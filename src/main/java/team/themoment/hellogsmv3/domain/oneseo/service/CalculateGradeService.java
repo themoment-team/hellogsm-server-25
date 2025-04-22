@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.ArtsPhysicalSubjectsScoreDetailResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.GeneralSubjectsSemesterScoreCalcResDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.GeneralSubjectsSemesterScoreCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.GeneralSubjectsScoreDetailResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
@@ -42,7 +42,7 @@ public class CalculateGradeService {
                 ? "1-1"
                 : dto.freeSemester();
 
-        GeneralSubjectsSemesterScoreCalcResDto generalSubjectsSemesterScore = calcGeneralSubjectsSemesterScore(dto, graduationType, liberalSystem, freeSemester);
+        GeneralSubjectsSemesterScoreCalcDto generalSubjectsSemesterScore = calcGeneralSubjectsSemesterScore(dto, graduationType, liberalSystem, freeSemester);
 
         // 일반 교과 성적 환산값 (총점: 180점)
         BigDecimal generalSubjectsScore = calcGeneralSubjectsTotalScore(generalSubjectsSemesterScore);
@@ -242,9 +242,9 @@ public class CalculateGradeService {
                 .setScale(3, RoundingMode.HALF_UP);
     }
 
-    private GeneralSubjectsSemesterScoreCalcResDto calcGeneralSubjectsSemesterScore(MiddleSchoolAchievementReqDto dto, GraduationType graduationType, String liberalSystem, String freeSemester) {
+    private GeneralSubjectsSemesterScoreCalcDto calcGeneralSubjectsSemesterScore(MiddleSchoolAchievementReqDto dto, GraduationType graduationType, String liberalSystem, String freeSemester) {
 
-        GeneralSubjectsSemesterScoreCalcResDto.GeneralSubjectsSemesterScoreCalcResDtoBuilder builder = GeneralSubjectsSemesterScoreCalcResDto.builder();
+        GeneralSubjectsSemesterScoreCalcDto.GeneralSubjectsSemesterScoreCalcDtoBuilder builder = GeneralSubjectsSemesterScoreCalcDto.builder();
 
         switch (graduationType) {
             case CANDIDATE -> builder
@@ -291,7 +291,7 @@ public class CalculateGradeService {
         return builder.build();
     }
 
-    private BigDecimal calcGeneralSubjectsTotalScore(GeneralSubjectsSemesterScoreCalcResDto generalSubjectsSemesterScore) {
+    private BigDecimal calcGeneralSubjectsTotalScore(GeneralSubjectsSemesterScoreCalcDto generalSubjectsSemesterScore) {
         return Stream.of(
                         generalSubjectsSemesterScore.score1_2(),
                         generalSubjectsSemesterScore.score2_1(),

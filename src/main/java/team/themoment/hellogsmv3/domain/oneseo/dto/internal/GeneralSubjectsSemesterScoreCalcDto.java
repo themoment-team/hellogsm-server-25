@@ -1,13 +1,11 @@
-package team.themoment.hellogsmv3.domain.oneseo.dto.response;
+package team.themoment.hellogsmv3.domain.oneseo.dto.internal;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
 import java.math.BigDecimal;
 
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public record GeneralSubjectsSemesterScoreCalcResDto(
+public record GeneralSubjectsSemesterScoreCalcDto(
         BigDecimal score1_2,
         BigDecimal score2_1,
         BigDecimal score2_2,
