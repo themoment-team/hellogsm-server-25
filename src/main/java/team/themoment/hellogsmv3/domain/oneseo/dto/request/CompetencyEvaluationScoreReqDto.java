@@ -6,10 +6,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record AptitudeEvaluationScoreReqDto(
+public record CompetencyEvaluationScoreReqDto(
         @NotNull
         @DecimalMin(value = "0.0", message = "0점 이상이여야 합니다.")
         @DecimalMax(value = "100.0", message = "100점 이하여야 합니다.")
-        BigDecimal aptitudeEvaluationScore
+        BigDecimal competencyEvaluationScore
 ) {
 }

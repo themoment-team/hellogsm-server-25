@@ -181,7 +181,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/arrived-status/{memberId}").hasAnyAuthority(
                         Role.ADMIN.name()
                 )
-                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/aptitude-score/{memberId}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/competency-score/{memberId}").hasAnyAuthority(
                         Role.ADMIN.name()
                 )
                 .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/interview-score/{memberId}").hasAnyAuthority(
