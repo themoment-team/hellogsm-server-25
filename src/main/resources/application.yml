@@ -104,7 +104,7 @@ schedule:
   oneseoSubmissionStart: ${ONESEO_SUBMISSION_START}
   oneseoSubmissionEnd: ${ONESEO_SUBMISSION_END}
   firstResultsAnnouncement: ${FIRST_RESULTS_ANNOUNCEMENT}
-  aptitudeEvaluation: ${APTITUDE_EVALUATION}
+  competencyEvaluation: ${COMPETENCY_EVALUATION}
   interview: ${INTERVIEW}
   finalResultsAnnouncement: ${FINAL_RESULTS_ANNOUNCEMENT}
 
