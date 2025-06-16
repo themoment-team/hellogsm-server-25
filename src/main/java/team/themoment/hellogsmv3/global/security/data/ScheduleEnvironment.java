@@ -9,7 +9,7 @@ public record ScheduleEnvironment(
     LocalDateTime oneseoSubmissionStart,
     LocalDateTime oneseoSubmissionEnd,
     LocalDateTime firstResultsAnnouncement,
-    LocalDateTime aptitudeEvaluation,
+    LocalDateTime competencyEvaluation,
     LocalDateTime interview,
     LocalDateTime finalResultsAnnouncement
 ) {
