@@ -122,7 +122,7 @@ public class DownloadExcelServiceTest {
             List<String> expectedHeader = List.of(
                     "순번", "접수번호", "성명", "1지망", "2지망", "3지망", "생년월일", "성별", "상세주소", "출신학교",
                     "학력", "초기전형", "적용되는 전형", "일반교과점수", "예체능점수", "출석점수", "봉사점수", "1차전형총점",
-                    "직무적성소양평가점수", "심층면접점수", "최종점수", "최종학과", "지원자연락처", "보호자연락처", "담임연락처", "1차전형결과", "2차전형결과"
+                    "역량평가점수", "심층면접점수", "최종점수", "최종학과", "지원자연락처", "보호자연락처", "담임연락처", "1차전형결과", "2차전형결과"
             );
 
             String wantedScreening = null;
@@ -153,7 +153,7 @@ public class DownloadExcelServiceTest {
                     String.valueOf(entranceTestResult.getEntranceTestFactorsDetail().getAttendanceScore()),
                     String.valueOf(entranceTestResult.getEntranceTestFactorsDetail().getVolunteerScore()),
                     String.valueOf(entranceTestResult.getDocumentEvaluationScore()),
-                    String.valueOf(entranceTestResult.getAptitudeEvaluationScore()),
+                    String.valueOf(entranceTestResult.getCompetencyEvaluationScore()),
                     String.valueOf(entranceTestResult.getInterviewScore()),
                     String.valueOf(46.334),
                     String.valueOf(oneseo.getDecidedMajor()),
@@ -230,7 +230,7 @@ public class DownloadExcelServiceTest {
                     .documentEvaluationScore(BigDecimal.valueOf(80))
                     .firstTestPassYn(yn)
                     .secondTestPassYn(yn)
-                    .aptitudeEvaluationScore(BigDecimal.valueOf(70))
+                    .competencyEvaluationScore(BigDecimal.valueOf(70))
                     .interviewScore(BigDecimal.valueOf(60))
                     .build();
         }
