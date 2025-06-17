@@ -128,7 +128,7 @@ class SearchOneseoServiceTest {
                 assertEquals(oneseoPrivacyDetail.getGuardianPhoneNumber(), searchOneseoResDto.guardianPhoneNumber());
                 assertEquals(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber(), searchOneseoResDto.schoolTeacherPhoneNumber());
                 assertEquals(entranceTestResult.getFirstTestPassYn(), searchOneseoResDto.firstTestPassYn());
-                assertEquals(entranceTestResult.getAptitudeEvaluationScore(), searchOneseoResDto.aptitudeEvaluationScore());
+                assertEquals(entranceTestResult.getCompetencyEvaluationScore(), searchOneseoResDto.competencyEvaluationScore());
                 assertEquals(entranceTestResult.getInterviewScore(), searchOneseoResDto.interviewScore());
                 assertEquals(entranceTestResult.getSecondTestPassYn(), searchOneseoResDto.secondTestPassYn());
             }
@@ -172,7 +172,7 @@ class SearchOneseoServiceTest {
                 .guardianPhoneNumber(oneseoPrivacyDetail.getGuardianPhoneNumber())
                 .schoolTeacherPhoneNumber(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber())
                 .firstTestPassYn(entranceTestResult.getFirstTestPassYn())
-                .aptitudeEvaluationScore(entranceTestResult.getAptitudeEvaluationScore())
+                .competencyEvaluationScore(entranceTestResult.getCompetencyEvaluationScore())
                 .interviewScore(entranceTestResult.getInterviewScore())
                 .secondTestPassYn(entranceTestResult.getSecondTestPassYn())
                 .build();
@@ -182,7 +182,7 @@ class SearchOneseoServiceTest {
         return EntranceTestResult.builder()
                 .id(1L)
                 .firstTestPassYn(YES)
-                .aptitudeEvaluationScore(BigDecimal.TEN)
+                .competencyEvaluationScore(BigDecimal.TEN)
                 .interviewScore(BigDecimal.TEN)
                 .secondTestPassYn(YES)
                 .build();

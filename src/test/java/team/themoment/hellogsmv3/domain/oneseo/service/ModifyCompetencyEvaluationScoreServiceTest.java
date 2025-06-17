@@ -10,22 +10,21 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.AptitudeEvaluationScoreReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.request.CompetencyEvaluationScoreReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("ModifyAptitudeEvaluationScoreService 클래스의")
-public class ModifyAptitudeEvaluationScoreServiceTest {
+@DisplayName("ModifyCompetencyEvaluationScoreService 클래스의")
+public class ModifyCompetencyEvaluationScoreServiceTest {
 
     @Mock
     private MemberService memberService;
@@ -35,7 +34,7 @@ public class ModifyAptitudeEvaluationScoreServiceTest {
     private EntranceTestResultRepository entranceTestResultRepository;
 
     @InjectMocks
-    private ModifyAptitudeEvaluationScoreService modifyAptitudeEvaluationScoreService;
+    private ModifyCompetencyEvaluationScoreService modifyCompetencyEvaluationScoreService;
 
     @BeforeEach
     void setUp() {
@@ -49,8 +48,8 @@ public class ModifyAptitudeEvaluationScoreServiceTest {
         private final BigDecimal newScore = BigDecimal.valueOf(85);
 
         @Nested
-        @DisplayName("존재하는 회원 ID와 적성 검사 점수가 주어지면")
-        class Context_with_existing_member_id_and_aptitude_evaluation_score {
+        @DisplayName("존재하는 회원 ID와 역량검사 점수가 주어지면")
+        class Context_with_existing_member_id_and_competency_evaluation_score {
             EntranceTestResult entranceTestResult;
 
             @BeforeEach
@@ -60,7 +59,7 @@ public class ModifyAptitudeEvaluationScoreServiceTest {
                         .build();
 
                 entranceTestResult = EntranceTestResult.builder()
-                        .aptitudeEvaluationScore(BigDecimal.valueOf(70))
+                        .competencyEvaluationScore(BigDecimal.valueOf(70))
                         .secondTestPassYn(null)
                         .build();
 
@@ -74,13 +73,13 @@ public class ModifyAptitudeEvaluationScoreServiceTest {
             }
 
             @Test
-            @DisplayName("적성 검사 점수를 저장한다.")
-            void it_save_aptitude_evaluation_score() {
-                AptitudeEvaluationScoreReqDto aptitudeEvaluationScoreReqDto = new AptitudeEvaluationScoreReqDto(newScore);
+            @DisplayName("역량검사 점수를 저장한다.")
+            void it_save_competency_evaluation_score() {
+                CompetencyEvaluationScoreReqDto competencyEvaluationScoreReqDto = new CompetencyEvaluationScoreReqDto(newScore);
 
-                modifyAptitudeEvaluationScoreService.execute(memberId, aptitudeEvaluationScoreReqDto);
+                modifyCompetencyEvaluationScoreService.execute(memberId, competencyEvaluationScoreReqDto);
 
-                assertEquals(newScore, entranceTestResult.getAptitudeEvaluationScore());
+                assertEquals(newScore, entranceTestResult.getCompetencyEvaluationScore());
                 verify(entranceTestResultRepository).save(entranceTestResult);
             }
         }
@@ -97,9 +96,9 @@ public class ModifyAptitudeEvaluationScoreServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
-                AptitudeEvaluationScoreReqDto aptitudeEvaluationScoreReqDto = new AptitudeEvaluationScoreReqDto(newScore);
+                CompetencyEvaluationScoreReqDto competencyEvaluationScoreReqDto = new CompetencyEvaluationScoreReqDto(newScore);
 
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> modifyAptitudeEvaluationScoreService.execute(memberId, aptitudeEvaluationScoreReqDto));
+                ExpectedException exception = assertThrows(ExpectedException.class, () -> modifyCompetencyEvaluationScoreService.execute(memberId, competencyEvaluationScoreReqDto));
 
                 assertEquals("존재하지 않는 지원자입니다. member ID: ", exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());

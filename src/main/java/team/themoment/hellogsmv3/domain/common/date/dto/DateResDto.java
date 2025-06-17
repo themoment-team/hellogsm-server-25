@@ -18,7 +18,7 @@ public record DateResDto(
         LocalDateTime firstResultsAnnouncement,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime jobFitAssessment,
+        LocalDateTime competencyEvaluation,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime inDepthInterview,

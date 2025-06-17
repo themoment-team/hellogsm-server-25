@@ -39,7 +39,7 @@ public class OneseoController {
     private final CreateOneseoService createOneseoService;
     private final ModifyOneseoService modifyOneseoService;
     private final ModifyRealOneseoArrivedYnService modifyRealOneseoArrivedYnService;
-    private final ModifyAptitudeEvaluationScoreService modifyAptitudeEvaluationScoreService;
+    private final ModifyCompetencyEvaluationScoreService modifyCompetencyEvaluationScoreService;
     private final ModifyInterviewScoreService modifyInterviewScoreService;
     private final QueryAdmissionTicketsService queryAdmissionTicketsService;
     private final DownloadExcelService downloadExcelService;
@@ -78,13 +78,13 @@ public class OneseoController {
         return modifyRealOneseoArrivedYnService.execute(memberId);
     }
 
-    @Operation(summary = "적성 검사 점수 기입", description = "맴버 id로 원서의 적성 검사 점수를 기입합니다.")
-    @PatchMapping("/aptitude-score/{memberId}")
-    public CommonApiResponse modifyAptitudeScore(
+    @Operation(summary = "역량검사 점수 기입", description = "맴버 id로 원서의 역량검사 점수를 기입합니다.")
+    @PatchMapping("/competency-score/{memberId}")
+    public CommonApiResponse modifyCompetencyScore(
             @PathVariable Long memberId,
-            @RequestBody @Valid AptitudeEvaluationScoreReqDto aptitudeEvaluationScoreReqDto
+            @RequestBody @Valid CompetencyEvaluationScoreReqDto competencyEvaluationScoreReqDto
     ) {
-        modifyAptitudeEvaluationScoreService.execute(memberId, aptitudeEvaluationScoreReqDto);
+        modifyCompetencyEvaluationScoreService.execute(memberId, competencyEvaluationScoreReqDto);
         return CommonApiResponse.success("수정되었습니다.");
     }
 

@@ -2,7 +2,6 @@ package team.themoment.hellogsmv3.domain.oneseo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 
 import java.math.BigDecimal;
@@ -38,8 +37,8 @@ public class EntranceTestResult {
     @Column(name = "first_test_pass_yn")
     private YesNo firstTestPassYn;
 
-    @Column(name = "aptitude_evaluation_score")
-    private BigDecimal aptitudeEvaluationScore;
+    @Column(name = "competency_evaluation_score")
+    private BigDecimal competencyEvaluationScore;
 
     @Column(name = "interview_score")
     private BigDecimal interviewScore;
@@ -48,8 +47,8 @@ public class EntranceTestResult {
     @Column(name = "second_test_pass_yn")
     private YesNo secondTestPassYn;
 
-    public void modifyAptitudeEvaluationScore(BigDecimal aptitudeEvaluationScore) {
-        this.aptitudeEvaluationScore = aptitudeEvaluationScore;
+    public void modifyCompetencyEvaluationScore(BigDecimal competencyEvaluationScore) {
+        this.competencyEvaluationScore = competencyEvaluationScore;
     }
 
     public void modifyInterviewScore(BigDecimal interviewScore) {

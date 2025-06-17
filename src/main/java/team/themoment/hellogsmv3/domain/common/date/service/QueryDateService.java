@@ -16,7 +16,7 @@ public class QueryDateService {
                 .oneseoSubmissionStart(scheduleEnv.oneseoSubmissionStart())
                 .oneseoSubmissionEnd(scheduleEnv.oneseoSubmissionEnd())
                 .firstResultsAnnouncement(scheduleEnv.firstResultsAnnouncement())
-                .jobFitAssessment(scheduleEnv.aptitudeEvaluation())
+                .competencyEvaluation(scheduleEnv.competencyEvaluation())
                 .inDepthInterview(scheduleEnv.interview())
                 .finalResultsAnnouncement(scheduleEnv.finalResultsAnnouncement())
                 .build();

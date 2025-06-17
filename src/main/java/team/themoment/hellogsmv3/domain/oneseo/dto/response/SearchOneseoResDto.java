@@ -19,7 +19,7 @@ public record SearchOneseoResDto(
         String guardianPhoneNumber,
         String schoolTeacherPhoneNumber,
         YesNo firstTestPassYn,
-        BigDecimal aptitudeEvaluationScore,
+        BigDecimal competencyEvaluationScore,
         BigDecimal interviewScore,
         YesNo secondTestPassYn,
         YesNo entranceIntentionYn
