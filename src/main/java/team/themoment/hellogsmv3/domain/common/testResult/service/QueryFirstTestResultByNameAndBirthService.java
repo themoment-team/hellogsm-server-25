@@ -3,6 +3,7 @@ package team.themoment.hellogsmv3.domain.common.testResult.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.common.testResult.dto.response.FoundTestResultResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
@@ -18,6 +19,7 @@ public class QueryFirstTestResultByNameAndBirthService {
     private final OneseoService oneseoService;
     private final OneseoRepository oneseoRepository;
 
+    @Transactional(readOnly = true)
     public FoundTestResultResDto execute(String name, LocalDate birth) {
         if(oneseoService.validateFirstTestResultAnnouncement()) {
             throw new ExpectedException("1차 전형 결과 발표 전 입니다.", HttpStatus.BAD_REQUEST);
