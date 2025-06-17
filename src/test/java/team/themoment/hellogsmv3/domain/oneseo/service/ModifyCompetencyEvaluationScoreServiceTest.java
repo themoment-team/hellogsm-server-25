@@ -48,7 +48,7 @@ public class ModifyCompetencyEvaluationScoreServiceTest {
         private final BigDecimal newScore = BigDecimal.valueOf(85);
 
         @Nested
-        @DisplayName("존재하는 회원 ID와 역량 검사 점수가 주어지면")
+        @DisplayName("존재하는 회원 ID와 역량검사 점수가 주어지면")
         class Context_with_existing_member_id_and_competency_evaluation_score {
             EntranceTestResult entranceTestResult;
 
@@ -73,7 +73,7 @@ public class ModifyCompetencyEvaluationScoreServiceTest {
             }
 
             @Test
-            @DisplayName("역량 검사 점수를 저장한다.")
+            @DisplayName("역량검사 점수를 저장한다.")
             void it_save_competency_evaluation_score() {
                 CompetencyEvaluationScoreReqDto competencyEvaluationScoreReqDto = new CompetencyEvaluationScoreReqDto(newScore);
 
