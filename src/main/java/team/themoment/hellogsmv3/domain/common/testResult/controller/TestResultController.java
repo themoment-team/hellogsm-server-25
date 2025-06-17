@@ -85,7 +85,7 @@ public class TestResultController {
             @ApiResponse(responseCode = "200", description = "1차 전형 합격자 조회 성공"),
             @ApiResponse(responseCode = "204", description = "1차 전형 결과가 아직 발표되지 않았습니다.", content = @Content())
     })
-    @GetMapping("/public/first-test-pass")
+    @GetMapping("/public/first-test")
     public FoundTestResultResDto firstTestResultByNameAndBirth(
             @RequestParam("name") @NotNull String name,
             @RequestParam("birth") @NotNull LocalDate birth
@@ -98,7 +98,7 @@ public class TestResultController {
             @ApiResponse(responseCode = "200", description = "최종 합격자 조회 성공"),
             @ApiResponse(responseCode = "204", description = "최종 합격 결과가 아직 발표되지 않았습니다.", content = @Content())
     })
-    @GetMapping("/public/final-test-pass")
+    @GetMapping("/public/second-test")
     public FoundTestResultResDto secondTestResultByNameAndBirth(
             @RequestParam("name") @NotNull String name,
             @RequestParam("birth") @NotNull LocalDate birth
