@@ -219,7 +219,15 @@ public class SecurityConfig {
                 )
 
                 // test result api
-                .requestMatchers("/test-result/v3/**").hasAnyAuthority(
+                .requestMatchers("/test-result/v3/auth-code").hasAnyAuthority(
+                        Role.UNAUTHENTICATED.name(),
+                        Role.APPLICANT.name()
+                )
+                .requestMatchers("/test-result/v3/send-code").hasAnyAuthority(
+                        Role.UNAUTHENTICATED.name(),
+                        Role.APPLICANT.name()
+                )
+                .requestMatchers("/test-result/v3/my/**").hasAnyAuthority(
                         Role.UNAUTHENTICATED.name(),
                         Role.APPLICANT.name()
                 )
