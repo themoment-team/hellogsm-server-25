@@ -82,3 +82,17 @@ public class TestResultController {
     ) {
         return queryFirstTestResultByNameAndBirthService.execute(name, birth);
     }
+
+    @Operation(summary = "최종 합격 여부 공개 조회", description = "최종 합격 여부를 이름과 생년월일로 공개 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "최종 합격자 조회 성공"),
+            @ApiResponse(responseCode = "204", description = "최종 합격 결과가 아직 발표되지 않았습니다.", content = @Content())
+    })
+    @GetMapping("/public/final-test-pass")
+    public FoundTestResultResDto secondTestResultByNameAndBirth(
+            @RequestParam("name") @NotNull String name,
+            @RequestParam("birth") @NotNull LocalDate birth
+    ) {
+        return querySecondTestResultByNameAndBirthService.execute(name, birth);
+    }
+}
