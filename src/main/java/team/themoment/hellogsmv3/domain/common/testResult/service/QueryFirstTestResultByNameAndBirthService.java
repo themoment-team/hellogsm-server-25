@@ -20,20 +20,25 @@ public class QueryFirstTestResultByNameAndBirthService {
     private final OneseoRepository oneseoRepository;
 
     @Transactional(readOnly = true)
-    public FoundTestResultResDto execute(String name, LocalDate birth) {
+    public FoundTestResultResDto execute(String name,String phoneNumber, String birth) {
         if(oneseoService.validateFirstTestResultAnnouncement()) {
             throw new ExpectedException("1차 전형 결과 발표 전 입니다.", HttpStatus.BAD_REQUEST);
         }
-        Oneseo oneseo = findOneseo(name, birth);
+        try {
+            LocalDate.parse(birth);
+        } catch (Exception e) {
+            throw new ExpectedException("생년월일 형식이 잘못되었습니다. 올바른 형식은 'YYYY-MM-DD'입니다.", HttpStatus.BAD_REQUEST);
+        }
+        Oneseo oneseo = findOneseo(name, phoneNumber, LocalDate.parse(birth));
         return FoundTestResultResDto.builder()
                 .name(maskingName(oneseo.getMember().getName()))
                 .firstTestPassYn(oneseo.getEntranceTestResult().getFirstTestPassYn())
                 .build();
     }
 
-    private Oneseo findOneseo(String name, LocalDate birth) {
-        return oneseoRepository.findByMemberNameAndMemberBirth(name, birth)
-                .orElseThrow(() -> new ExpectedException("해당 이름, 생년월일의 정보를 가진 원서를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
+    private Oneseo findOneseo(String name, String phoneNumber, LocalDate birth) {
+        return oneseoRepository.findByMemberNameAndMemberBirth(name, phoneNumber, birth)
+                .orElseThrow(() -> new ExpectedException("해당 이름, 전화번호,생년월일의 정보를 가진 원서를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
     }
 
     private String maskingName(String name) {
