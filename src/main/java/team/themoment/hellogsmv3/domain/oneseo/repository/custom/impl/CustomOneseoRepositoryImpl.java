@@ -24,10 +24,12 @@ import static com.querydsl.core.types.ExpressionUtils.anyOf;
 import static com.querydsl.core.types.ExpressionUtils.eq;
 import static team.themoment.hellogsmv3.domain.member.entity.QMember.member;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QEntranceTestResult.entranceTestResult;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.QMiddleSchoolAchievement.middleSchoolAchievement;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QOneseo.oneseo;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QOneseoPrivacyDetail.oneseoPrivacyDetail;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,6 +160,26 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .fetch();
 
         return PageableExecutionUtils.getPage(oneseos, pageable, () -> getTotalCount(builder));
+    }
+
+    @Override
+    public Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(oneseo)
+                        .leftJoin(oneseo.member, member)
+                        .fetchJoin()
+                        .leftJoin(oneseo.entranceTestResult, entranceTestResult)
+                        .fetchJoin()
+                        .leftJoin(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail)
+                        .fetchJoin()
+                        .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement)
+                        .fetchJoin()
+                        .where(
+                                member.name.eq(memberName)
+                                        .and(member.phoneNumber.eq(phoneNumber))
+                                        .and(member.birth.eq(memberBirth))
+                        ).fetchOne()
+        );
     }
 
     private long getTotalCount(BooleanBuilder builder) {
