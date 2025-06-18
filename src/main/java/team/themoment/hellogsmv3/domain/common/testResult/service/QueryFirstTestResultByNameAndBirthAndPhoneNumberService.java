@@ -14,15 +14,15 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class QuerySecondTestResultByNameAndBirthService {
+public class QueryFirstTestResultByNameAndBirthAndPhoneNumberService {
 
     private final OneseoService oneseoService;
     private final OneseoRepository oneseoRepository;
 
     @Transactional(readOnly = true)
-    public FoundTestResultResDto execute(String name, String phoneNumber, String birth) {
-        if (oneseoService.validateSecondTestResultAnnouncement()) {
-            throw new ExpectedException("2차 전형 결과 발표 전 입니다.", HttpStatus.BAD_REQUEST);
+    public FoundTestResultResDto execute(String name,String phoneNumber, String birth) {
+        if(oneseoService.validateFirstTestResultAnnouncement()) {
+            throw new ExpectedException("1차 전형 결과 발표 전 입니다.", HttpStatus.BAD_REQUEST);
         }
         try {
             LocalDate.parse(birth);
@@ -32,14 +32,13 @@ public class QuerySecondTestResultByNameAndBirthService {
         Oneseo oneseo = findOneseo(name, phoneNumber, LocalDate.parse(birth));
         return FoundTestResultResDto.builder()
                 .name(maskingName(oneseo.getMember().getName()))
-                .secondTestPassYn(oneseo.getEntranceTestResult().getSecondTestPassYn())
-                .decidedMajor(oneseo.getDecidedMajor())
+                .firstTestPassYn(oneseo.getEntranceTestResult().getFirstTestPassYn())
                 .build();
     }
 
     private Oneseo findOneseo(String name, String phoneNumber, LocalDate birth) {
         return oneseoRepository.findByMemberNameAndMemberBirthAndPhoneNumber(name, phoneNumber, birth)
-                .orElseThrow(() -> new ExpectedException("해당 이름, 전화번호, 생년월일의 정보를 가진 원서를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new ExpectedException("해당 이름, 전화번호,생년월일의 정보를 가진 원서를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
     }
 
     private String maskingName(String name) {

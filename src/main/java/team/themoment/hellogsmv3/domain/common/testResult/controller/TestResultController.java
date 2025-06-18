@@ -10,8 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import team.themoment.hellogsmv3.domain.common.testResult.dto.response.FoundTestResultResDto;
-import team.themoment.hellogsmv3.domain.common.testResult.service.QueryFirstTestResultByNameAndBirthService;
-import team.themoment.hellogsmv3.domain.common.testResult.service.QuerySecondTestResultByNameAndBirthService;
+import team.themoment.hellogsmv3.domain.common.testResult.service.QueryFirstTestResultByNameAndBirthAndPhoneNumberService;
+import team.themoment.hellogsmv3.domain.common.testResult.service.QuerySecondTestResultByNameAndBirthAndPhoneNumberService;
 import team.themoment.hellogsmv3.domain.common.testResult.service.QueryTestResultService;
 import team.themoment.hellogsmv3.domain.common.testResult.service.impl.GenerateTestResultCodeServiceImpl;
 import team.themoment.hellogsmv3.domain.member.dto.request.AuthenticateCodeReqDto;
@@ -19,8 +19,6 @@ import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.service.AuthenticateCodeService;
 import team.themoment.hellogsmv3.global.common.handler.annotation.AuthRequest;
 import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
-
-import java.time.LocalDate;
 
 import static team.themoment.hellogsmv3.domain.common.testResult.type.TestType.FIRST;
 import static team.themoment.hellogsmv3.domain.common.testResult.type.TestType.SECOND;
@@ -35,8 +33,8 @@ public class TestResultController {
     private final QueryTestResultService queryTestResultService;
     private final AuthenticateCodeService authenticateCodeService;
     private final GenerateTestResultCodeServiceImpl generateTestResultCodeService;
-    private final QueryFirstTestResultByNameAndBirthService queryFirstTestResultByNameAndBirthService;
-    private final QuerySecondTestResultByNameAndBirthService querySecondTestResultByNameAndBirthService;
+    private final QueryFirstTestResultByNameAndBirthAndPhoneNumberService queryFirstTestResultByNameAndBirthAndPhoneNumberService;
+    private final QuerySecondTestResultByNameAndBirthAndPhoneNumberService querySecondTestResultByNameAndBirthAndPhoneNumberService;
 
     @Operation(summary = "인증코드 전송", description = "전화번호를 요청받아 인증코드를 전송합니다.")
     @PostMapping("/send-code")
@@ -91,7 +89,7 @@ public class TestResultController {
             @RequestParam("phoneNumber") @NotNull String phoneNumber,
             @RequestParam("birth") @NotNull String birth
     ) {
-        return queryFirstTestResultByNameAndBirthService.execute(name, phoneNumber, birth);
+        return queryFirstTestResultByNameAndBirthAndPhoneNumberService.execute(name, phoneNumber, birth);
     }
 
     @Operation(summary = "최종 합격 여부 공개 조회", description = "최종 합격 여부를 이름과 생년월일,학생 전화번호로 공개 조회합니다.")
@@ -105,6 +103,6 @@ public class TestResultController {
             @RequestParam("phoneNumber") @NotNull String phoneNumber,
             @RequestParam("birth") @NotNull String birth
     ) {
-        return querySecondTestResultByNameAndBirthService.execute(name, phoneNumber, birth);
+        return querySecondTestResultByNameAndBirthAndPhoneNumberService.execute(name, phoneNumber, birth);
     }
 }
