@@ -33,5 +33,5 @@ public interface CustomOneseoRepository {
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndSubmitCode(String phoneNumber, String submitCode);
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndExaminationNumber(String phoneNumber, String examinationNumber);
 
-    Optional<Oneseo> findByMemberNameAndMemberBirth(String memberName, String phoneNumber, LocalDate memberBirth);
+    Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth);
 }

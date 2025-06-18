@@ -163,7 +163,7 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
     }
 
     @Override
-    public Optional<Oneseo> findByMemberNameAndMemberBirth(String memberName, String phoneNumber, LocalDate memberBirth) {
+    public Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(oneseo)
                         .leftJoin(oneseo.member, member)

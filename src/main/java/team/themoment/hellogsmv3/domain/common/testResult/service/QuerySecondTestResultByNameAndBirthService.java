@@ -38,7 +38,7 @@ public class QuerySecondTestResultByNameAndBirthService {
     }
 
     private Oneseo findOneseo(String name, String phoneNumber, LocalDate birth) {
-        return oneseoRepository.findByMemberNameAndMemberBirth(name, phoneNumber, birth)
+        return oneseoRepository.findByMemberNameAndMemberBirthAndPhoneNumber(name, phoneNumber, birth)
                 .orElseThrow(() -> new ExpectedException("해당 이름, 전화번호, 생년월일의 정보를 가진 원서를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
     }
 
