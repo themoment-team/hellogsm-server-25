@@ -22,7 +22,7 @@ public class QuerySecondTestResultByNameAndBirthAndPhoneNumberService {
     @Transactional(readOnly = true)
     public FoundTestResultResDto execute(String name, String phoneNumber, String birth) {
         if (oneseoService.validateSecondTestResultAnnouncement()) {
-            throw new ExpectedException("2차 전형 결과 발표 전 입니다.", HttpStatus.BAD_REQUEST);
+            throw new ExpectedException("2차 전형 결과 발표 전 입니다.", HttpStatus.NO_CONTENT);
         }
         try {
             LocalDate.parse(birth);
