@@ -80,7 +80,7 @@ public class TestResultController {
         return queryTestResultService.execute(memberId, code, phoneNumber, examinationNumber, SECOND);
     }
 
-    @Operation(summary = "1차 전형 합불 여부 공개 조회", description = "1차 전형 합불 여부를 이름과 생년월일로 공개 조회합니다.")
+    @Operation(summary = "1차 전형 합불 여부 공개 조회", description = "1차 전형 합불 여부를 이름과 생년월일,학생 전화번호로 공개 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "1차 전형 합격자 조회 성공"),
             @ApiResponse(responseCode = "204", description = "1차 전형 결과가 아직 발표되지 않았습니다.", content = @Content())
@@ -88,12 +88,13 @@ public class TestResultController {
     @GetMapping("/public/first-test")
     public FoundTestResultResDto firstTestResultByNameAndBirth(
             @RequestParam("name") @NotNull String name,
-            @RequestParam("birth") @NotNull LocalDate birth
+            @RequestParam("phoneNumber") @NotNull String phoneNumber,
+            @RequestParam("birth") @NotNull String birth
     ) {
-        return queryFirstTestResultByNameAndBirthService.execute(name, birth);
+        return queryFirstTestResultByNameAndBirthService.execute(name, phoneNumber, birth);
     }
 
-    @Operation(summary = "최종 합격 여부 공개 조회", description = "최종 합격 여부를 이름과 생년월일로 공개 조회합니다.")
+    @Operation(summary = "최종 합격 여부 공개 조회", description = "최종 합격 여부를 이름과 생년월일,학생 전화번호로 공개 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "최종 합격자 조회 성공"),
             @ApiResponse(responseCode = "204", description = "최종 합격 결과가 아직 발표되지 않았습니다.", content = @Content())
@@ -101,8 +102,9 @@ public class TestResultController {
     @GetMapping("/public/second-test")
     public FoundTestResultResDto secondTestResultByNameAndBirth(
             @RequestParam("name") @NotNull String name,
-            @RequestParam("birth") @NotNull LocalDate birth
+            @RequestParam("phoneNumber") @NotNull String phoneNumber,
+            @RequestParam("birth") @NotNull String birth
     ) {
-        return querySecondTestResultByNameAndBirthService.execute(name, birth);
+        return querySecondTestResultByNameAndBirthService.execute(name, phoneNumber, birth);
     }
 }
