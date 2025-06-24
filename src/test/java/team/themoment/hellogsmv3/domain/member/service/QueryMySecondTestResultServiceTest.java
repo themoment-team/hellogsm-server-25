@@ -12,6 +12,7 @@ import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberSecondTes
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.service.OneseoService;
 
@@ -53,6 +54,7 @@ public class QueryMySecondTestResultServiceTest {
                     .entranceTestResult(EntranceTestResult.builder()
                             .secondTestPassYn(YesNo.YES)
                             .build())
+                    .decidedMajor(Major.SW)
                     .build();
 
             given(memberService.findByIdOrThrow(memberId)).willReturn(member);
@@ -73,6 +75,7 @@ public class QueryMySecondTestResultServiceTest {
             void it_returns_second_test_result_and_decided_major() {
                 FoundMemberSecondTestResDto result = queryMySecondTestResultService.execute(memberId);
                 assertEquals(oneseo.getEntranceTestResult().getSecondTestPassYn(), result.secondTestPassYn());
+                assertEquals(oneseo.getDecidedMajor(), result.decidedMajor());
             }
         }
 
