@@ -42,7 +42,7 @@ class AnnounceFirstTestResultServiceTest {
     }
 
     @Nested
-    @DisplayName("execute 메서드는")
+    @DisplayName("execute 메소드는")
     class Describe_execute {
 
         @Nested
@@ -56,7 +56,7 @@ class AnnounceFirstTestResultServiceTest {
             }
 
             @Test
-            @DisplayName("예외를 던진다")
+            @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
                 ExpectedException exception = assertThrows(ExpectedException.class, () ->
                         announceFirstTestResultService.execute()
@@ -83,7 +83,7 @@ class AnnounceFirstTestResultServiceTest {
             }
 
             @Test
-            @DisplayName("예외를 던진다")
+            @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
                 ExpectedException exception = assertThrows(ExpectedException.class, () ->
                         announceFirstTestResultService.execute()
