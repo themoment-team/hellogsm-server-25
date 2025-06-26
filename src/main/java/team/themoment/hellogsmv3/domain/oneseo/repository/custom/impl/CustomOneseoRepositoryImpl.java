@@ -61,25 +61,6 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
     }
 
     @Override
-    public List<Oneseo> findAllByScreeningDynamic(Screening screening) {
-        boolean isExistAppliedScreening = queryFactory
-                .selectOne()
-                .from(oneseo)
-                .where(oneseo.appliedScreening.isNotNull())
-                .fetchFirst() != null;
-
-        return queryFactory
-                .select(oneseo)
-                .from(oneseo)
-                .join(oneseo.entranceTestResult, entranceTestResult)
-                .where(isExistAppliedScreening
-                        ? oneseo.appliedScreening.eq(screening)
-                        : oneseo.wantedScreening.eq(screening))
-                .orderBy(entranceTestResult.documentEvaluationScore.desc())
-                .fetch();
-    }
-
-    @Override
     public Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndSubmitCode(String phoneNumber, String submitCode) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(oneseo)
