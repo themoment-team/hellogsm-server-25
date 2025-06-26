@@ -15,17 +15,16 @@ import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.Sex;
 import team.themoment.hellogsmv3.domain.oneseo.entity.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.*;
-import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
 
 @DisplayName("DownloadExcelService 클래스의")
@@ -34,14 +33,14 @@ public class DownloadExcelServiceTest {
     @Mock
     private OneseoRepository oneseoRepository;
 
-    @Mock
-    private EntranceTestResultRepository entranceTestResultRepository;
-
-    @Mock
-    private OneseoPrivacyDetailRepository oneseoPrivacyDetailRepository;
-
     @InjectMocks
     private DownloadExcelService downloadExcelService;
+
+    private final List<String> EXPECTED_HEADER = List.of(
+            "순번", "접수번호", "성명", "1지망", "2지망", "3지망", "생년월일", "성별", "상세주소", "출신학교",
+            "학력", "초기전형", "적용되는 전형", "일반교과점수", "예체능점수", "출석점수", "봉사점수", "1차전형총점",
+            "역량평가점수", "심층면접점수", "최종점수", "최종학과", "지원자연락처", "보호자연락처", "담임연락처", "1차전형결과", "2차전형결과"
+    );
 
     @BeforeEach
     void setUp() {
@@ -51,145 +50,151 @@ public class DownloadExcelServiceTest {
     @Nested
     @DisplayName("execute 메소드는")
     class Describe_execute {
-        Oneseo oneseoGeneral;
-        Oneseo oneseoSpecial;
-        Oneseo oneseoExtra;
-        Oneseo oneseoFallen;
 
-        EntranceTestResult generalEntranceTestResult;
-        EntranceTestResult specialEntranceTestResult;
-        EntranceTestResult extraEntranceTestResult;
-        EntranceTestResult fallenEntranceTestResult;
+        @Nested
+        @DisplayName("정상적인 데이터가 있을 때")
+        class Context_with_valid_data {
+            Oneseo oneseoGeneral;
+            Oneseo oneseoSpecial;
+            Oneseo oneseoExtra;
+            Oneseo oneseoFallen;
 
-        OneseoPrivacyDetail generalPrivacyDetail;
-        OneseoPrivacyDetail specialPrivacyDetail;
-        OneseoPrivacyDetail extraPrivacyDetail;
-        OneseoPrivacyDetail fallenPrivacyDetail;
+            @BeforeEach
+            void setUp() {
+                oneseoGeneral = createOneseoWithAllDetails(1L, Screening.GENERAL, "A-1", YES);
+                oneseoSpecial = createOneseoWithAllDetails(2L, Screening.SPECIAL, "B-2", YES);
+                oneseoExtra = createOneseoWithAllDetails(3L, Screening.EXTRA_VETERANS, "C-3", YES);
+                oneseoFallen = createOneseoWithAllDetails(4L, Screening.GENERAL, "A-4", NO);
 
-        @BeforeEach
-        void setUp() {
-            Long generalId = 1L;
-            Long specialId = 2L;
-            Long extraId = 3L;
-            Long fallenId = 4L;
-
-            oneseoGeneral = createOneseo(generalId, Screening.GENERAL, "A-1");
-            oneseoSpecial = createOneseo(specialId, Screening.SPECIAL, "B-2");
-            oneseoExtra = createOneseo(extraId, Screening.EXTRA_VETERANS, "C-3");
-            oneseoFallen = createOneseo(fallenId, Screening.GENERAL, "A-4");
-
-            generalEntranceTestResult = createEntranceTestResult(generalId, oneseoGeneral, YES);
-            specialEntranceTestResult = createEntranceTestResult(specialId, oneseoSpecial, YES);
-            extraEntranceTestResult = createEntranceTestResult(extraId, oneseoExtra, YES);
-            fallenEntranceTestResult = createEntranceTestResult(fallenId, oneseoFallen, NO);
-
-            generalPrivacyDetail = createOneseoPrivacyDetail(generalId, oneseoGeneral);
-            specialPrivacyDetail = createOneseoPrivacyDetail(specialId, oneseoSpecial);
-            extraPrivacyDetail = createOneseoPrivacyDetail(extraId, oneseoExtra);
-            fallenPrivacyDetail = createOneseoPrivacyDetail(fallenId, oneseoFallen);
-
-            given(oneseoRepository.findAllByScreeningDynamic(Screening.GENERAL)).willReturn(List.of(oneseoGeneral));
-            given(oneseoRepository.findAllByScreeningDynamic(Screening.SPECIAL)).willReturn(List.of(oneseoSpecial));
-            given(oneseoRepository.findAllByScreeningDynamic(Screening.EXTRA_VETERANS)).willReturn(List.of(oneseoExtra));
-            given(entranceTestResultRepository.findAllByFirstTestPassYnOrSecondTestPassYn(NO, NO)).willReturn(List.of(fallenEntranceTestResult));
-
-            given(entranceTestResultRepository.findByOneseo(oneseoGeneral)).willReturn(generalEntranceTestResult);
-            given(entranceTestResultRepository.findByOneseo(oneseoSpecial)).willReturn(specialEntranceTestResult);
-            given(entranceTestResultRepository.findByOneseo(oneseoExtra)).willReturn(extraEntranceTestResult);
-            given(entranceTestResultRepository.findByOneseo(oneseoFallen)).willReturn(fallenEntranceTestResult);
-
-            given(oneseoPrivacyDetailRepository.findByOneseo(oneseoSpecial)).willReturn(specialPrivacyDetail);
-            given(oneseoPrivacyDetailRepository.findByOneseo(oneseoGeneral)).willReturn(generalPrivacyDetail);
-            given(oneseoPrivacyDetailRepository.findByOneseo(oneseoExtra)).willReturn(extraPrivacyDetail);
-            given(oneseoPrivacyDetailRepository.findByOneseo(oneseoFallen)).willReturn(fallenPrivacyDetail);
-        }
-
-        @Test
-        @DisplayName("모든 전형의 시트를 생성하고 데이터를 채운다.")
-        void it_create_sheets_and_populate_data() {
-            Workbook workbook = downloadExcelService.execute();
-
-            assertNotNull(workbook);
-            assertEquals(4, workbook.getNumberOfSheets());
-
-            assertSheetData(workbook.getSheetAt(0), oneseoGeneral, generalEntranceTestResult, generalPrivacyDetail, 0);
-            assertSheetData(workbook.getSheetAt(1), oneseoSpecial, specialEntranceTestResult, specialPrivacyDetail, 1);
-            assertSheetData(workbook.getSheetAt(2), oneseoExtra, extraEntranceTestResult, extraPrivacyDetail, 2);
-            assertSheetData(workbook.getSheetAt(3), oneseoFallen, fallenEntranceTestResult, fallenPrivacyDetail, 3);
-        }
-
-        private void assertSheetData(Sheet sheet, Oneseo oneseo, EntranceTestResult entranceTestResult, OneseoPrivacyDetail oneseoPrivacyDetail, int idx) {
-            List<String> expectedHeader = List.of(
-                    "순번", "접수번호", "성명", "1지망", "2지망", "3지망", "생년월일", "성별", "상세주소", "출신학교",
-                    "학력", "초기전형", "적용되는 전형", "일반교과점수", "예체능점수", "출석점수", "봉사점수", "1차전형총점",
-                    "역량평가점수", "심층면접점수", "최종점수", "최종학과", "지원자연락처", "보호자연락처", "담임연락처", "1차전형결과", "2차전형결과"
-            );
-
-            String wantedScreening = null;
-
-            switch (oneseo.getWantedScreening()) {
-                case GENERAL -> wantedScreening = "일반전형";
-                case SPECIAL -> wantedScreening = "특별전형";
-                case EXTRA_VETERANS -> wantedScreening = "국가보훈대상자";
-                case EXTRA_ADMISSION -> wantedScreening = "특례입학대상자";
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
+                    .willReturn(List.of(oneseoGeneral));
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
+                    .willReturn(List.of(oneseoSpecial));
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
+                    .willReturn(List.of(oneseoExtra));
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllFailedWithAllDetails())
+                    .willReturn(List.of(oneseoFallen));
             }
 
-            List<String> expectedData = Arrays.asList(
-                    "1",
-                    null,
-                    String.valueOf(oneseo.getMember().getName()),
-                    String.valueOf(oneseo.getDesiredMajors().getFirstDesiredMajor()),
-                    String.valueOf(oneseo.getDesiredMajors().getSecondDesiredMajor()),
-                    String.valueOf(oneseo.getDesiredMajors().getThirdDesiredMajor()),
-                    String.valueOf(oneseo.getMember().getBirth()),
-                    "남자",
-                    (oneseoPrivacyDetail.getAddress() + oneseoPrivacyDetail.getDetailAddress()),
-                    String.valueOf(oneseoPrivacyDetail.getSchoolName()),
-                    "졸업자",
-                    String.valueOf(wantedScreening),
-                    "",
-                    String.valueOf(entranceTestResult.getEntranceTestFactorsDetail().getGeneralSubjectsScore()),
-                    String.valueOf(entranceTestResult.getEntranceTestFactorsDetail().getArtsPhysicalSubjectsScore()),
-                    String.valueOf(entranceTestResult.getEntranceTestFactorsDetail().getAttendanceScore()),
-                    String.valueOf(entranceTestResult.getEntranceTestFactorsDetail().getVolunteerScore()),
-                    String.valueOf(entranceTestResult.getDocumentEvaluationScore()),
-                    String.valueOf(entranceTestResult.getCompetencyEvaluationScore()),
-                    String.valueOf(entranceTestResult.getInterviewScore()),
-                    String.valueOf(46.334),
-                    String.valueOf(oneseo.getDecidedMajor()),
-                    String.valueOf(oneseo.getMember().getPhoneNumber()),
-                    String.valueOf(oneseoPrivacyDetail.getGuardianPhoneNumber()),
-                    String.valueOf(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber()),
-                    entranceTestResult.getFirstTestPassYn().equals(YES) ? "합격" : "불합격",
-                    entranceTestResult.getSecondTestPassYn().equals(YES) ? "합격" : "불합격"
-            );
+            @Test
+            @DisplayName("모든 전형의 시트를 생성하고 데이터를 채운다")
+            void it_creates_all_sheets_with_data() throws IOException {
+                try (Workbook workbook = downloadExcelService.execute()) {
 
-            Row headerRow = sheet.getRow(0);
-            for (int i = 0; i < expectedHeader.size(); i++) {
-                Cell cell = headerRow.getCell(i);
-                assertNotNull(cell);
-                assertEquals(expectedHeader.get(i), cell.getStringCellValue());
-            }
+                    assertNotNull(workbook);
+                    assertEquals(4, workbook.getNumberOfSheets());
 
-            Row dataRow = sheet.getRow(1);
-            for (int i = 0; i < expectedData.size(); i++) {
-                Cell cell = dataRow.getCell(i);
-                assertNotNull(cell);
-                if (i == 1) {
-                    String submitCode =
-                            idx == 0 ? "A-001" :
-                            idx == 1 ? "B-002" :
-                            idx == 2 ? "C-003" :
-                            idx == 3 ? "A-004" : null;
+                    assertEquals("일반전형", workbook.getSheetAt(0).getSheetName());
+                    assertEquals("특별전형", workbook.getSheetAt(1).getSheetName());
+                    assertEquals("정원외 특별전형", workbook.getSheetAt(2).getSheetName());
+                    assertEquals("불합격", workbook.getSheetAt(3).getSheetName());
 
-                    assertEquals(submitCode, cell.getStringCellValue());
-                } else {
-                    assertEquals(expectedData.get(i), cell.getStringCellValue());
+                    assertSheetHeader(workbook.getSheetAt(0));
+                    assertSheetHeader(workbook.getSheetAt(1));
+                    assertSheetHeader(workbook.getSheetAt(2));
+                    assertSheetHeader(workbook.getSheetAt(3));
+
+                    assertEquals(1, workbook.getSheetAt(0).getLastRowNum());
+                    assertEquals(1, workbook.getSheetAt(1).getLastRowNum());
+                    assertEquals(1, workbook.getSheetAt(2).getLastRowNum());
+                    assertEquals(1, workbook.getSheetAt(3).getLastRowNum());
+
+                    assertSheetData(workbook.getSheetAt(0), oneseoGeneral, "A-001", "일반전형");
+                    assertSheetData(workbook.getSheetAt(1), oneseoSpecial, "B-002", "특별전형");
+                    assertSheetData(workbook.getSheetAt(2), oneseoExtra, "C-003", "국가보훈대상자");
+                    assertSheetData(workbook.getSheetAt(3), oneseoFallen, "A-004", "일반전형");
+
                 }
             }
         }
 
-        private Oneseo createOneseo(Long id, Screening screening, String submitCode) {
+        @Nested
+        @DisplayName("빈 데이터가 있을 때")
+        class Context_with_empty_data {
+
+            @BeforeEach
+            void setUp() {
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllFailedWithAllDetails())
+                    .willReturn(List.of());
+            }
+
+            @Test
+            @DisplayName("헤더만 있는 시트를 생성한다")
+            void it_creates_sheets_with_header_only() throws IOException {
+                try (Workbook workbook = downloadExcelService.execute()) {
+
+                    assertNotNull(workbook);
+                    assertEquals(4, workbook.getNumberOfSheets());
+
+                    for (int i = 0; i < 4; i++) {
+                        Sheet sheet = workbook.getSheetAt(i);
+                        assertEquals(0, sheet.getLastRowNum());
+                        assertSheetHeader(sheet);
+                    }
+                }
+            }
+        }
+
+        private void assertSheetHeader(Sheet sheet) {
+            Row headerRow = sheet.getRow(0);
+            assertNotNull(headerRow);
+            
+            for (int i = 0; i < EXPECTED_HEADER.size(); i++) {
+                Cell cell = headerRow.getCell(i);
+                assertNotNull(cell);
+                assertEquals(EXPECTED_HEADER.get(i), cell.getStringCellValue());
+            }
+        }
+
+        private void assertSheetData(Sheet sheet, Oneseo oneseo, String expectedSubmitCode, String expectedScreening) {
+            Row dataRow = sheet.getRow(1);
+            assertNotNull(dataRow);
+
+            assertEquals("1", dataRow.getCell(0).getStringCellValue());
+            assertEquals(expectedSubmitCode, dataRow.getCell(1).getStringCellValue());
+            assertEquals(oneseo.getMember().getName(), dataRow.getCell(2).getStringCellValue());
+            assertEquals("AI", dataRow.getCell(3).getStringCellValue());
+            assertEquals("SW", dataRow.getCell(4).getStringCellValue());  
+            assertEquals("IOT", dataRow.getCell(5).getStringCellValue());
+            assertEquals("2024-07-31", dataRow.getCell(6).getStringCellValue());
+            assertEquals("남자", dataRow.getCell(7).getStringCellValue());
+            assertEquals("광주광역시 광산구 송정동 상무대로 312 동행관", dataRow.getCell(8).getStringCellValue());
+            assertEquals("광주소프트웨어마이스터고등학교", dataRow.getCell(9).getStringCellValue());
+            assertEquals("졸업자", dataRow.getCell(10).getStringCellValue());
+            assertEquals(expectedScreening, dataRow.getCell(11).getStringCellValue());
+
+            assertEquals("80", dataRow.getCell(13).getStringCellValue());
+            assertEquals("70", dataRow.getCell(14).getStringCellValue());
+            assertEquals("60", dataRow.getCell(15).getStringCellValue());
+            assertEquals("50", dataRow.getCell(16).getStringCellValue());
+            assertEquals("80", dataRow.getCell(17).getStringCellValue());
+            assertEquals("70", dataRow.getCell(18).getStringCellValue());
+            assertEquals("60", dataRow.getCell(19).getStringCellValue());
+            
+            assertEquals("46.334", dataRow.getCell(20).getStringCellValue());
+            
+            assertEquals("IOT", dataRow.getCell(21).getStringCellValue());
+            assertEquals("01012345678", dataRow.getCell(22).getStringCellValue());
+            assertEquals("01087654321", dataRow.getCell(23).getStringCellValue());
+            assertEquals("01012344321", dataRow.getCell(24).getStringCellValue());
+            
+            String expectedFirstResult = oneseo.getEntranceTestResult().getFirstTestPassYn() == YES ? "합격" : "불합격";
+            String expectedSecondResult = oneseo.getEntranceTestResult().getSecondTestPassYn() == YES ? "합격" : "불합격";
+            assertEquals(expectedFirstResult, dataRow.getCell(25).getStringCellValue());
+            assertEquals(expectedSecondResult, dataRow.getCell(26).getStringCellValue());
+        }
+
+        private Oneseo createOneseoWithAllDetails(Long id, Screening screening, String submitCode, YesNo passYn) {
             Member member = Member.builder()
                     .id(id)
                     .name("홍길동")
@@ -204,17 +209,6 @@ public class DownloadExcelServiceTest {
                     .thirdDesiredMajor(Major.IOT)
                     .build();
 
-            return Oneseo.builder()
-                    .id(id)
-                    .member(member)
-                    .oneseoSubmitCode(submitCode)
-                    .desiredMajors(desiredMajors)
-                    .wantedScreening(screening)
-                    .decidedMajor(Major.IOT)
-                    .build();
-        }
-
-        private EntranceTestResult createEntranceTestResult(Long id, Oneseo oneseo, YesNo yn) {
             EntranceTestFactorsDetail factorsDetail = EntranceTestFactorsDetail.builder()
                     .id(id)
                     .generalSubjectsScore(BigDecimal.valueOf(80))
@@ -223,20 +217,27 @@ public class DownloadExcelServiceTest {
                     .volunteerScore(BigDecimal.valueOf(50))
                     .build();
 
-            return EntranceTestResult.builder()
+            Oneseo oneseo = Oneseo.builder()
+                    .id(id)
+                    .member(member)
+                    .oneseoSubmitCode(submitCode)
+                    .desiredMajors(desiredMajors)
+                    .wantedScreening(screening)
+                    .decidedMajor(Major.IOT)
+                    .build();
+
+            EntranceTestResult entranceTestResult = EntranceTestResult.builder()
                     .id(id)
                     .oneseo(oneseo)
                     .entranceTestFactorsDetail(factorsDetail)
                     .documentEvaluationScore(BigDecimal.valueOf(80))
-                    .firstTestPassYn(yn)
-                    .secondTestPassYn(yn)
+                    .firstTestPassYn(passYn)
+                    .secondTestPassYn(passYn)
                     .competencyEvaluationScore(BigDecimal.valueOf(70))
                     .interviewScore(BigDecimal.valueOf(60))
                     .build();
-        }
 
-        private OneseoPrivacyDetail createOneseoPrivacyDetail(Long id, Oneseo oneseo) {
-            return OneseoPrivacyDetail.builder()
+            OneseoPrivacyDetail privacyDetail = OneseoPrivacyDetail.builder()
                     .id(id)
                     .oneseo(oneseo)
                     .schoolName("광주소프트웨어마이스터고등학교")
@@ -245,6 +246,224 @@ public class DownloadExcelServiceTest {
                     .guardianPhoneNumber("01087654321")
                     .schoolTeacherPhoneNumber("01012344321")
                     .graduationType(GraduationType.GRADUATE)
+                    .build();
+
+            return Oneseo.builder()
+                    .id(id)
+                    .member(member)
+                    .oneseoSubmitCode(submitCode)
+                    .desiredMajors(desiredMajors)
+                    .wantedScreening(screening)
+                    .decidedMajor(Major.IOT)
+                    .entranceTestResult(entranceTestResult)
+                    .oneseoPrivacyDetail(privacyDetail)
+                    .build();
+        }
+    }
+
+    @Nested
+    @DisplayName("점수 계산 로직은")
+    class Describe_score_calculation {
+
+        @Nested
+        @DisplayName("유효한 점수가 있을 때")
+        class Context_with_valid_scores {
+
+            @Test
+            @DisplayName("최종 점수를 올바르게 계산한다")
+            void it_calculates_final_score_correctly() throws IOException {
+                Oneseo oneseo = createOneseoWithScores(
+                    BigDecimal.valueOf(90),
+                    BigDecimal.valueOf(80),
+                    BigDecimal.valueOf(75)
+                );
+                
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
+                    .willReturn(List.of(oneseo));
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllFailedWithAllDetails())
+                    .willReturn(List.of());
+
+                try (Workbook workbook = downloadExcelService.execute()) {
+
+                    Sheet sheet = workbook.getSheetAt(0);
+                    Row dataRow = sheet.getRow(1);
+
+                    assertEquals("54.000", dataRow.getCell(20).getStringCellValue());
+
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("null 점수가 있을 때")
+        class Context_with_null_scores {
+
+            @Test
+            @DisplayName("빈 문자열을 반환한다")
+            void it_returns_empty_string_for_null_scores() throws IOException {
+                Oneseo oneseo = createOneseoWithNullScores();
+                
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
+                    .willReturn(List.of(oneseo));
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
+                    .willReturn(List.of());
+                given(oneseoRepository.findAllFailedWithAllDetails())
+                    .willReturn(List.of());
+
+                try (Workbook workbook = downloadExcelService.execute()) {
+
+                    Sheet sheet = workbook.getSheetAt(0);
+                    Row dataRow = sheet.getRow(1);
+
+                    assertEquals("", dataRow.getCell(13).getStringCellValue());
+                    assertEquals("", dataRow.getCell(17).getStringCellValue());
+                    assertEquals("", dataRow.getCell(18).getStringCellValue());
+                    assertEquals("", dataRow.getCell(19).getStringCellValue());
+                    assertEquals("", dataRow.getCell(20).getStringCellValue());
+
+                }
+            }
+        }
+
+        private Oneseo createOneseoWithScores(BigDecimal documentScore, BigDecimal competencyScore, BigDecimal interviewScore) {
+            Member member = Member.builder()
+                    .id(1L)
+                    .name("테스트")
+                    .sex(Sex.MALE)
+                    .birth(LocalDate.of(2024, 7, 31))
+                    .phoneNumber("01012345678")
+                    .build();
+
+            DesiredMajors desiredMajors = DesiredMajors.builder()
+                    .firstDesiredMajor(Major.AI)
+                    .secondDesiredMajor(Major.SW)
+                    .thirdDesiredMajor(Major.IOT)
+                    .build();
+
+            EntranceTestFactorsDetail factorsDetail = EntranceTestFactorsDetail.builder()
+                    .id(1L)
+                    .generalSubjectsScore(BigDecimal.valueOf(80))
+                    .artsPhysicalSubjectsScore(BigDecimal.valueOf(70))
+                    .attendanceScore(BigDecimal.valueOf(60))
+                    .volunteerScore(BigDecimal.valueOf(50))
+                    .build();
+
+            Oneseo oneseo = Oneseo.builder()
+                    .id(1L)
+                    .member(member)
+                    .oneseoSubmitCode("A-1")
+                    .desiredMajors(desiredMajors)
+                    .wantedScreening(Screening.GENERAL)
+                    .decidedMajor(Major.IOT)
+                    .build();
+
+            EntranceTestResult entranceTestResult = EntranceTestResult.builder()
+                    .id(1L)
+                    .oneseo(oneseo)
+                    .entranceTestFactorsDetail(factorsDetail)
+                    .documentEvaluationScore(documentScore)
+                    .firstTestPassYn(YES)
+                    .secondTestPassYn(YES)
+                    .competencyEvaluationScore(competencyScore)
+                    .interviewScore(interviewScore)
+                    .build();
+
+            OneseoPrivacyDetail privacyDetail = OneseoPrivacyDetail.builder()
+                    .id(1L)
+                    .oneseo(oneseo)
+                    .schoolName("테스트고등학교")
+                    .address("테스트주소")
+                    .detailAddress("상세주소")
+                    .guardianPhoneNumber("01087654321")
+                    .schoolTeacherPhoneNumber("01012344321")
+                    .graduationType(GraduationType.GRADUATE)
+                    .build();
+
+            return Oneseo.builder()
+                    .id(1L)
+                    .member(member)
+                    .oneseoSubmitCode("A-1")
+                    .desiredMajors(desiredMajors)
+                    .wantedScreening(Screening.GENERAL)
+                    .decidedMajor(Major.IOT)
+                    .entranceTestResult(entranceTestResult)
+                    .oneseoPrivacyDetail(privacyDetail)
+                    .build();
+        }
+
+        private Oneseo createOneseoWithNullScores() {
+            Member member = Member.builder()
+                    .id(1L)
+                    .name("테스트")
+                    .sex(Sex.MALE)
+                    .birth(LocalDate.of(2024, 7, 31))
+                    .phoneNumber("01012345678")
+                    .build();
+
+            DesiredMajors desiredMajors = DesiredMajors.builder()
+                    .firstDesiredMajor(Major.AI)
+                    .secondDesiredMajor(Major.SW)
+                    .thirdDesiredMajor(Major.IOT)
+                    .build();
+
+            EntranceTestFactorsDetail factorsDetail = EntranceTestFactorsDetail.builder()
+                    .id(1L)
+                    .generalSubjectsScore(null)
+                    .artsPhysicalSubjectsScore(null)
+                    .attendanceScore(null)
+                    .volunteerScore(null)
+                    .build();
+
+            Oneseo oneseo = Oneseo.builder()
+                    .id(1L)
+                    .member(member)
+                    .oneseoSubmitCode("A-1")
+                    .desiredMajors(desiredMajors)
+                    .wantedScreening(Screening.GENERAL)
+                    .decidedMajor(Major.IOT)
+                    .build();
+
+            EntranceTestResult entranceTestResult = EntranceTestResult.builder()
+                    .id(1L)
+                    .oneseo(oneseo)
+                    .entranceTestFactorsDetail(factorsDetail)
+                    .documentEvaluationScore(null)
+                    .firstTestPassYn(YES)
+                    .secondTestPassYn(null)
+                    .competencyEvaluationScore(null)
+                    .interviewScore(null)
+                    .build();
+
+            OneseoPrivacyDetail privacyDetail = OneseoPrivacyDetail.builder()
+                    .id(1L)
+                    .oneseo(oneseo)
+                    .schoolName("테스트고등학교")
+                    .address("테스트주소")
+                    .detailAddress("상세주소")
+                    .guardianPhoneNumber("01087654321")
+                    .schoolTeacherPhoneNumber("01012344321")
+                    .graduationType(GraduationType.GRADUATE)
+                    .build();
+
+            return Oneseo.builder()
+                    .id(1L)
+                    .member(member)
+                    .oneseoSubmitCode("A-1")
+                    .desiredMajors(desiredMajors)
+                    .wantedScreening(Screening.GENERAL)
+                    .decidedMajor(Major.IOT)
+                    .entranceTestResult(entranceTestResult)
+                    .oneseoPrivacyDetail(privacyDetail)
                     .build();
         }
     }
