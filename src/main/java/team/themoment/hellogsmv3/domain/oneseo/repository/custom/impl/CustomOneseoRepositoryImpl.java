@@ -2,36 +2,34 @@ package team.themoment.hellogsmv3.domain.oneseo.repository.custom.impl;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
-import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
-import team.themoment.hellogsmv3.domain.oneseo.entity.QOneseo;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.TestResultTag;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.custom.CustomOneseoRepository;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 import static com.querydsl.core.types.ExpressionUtils.anyOf;
-import static com.querydsl.core.types.ExpressionUtils.eq;
 import static team.themoment.hellogsmv3.domain.member.entity.QMember.member;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.QEntranceTestFactorsDetail.entranceTestFactorsDetail;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QEntranceTestResult.entranceTestResult;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QMiddleSchoolAchievement.middleSchoolAchievement;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QOneseo.oneseo;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QOneseoPrivacyDetail.oneseoPrivacyDetail;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.YES;
 
 @Repository
 @RequiredArgsConstructor
@@ -161,6 +159,43 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                                         .and(member.birth.eq(memberBirth))
                         ).fetchOne()
         );
+    }
+
+    @Override
+    public List<Oneseo> findAllByScreeningWithAllDetails(Screening screening) {
+        boolean isExistAppliedScreening = queryFactory
+                .selectOne()
+                .from(oneseo)
+                .where(oneseo.appliedScreening.isNotNull())
+                .fetchFirst() != null;
+
+        return queryFactory
+                .selectFrom(oneseo)
+                .join(oneseo.member, member).fetchJoin()
+                .join(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail).fetchJoin()
+                .join(oneseo.entranceTestResult, entranceTestResult).fetchJoin()
+                .join(entranceTestResult.entranceTestFactorsDetail, entranceTestFactorsDetail).fetchJoin()
+                .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement).fetchJoin()
+                .where(isExistAppliedScreening
+                        ? oneseo.appliedScreening.eq(screening)
+                        : oneseo.wantedScreening.eq(screening))
+                .orderBy(entranceTestResult.documentEvaluationScore.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Oneseo> findAllFailedWithAllDetails() {
+        return queryFactory
+                .selectFrom(oneseo)
+                .join(oneseo.member, member).fetchJoin()
+                .join(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail).fetchJoin()
+                .join(oneseo.entranceTestResult, entranceTestResult).fetchJoin()
+                .join(entranceTestResult.entranceTestFactorsDetail, entranceTestFactorsDetail).fetchJoin()
+                .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement).fetchJoin()
+                .where(entranceTestResult.firstTestPassYn.eq(NO)
+                        .or(entranceTestResult.secondTestPassYn.eq(NO)))
+                .orderBy(entranceTestResult.documentEvaluationScore.desc())
+                .fetch();
     }
 
     private long getTotalCount(BooleanBuilder builder) {

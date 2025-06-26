@@ -32,4 +32,7 @@ public interface CustomOneseoRepository {
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndExaminationNumber(String phoneNumber, String examinationNumber);
 
     Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth);
+
+    List<Oneseo> findAllByScreeningWithAllDetails(Screening screening);
+    List<Oneseo> findAllFailedWithAllDetails();
 }
