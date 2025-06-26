@@ -109,7 +109,7 @@ class AnnounceFirstTestResultServiceTest {
             }
 
             @Test
-            @DisplayName("결과를 발표하고 저장한다")
+            @DisplayName("1차 결과를 발표하고 저장한다")
             void it_announces_and_saves() {
                 announceFirstTestResultService.execute();
                 verify(testResult).announceFirstTestResult();
