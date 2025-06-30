@@ -41,7 +41,7 @@ public class CalculateGradeService {
                 ? "1-1"
                 : dto.freeSemester();
 
-        GeneralSubjectsSemesterScoreCalcDto generalSubjectsSemesterScore = calcGeneralSubjectsSemesterScore(dto, graduationType, liberalSystem, freeSemester);
+        GeneralSubjectsSemesterScoreCalcDto generalSubjectsSemesterScore = calcGeneralSubjectsSemesterScore(dto, graduationType);
 
         // 일반 교과 성적 환산값 (총점: 180점)
         BigDecimal generalSubjectsScore = calcGeneralSubjectsTotalScore(generalSubjectsSemesterScore);
@@ -241,7 +241,7 @@ public class CalculateGradeService {
                 .setScale(3, RoundingMode.HALF_UP);
     }
 
-    private GeneralSubjectsSemesterScoreCalcDto calcGeneralSubjectsSemesterScore(MiddleSchoolAchievementCalcDto dto, GraduationType graduationType, String liberalSystem, String freeSemester) {
+    private GeneralSubjectsSemesterScoreCalcDto calcGeneralSubjectsSemesterScore(MiddleSchoolAchievementCalcDto dto, GraduationType graduationType) {
 
         GeneralSubjectsSemesterScoreCalcDto.GeneralSubjectsSemesterScoreCalcDtoBuilder builder = GeneralSubjectsSemesterScoreCalcDto.builder();
 
