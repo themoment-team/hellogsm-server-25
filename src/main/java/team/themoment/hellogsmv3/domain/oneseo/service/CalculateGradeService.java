@@ -247,44 +247,41 @@ public class CalculateGradeService {
 
         switch (graduationType) {
             case CANDIDATE -> builder
-                        .score1_2(calcGeneralSubjectsScore(
-                                dto.achievement1_2(),
-                                BigDecimal.valueOf((liberalSystem.equals("자유학년제") || freeSemester.equals("1-2") || freeSemester.equals("1-1")) ? 0 : 54)
-                        ))
-                        .score2_1(calcGeneralSubjectsScore(
-                                dto.achievement2_1(),
-                                BigDecimal.valueOf(freeSemester.equals("2-1") ? 0 : 54)
-                        ))
-                        .score2_2(calcGeneralSubjectsScore(
-                                dto.achievement2_2(),
-                                BigDecimal.valueOf(freeSemester.equals("2-2") ? 0 : (freeSemester.equals("3-1") ? 72 : 54))
-                        ))
-                        .score3_1(calcGeneralSubjectsScore(
-                                dto.achievement3_1(),
-                                BigDecimal.valueOf(freeSemester.equals("3-1") ? 0 : 72)
-                        ))
-                        .score3_2(BigDecimal.ZERO);
+                    .score1_2(calcGeneralSubjectsScore(
+                            dto.achievement1_2(),
+                            BigDecimal.valueOf(18)
+                    ))
+                    .score2_1(calcGeneralSubjectsScore(
+                            dto.achievement2_1(),
+                            BigDecimal.valueOf(45)
+                    ))
+                    .score2_2(calcGeneralSubjectsScore(
+                            dto.achievement2_2(),
+                            BigDecimal.valueOf(45)
+                    ))
+                    .score3_1(calcGeneralSubjectsScore(
+                            dto.achievement3_1(),
+                            BigDecimal.valueOf(72)
+                    ))
+                    .score3_2(BigDecimal.ZERO);
             case GRADUATE -> builder
-                        .score1_2(calcGeneralSubjectsScore(
-                                dto.achievement1_2(),
-                                BigDecimal.valueOf((liberalSystem.equals("자유학년제") || freeSemester.equals("1-2")) ? 0 : 36)
-                        ))
-                        .score2_1(calcGeneralSubjectsScore(
-                                dto.achievement2_1(),
-                                BigDecimal.valueOf(freeSemester.equals("2-1") ? 0 : 36)
-                        ))
-                        .score2_2(calcGeneralSubjectsScore(
-                                dto.achievement2_2(),
-                                BigDecimal.valueOf(freeSemester.equals("2-2") || freeSemester.equals("3-1") || freeSemester.equals("3-2") || freeSemester.equals("1-1") ? 0 : 36)
-                        ))
-                        .score3_1(calcGeneralSubjectsScore(
-                                dto.achievement3_1(),
-                                BigDecimal.valueOf(freeSemester.equals("3-1") ? 0 : 54)
-                        ))
-                        .score3_2(calcGeneralSubjectsScore(
-                                dto.achievement3_2(),
-                                BigDecimal.valueOf(freeSemester.equals("3-2") || freeSemester.equals("1-1") ? 0 : 54)
-                        ));
+                    .score1_2(BigDecimal.ZERO)
+                    .score2_1(calcGeneralSubjectsScore(
+                            dto.achievement2_1(),
+                            BigDecimal.valueOf(36)
+                    ))
+                    .score2_2(calcGeneralSubjectsScore(
+                            dto.achievement2_2(),
+                            BigDecimal.valueOf(36)
+                    ))
+                    .score3_1(calcGeneralSubjectsScore(
+                            dto.achievement3_1(),
+                            BigDecimal.valueOf(54)
+                    ))
+                    .score3_2(calcGeneralSubjectsScore(
+                            dto.achievement3_2(),
+                            BigDecimal.valueOf(54)
+                    ));
         }
 
         return builder.build();
