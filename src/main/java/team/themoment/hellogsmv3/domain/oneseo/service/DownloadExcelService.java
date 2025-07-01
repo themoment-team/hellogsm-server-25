@@ -173,12 +173,9 @@ public class DownloadExcelService {
 
         BigDecimal finalScore = calculateFinalScore(entranceTestResult);
 
-        String firstDesiredMajor = oneseo.getDesiredMajors() != null ?
-                safeToString(oneseo.getDesiredMajors().getFirstDesiredMajor()) : "";
-        String secondDesiredMajor = oneseo.getDesiredMajors() != null ?
-                safeToString(oneseo.getDesiredMajors().getSecondDesiredMajor()) : "";
-        String thirdDesiredMajor = oneseo.getDesiredMajors() != null ?
-                safeToString(oneseo.getDesiredMajors().getThirdDesiredMajor()) : "";
+        String firstDesiredMajor = safeToString(oneseo.getDesiredMajors().getFirstDesiredMajor());
+        String secondDesiredMajor = safeToString(oneseo.getDesiredMajors().getSecondDesiredMajor());
+        String thirdDesiredMajor = safeToString(oneseo.getDesiredMajors().getThirdDesiredMajor());
 
         return List.of(
                 String.valueOf(index),
@@ -190,28 +187,24 @@ public class DownloadExcelService {
                 safeToString(oneseo.getMember().getBirth()),
                 convertSex(oneseo.getMember().getSex()),
                 buildAddress(oneseoPrivacyDetail),
-                oneseoPrivacyDetail != null ? safeToString(oneseoPrivacyDetail.getSchoolName()) : "",
-                convertGraduationType(oneseoPrivacyDetail != null ? oneseoPrivacyDetail.getGraduationType() : null),
+                safeToString(oneseoPrivacyDetail.getSchoolName()),
+                convertGraduationType(oneseoPrivacyDetail.getGraduationType()),
                 convertScreening(oneseo.getWantedScreening()),
                 convertScreening(oneseo.getAppliedScreening()),
-                getScoreString(entranceTestResult != null && entranceTestResult.getEntranceTestFactorsDetail() != null ?
-                        entranceTestResult.getEntranceTestFactorsDetail().getGeneralSubjectsScore() : null),
-                getScoreString(entranceTestResult != null && entranceTestResult.getEntranceTestFactorsDetail() != null ?
-                        entranceTestResult.getEntranceTestFactorsDetail().getArtsPhysicalSubjectsScore() : null),
-                getScoreString(entranceTestResult != null && entranceTestResult.getEntranceTestFactorsDetail() != null ?
-                        entranceTestResult.getEntranceTestFactorsDetail().getAttendanceScore() : null),
-                getScoreString(entranceTestResult != null && entranceTestResult.getEntranceTestFactorsDetail() != null ?
-                        entranceTestResult.getEntranceTestFactorsDetail().getVolunteerScore() : null),
-                getScoreString(entranceTestResult != null ? entranceTestResult.getDocumentEvaluationScore() : null),
-                getScoreString(entranceTestResult != null ? entranceTestResult.getCompetencyEvaluationScore() : null),
-                getScoreString(entranceTestResult != null ? entranceTestResult.getInterviewScore() : null),
+                getScoreString(entranceTestResult.getEntranceTestFactorsDetail().getGeneralSubjectsScore()),
+                getScoreString(entranceTestResult.getEntranceTestFactorsDetail().getArtsPhysicalSubjectsScore()),
+                getScoreString(entranceTestResult.getEntranceTestFactorsDetail().getAttendanceScore()),
+                getScoreString(entranceTestResult.getEntranceTestFactorsDetail().getVolunteerScore()),
+                getScoreString(entranceTestResult.getDocumentEvaluationScore()),
+                getScoreString(entranceTestResult.getCompetencyEvaluationScore()),
+                getScoreString(entranceTestResult.getInterviewScore()),
                 getScoreString(finalScore),
                 safeToString(oneseo.getDecidedMajor()),
                 safeToString(oneseo.getMember().getPhoneNumber()),
-                oneseoPrivacyDetail != null ? safeToString(oneseoPrivacyDetail.getGuardianPhoneNumber()) : "",
-                oneseoPrivacyDetail != null ? safeToString(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber()) : "",
-                convertTestPassYn(entranceTestResult != null ? entranceTestResult.getFirstTestPassYn() : null),
-                convertTestPassYn(entranceTestResult != null ? entranceTestResult.getSecondTestPassYn() : null)
+                safeToString(oneseoPrivacyDetail.getGuardianPhoneNumber()),
+                safeToString(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber()),
+                convertTestPassYn(entranceTestResult.getFirstTestPassYn()),
+                convertTestPassYn(entranceTestResult.getSecondTestPassYn())
         );
     }
 
