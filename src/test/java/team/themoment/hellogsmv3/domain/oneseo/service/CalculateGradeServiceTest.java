@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestFactorsDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
@@ -136,6 +137,8 @@ class CalculateGradeServiceTest {
                         .liberalSystem("자유학기제")
                         .freeSemester("2-1")
                         .build();
+
+                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, GRADUATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
