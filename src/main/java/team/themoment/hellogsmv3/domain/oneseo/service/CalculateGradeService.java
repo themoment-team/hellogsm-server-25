@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.ArtsPhysicalSubjectsScoreDetailResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.GeneralSubjectsSemesterScoreCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.GeneralSubjectsScoreDetailResDto;
@@ -32,14 +31,6 @@ public class CalculateGradeService {
     public CalculatedScoreResDto execute(MiddleSchoolAchievementCalcDto dto, Oneseo oneseo, GraduationType graduationType) {
         validGraduationType(graduationType);
         validFreeSemester(dto.liberalSystem(), dto.freeSemester());
-
-        String liberalSystem = dto.liberalSystem();
-        // freeSemester가 NULL이라면 "" 공백으로 변경, "" 공백이라면 "1-1"로 변경
-        String freeSemester = dto.freeSemester() == null
-                ? ""
-                : dto.freeSemester().equals("")
-                ? "1-1"
-                : dto.freeSemester();
 
         GeneralSubjectsSemesterScoreCalcDto generalSubjectsSemesterScore = calcGeneralSubjectsSemesterScore(dto, graduationType);
 
@@ -117,26 +108,6 @@ public class CalculateGradeService {
                     .score3_2(generalSubjectsSemesterScore.score3_2())
                     .build();
 
-            validateArtPhysicalAchievement(graduationType, dto.artsPhysicalAchievement());
-
-            BigDecimal score_1 = calculateIndividualArtsPhysicalScore(dto.artsPhysicalAchievement(), 0, 3);
-            BigDecimal score_2 = calculateIndividualArtsPhysicalScore(dto.artsPhysicalAchievement(), 3, 6);
-            BigDecimal score_3 = calculateIndividualArtsPhysicalScore(dto.artsPhysicalAchievement(), 6, 9);
-            BigDecimal score_4 = BigDecimal.ZERO;
-
-            if (graduationType.equals(GRADUATE))
-                score_4 = calculateIndividualArtsPhysicalScore(dto.artsPhysicalAchievement(), 9, 12);
-
-            String freeSemesterKey = getFreeSemesterKey(liberalSystem, freeSemester);
-
-            ArtsPhysicalSubjectsScoreDetailResDto artsPhysicalSubjectsScoreDetailResDto = ArtsPhysicalSubjectsScoreDetailResDto.builder()
-                    .score1_2(assignIndividualArtsPhysicalScore(freeSemesterKey, "1-2", graduationType, score_1, score_2, score_3, score_4))
-                    .score2_1(assignIndividualArtsPhysicalScore(freeSemesterKey, "2-1", graduationType, score_1, score_2, score_3, score_4))
-                    .score2_2(assignIndividualArtsPhysicalScore(freeSemesterKey, "2-2", graduationType, score_1, score_2, score_3, score_4))
-                    .score3_1(assignIndividualArtsPhysicalScore(freeSemesterKey, "3-1", graduationType, score_1, score_2, score_3, score_4))
-                    .score3_2(assignIndividualArtsPhysicalScore(freeSemesterKey, "3-2", graduationType, score_1, score_2, score_3, score_4))
-                    .build();
-
             return CalculatedScoreResDto.builder()
                     .generalSubjectsScore(generalSubjectsScore)
                     .artsPhysicalSubjectsScore(artsPhysicalSubjectsScore)
@@ -144,7 +115,6 @@ public class CalculateGradeService {
                     .volunteerScore(volunteerScore)
                     .totalScore(totalScore)
                     .generalSubjectsScoreDetail(generalSubjectsScoreDetailResDto)
-                    .artsPhysicalSubjectsScoreDetail(artsPhysicalSubjectsScoreDetailResDto)
                     .build();
         }
 
@@ -155,90 +125,6 @@ public class CalculateGradeService {
                 .volunteerScore(volunteerScore)
                 .totalScore(totalScore)
                 .build();
-    }
-
-    private static void validateArtPhysicalAchievement(GraduationType graduationType, List<Integer> achievementList) {
-        // 졸업예정자는 예체능 점수를 9개, 졸업자는 예체능 점수를 12개를 보내야 함
-        int size = graduationType.equals(CANDIDATE) ? 9 : 12;
-        if (achievementList.size() != size) {
-            throw new ExpectedException("예체능 성취도 개수가 유효하지 않습니다. " + achievementList.size(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    public static String getFreeSemesterKey(String liberalSystem, String freeSemester) {
-        if (liberalSystem.equals("자유학년제") || freeSemester.equals("1-1") || freeSemester.equals("1-2")) {
-            return "free";
-        }
-        return freeSemester;
-    }
-
-    public static BigDecimal assignIndividualArtsPhysicalScore(
-            String freeSemesterKey, String currentSemester, GraduationType graduationType,
-            BigDecimal score_1, BigDecimal score_2, BigDecimal score_3, BigDecimal score_4
-    ) {
-        switch (freeSemesterKey) {
-            case "free", "1-1", "1-2" -> {
-                if (currentSemester.equals("2-1")) return score_1;
-                if (currentSemester.equals("2-2")) return score_2;
-                if (currentSemester.equals("3-1")) return score_3;
-                if (currentSemester.equals("3-2") && graduationType.equals(GRADUATE)) return score_4;
-            }
-            case "2-1" -> {
-                if (currentSemester.equals("1-2")) return score_1;
-                if (currentSemester.equals("2-2")) return score_2;
-                if (currentSemester.equals("3-1")) return score_3;
-                if (currentSemester.equals("3-2") && graduationType.equals(GRADUATE)) return score_4;
-            }
-            case "2-2" -> {
-                if (currentSemester.equals("1-2")) return score_1;
-                if (currentSemester.equals("2-1")) return score_2;
-                if (currentSemester.equals("3-1")) return score_3;
-                if (currentSemester.equals("3-2") && graduationType.equals(GRADUATE)) return score_4;
-            }
-            case "3-1" -> {
-                if (currentSemester.equals("1-2")) return score_1;
-                if (currentSemester.equals("2-1")) return score_2;
-                if (currentSemester.equals("2-2")) return score_3;
-                if (currentSemester.equals("3-2") && graduationType.equals(GRADUATE)) return score_4;
-            }
-            case "3-2" -> {
-                if (currentSemester.equals("1-2")) return score_1;
-                if (currentSemester.equals("2-1")) return score_2;
-                if (currentSemester.equals("2-2")) return score_3;
-                if (currentSemester.equals("3-1") && graduationType.equals(GRADUATE)) return score_4;
-            }
-        }
-        return null;
-    }
-
-    public static BigDecimal calculateIndividualArtsPhysicalScore(List<Integer> achievementList, int start, int end) {
-        List<Integer> subList = achievementList.subList(start, end);
-
-        int sum = subList.stream()
-                .reduce(0, Integer::sum);
-
-        int achievementCount = (int) subList.stream()
-                .filter(achievement -> achievement != 0)
-                .count();
-
-        int allAchievementCount = (int) achievementList.stream()
-                .filter(achievement -> achievement != 0)
-                .count();
-
-        if (achievementCount == 0) {
-            return BigDecimal.ZERO;
-        }
-
-        // 개별 학기별 예체능 점수 배점은 60 * (해당 학기의 성적이 있는 예체능 교과 수 / 성적이 있는 총 예체능 교과 수)으로 계산
-        BigDecimal allocation = BigDecimal.valueOf(60)
-                .multiply(
-                        BigDecimal.valueOf(achievementCount).divide(BigDecimal.valueOf(allAchievementCount), 10, RoundingMode.HALF_UP)
-                );
-
-        return BigDecimal.valueOf(sum)
-                .divide(BigDecimal.valueOf(achievementCount).multiply(BigDecimal.valueOf(5)), 10, RoundingMode.HALF_UP)
-                .multiply(allocation)
-                .setScale(3, RoundingMode.HALF_UP);
     }
 
     private GeneralSubjectsSemesterScoreCalcDto calcGeneralSubjectsSemesterScore(MiddleSchoolAchievementCalcDto dto, GraduationType graduationType) {
