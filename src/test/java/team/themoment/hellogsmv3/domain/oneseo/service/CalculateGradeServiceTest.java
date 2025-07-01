@@ -95,6 +95,8 @@ class CalculateGradeServiceTest {
                         .freeSemester("3-1")
                         .build();
 
+                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, CANDIDATE);
+
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
 
