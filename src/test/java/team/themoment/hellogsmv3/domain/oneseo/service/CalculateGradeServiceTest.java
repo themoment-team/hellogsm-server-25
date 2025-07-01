@@ -8,7 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestFactorsDetail;
@@ -47,7 +47,7 @@ class CalculateGradeServiceTest {
     @DisplayName("execute 메소드는")
     class Describe_execute {
 
-        private MiddleSchoolAchievementReqDto reqDto;
+        private MiddleSchoolAchievementCalcDto calcDto;
         private Oneseo oneseo;
 
         @BeforeEach
@@ -62,7 +62,7 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("성적을 계산하고 결과를 저장한다")
             void it_calculates_and_saves_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
@@ -74,7 +74,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("3-1")
                         .build();
 
-                calculateGradeService.execute(reqDto, oneseo, CANDIDATE);
+                calculateGradeService.execute(calcDto, oneseo, CANDIDATE);
 
                 verify(entranceTestFactorsDetailRepository).save(any(EntranceTestFactorsDetail.class));
                 verify(entranceTestResultRepository).save(any(EntranceTestResult.class));
@@ -83,7 +83,7 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("graduationType이 CANDIDATE라면 올바른 내신 성적을 계산하고 결과를 저장한다")
             void it_candidate_calculates_and_save_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
@@ -95,7 +95,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("3-1")
                         .build();
 
-                CalculatedScoreResDto resDto = calculateGradeService.execute(reqDto, oneseo, CANDIDATE);
+                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, CANDIDATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -128,7 +128,7 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("graduationType이 GRADUATE라면 올바른 내신 성적을 계산하고 결과를 저장한다")
             void it_graduate_calculates_and_save_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
@@ -141,7 +141,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("2-1")
                         .build();
 
-                CalculatedScoreResDto resDto = calculateGradeService.execute(reqDto, oneseo, GRADUATE);
+                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, GRADUATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -180,7 +180,7 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("예외를 던진다")
             void it_throw_exception() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
@@ -194,7 +194,7 @@ class CalculateGradeServiceTest {
                         .build();
 
                 IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () ->
-                        calculateGradeService.execute(reqDto, oneseo, GED));
+                        calculateGradeService.execute(calcDto, oneseo, GED));
 
                 assertEquals("올바르지 않은 graduationType입니다.", illegalArgumentException.getMessage());
             }
