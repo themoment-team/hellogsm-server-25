@@ -87,6 +87,7 @@ class CalculateGradeServiceTest {
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
+                        .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
                         .artsPhysicalAchievement(Arrays.asList(5, 5, 5, 5, 0, 5, 0, 5, 0))
                         .absentDays(Arrays.asList(3, 0, 0))
                         .attendanceDays(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0))
@@ -106,19 +107,19 @@ class CalculateGradeServiceTest {
                 EntranceTestFactorsDetail capturedEntranceTestFactorsDetailArgument = entranceTestFactorsDetailArgumentCaptor.getValue();
                 EntranceTestResult capturedEntranceTestResult = entranceTestResultArgumentCaptor.getValue();
 
-                assertEquals(BigDecimal.valueOf(177.2).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getGeneralSubjectsScore());
+                assertEquals(BigDecimal.valueOf(178).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getGeneralSubjectsScore());
                 assertEquals(BigDecimal.valueOf(60).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getArtsPhysicalSubjectsScore());
-                assertEquals(BigDecimal.valueOf(237.2).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalSubjectsScore());
+                assertEquals(BigDecimal.valueOf(238).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalSubjectsScore());
                 assertEquals(BigDecimal.valueOf(21).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getAttendanceScore());
                 assertEquals(BigDecimal.valueOf(14).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getVolunteerScore());
                 assertEquals(BigDecimal.valueOf(35).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalNonSubjectsScore());
-                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2());
-                assertEquals(BigDecimal.valueOf(52.8).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1());
-                assertEquals(BigDecimal.valueOf(70.4).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_2());
-                assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(18).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2());
+                assertEquals(BigDecimal.valueOf(44).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1());
+                assertEquals(BigDecimal.valueOf(44).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_2());
+                assertEquals(BigDecimal.valueOf(72).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1());
                 assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2().setScale(3, UP));
 
-                assertEquals(BigDecimal.valueOf(272.2).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
+                assertEquals(BigDecimal.valueOf(273).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
 
                 assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score1_2(), BigDecimal.valueOf(30).setScale(3, HALF_UP));
                 assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_1(), BigDecimal.valueOf(20).setScale(3, HALF_UP));
@@ -129,7 +130,7 @@ class CalculateGradeServiceTest {
             @DisplayName("graduationType이 GRADUATE라면 올바른 내신 성적을 계산하고 결과를 저장한다")
             void it_graduate_calculates_and_save_results() {
                 calcDto = MiddleSchoolAchievementCalcDto.builder()
-                        .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
+                        .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
                         .achievement3_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
@@ -158,11 +159,11 @@ class CalculateGradeServiceTest {
                 assertEquals(BigDecimal.valueOf(21).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getAttendanceScore());
                 assertEquals(BigDecimal.valueOf(22).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getVolunteerScore());
                 assertEquals(BigDecimal.valueOf(43).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalNonSubjectsScore());
-                assertEquals(BigDecimal.valueOf(36).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2());
-                assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(36).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1());
                 assertEquals(BigDecimal.valueOf(36).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_2());
-                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1().setScale(3, UP));
-                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1());
+                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2());
 
                 assertEquals(BigDecimal.valueOf(283).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
 
