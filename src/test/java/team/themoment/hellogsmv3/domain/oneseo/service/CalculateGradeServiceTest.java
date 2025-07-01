@@ -8,7 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestFactorsDetail;
@@ -47,7 +47,7 @@ class CalculateGradeServiceTest {
     @DisplayName("execute 메소드는")
     class Describe_execute {
 
-        private MiddleSchoolAchievementReqDto reqDto;
+        private MiddleSchoolAchievementCalcDto calcDto;
         private Oneseo oneseo;
 
         @BeforeEach
@@ -62,7 +62,7 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("성적을 계산하고 결과를 저장한다")
             void it_calculates_and_saves_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
@@ -74,7 +74,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("3-1")
                         .build();
 
-                calculateGradeService.execute(reqDto, oneseo, CANDIDATE);
+                calculateGradeService.execute(calcDto, oneseo, CANDIDATE);
 
                 verify(entranceTestFactorsDetailRepository).save(any(EntranceTestFactorsDetail.class));
                 verify(entranceTestResultRepository).save(any(EntranceTestResult.class));
@@ -83,10 +83,11 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("graduationType이 CANDIDATE라면 올바른 내신 성적을 계산하고 결과를 저장한다")
             void it_candidate_calculates_and_save_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
+                        .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
                         .artsPhysicalAchievement(Arrays.asList(5, 5, 5, 5, 0, 5, 0, 5, 0))
                         .absentDays(Arrays.asList(3, 0, 0))
                         .attendanceDays(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0))
@@ -95,7 +96,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("3-1")
                         .build();
 
-                CalculatedScoreResDto resDto = calculateGradeService.execute(reqDto, oneseo, CANDIDATE);
+                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, CANDIDATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -106,19 +107,19 @@ class CalculateGradeServiceTest {
                 EntranceTestFactorsDetail capturedEntranceTestFactorsDetailArgument = entranceTestFactorsDetailArgumentCaptor.getValue();
                 EntranceTestResult capturedEntranceTestResult = entranceTestResultArgumentCaptor.getValue();
 
-                assertEquals(BigDecimal.valueOf(177.2).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getGeneralSubjectsScore());
+                assertEquals(BigDecimal.valueOf(178).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getGeneralSubjectsScore());
                 assertEquals(BigDecimal.valueOf(60).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getArtsPhysicalSubjectsScore());
-                assertEquals(BigDecimal.valueOf(237.2).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalSubjectsScore());
+                assertEquals(BigDecimal.valueOf(238).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalSubjectsScore());
                 assertEquals(BigDecimal.valueOf(21).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getAttendanceScore());
                 assertEquals(BigDecimal.valueOf(14).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getVolunteerScore());
                 assertEquals(BigDecimal.valueOf(35).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalNonSubjectsScore());
-                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2());
-                assertEquals(BigDecimal.valueOf(52.8).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1());
-                assertEquals(BigDecimal.valueOf(70.4).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_2());
-                assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(18).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2());
+                assertEquals(BigDecimal.valueOf(44).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1());
+                assertEquals(BigDecimal.valueOf(44).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_2());
+                assertEquals(BigDecimal.valueOf(72).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1());
                 assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2().setScale(3, UP));
 
-                assertEquals(BigDecimal.valueOf(272.2).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
+                assertEquals(BigDecimal.valueOf(273).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
 
                 assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score1_2(), BigDecimal.valueOf(30).setScale(3, HALF_UP));
                 assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_1(), BigDecimal.valueOf(20).setScale(3, HALF_UP));
@@ -128,8 +129,8 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("graduationType이 GRADUATE라면 올바른 내신 성적을 계산하고 결과를 저장한다")
             void it_graduate_calculates_and_save_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
-                        .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
+                        .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
                         .achievement3_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
@@ -141,7 +142,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("2-1")
                         .build();
 
-                CalculatedScoreResDto resDto = calculateGradeService.execute(reqDto, oneseo, GRADUATE);
+                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, GRADUATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -158,11 +159,11 @@ class CalculateGradeServiceTest {
                 assertEquals(BigDecimal.valueOf(21).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getAttendanceScore());
                 assertEquals(BigDecimal.valueOf(22).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getVolunteerScore());
                 assertEquals(BigDecimal.valueOf(43).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getTotalNonSubjectsScore());
-                assertEquals(BigDecimal.valueOf(36).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2());
-                assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore1_2().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(36).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_1());
                 assertEquals(BigDecimal.valueOf(36).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore2_2());
-                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1().setScale(3, UP));
-                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2().setScale(3, UP));
+                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_1());
+                assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2());
 
                 assertEquals(BigDecimal.valueOf(283).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
 
@@ -180,7 +181,7 @@ class CalculateGradeServiceTest {
             @Test
             @DisplayName("예외를 던진다")
             void it_throw_exception() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
@@ -194,7 +195,7 @@ class CalculateGradeServiceTest {
                         .build();
 
                 IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () ->
-                        calculateGradeService.execute(reqDto, oneseo, GED));
+                        calculateGradeService.execute(calcDto, oneseo, GED));
 
                 assertEquals("올바르지 않은 graduationType입니다.", illegalArgumentException.getMessage());
             }
