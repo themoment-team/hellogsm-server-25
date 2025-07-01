@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestFactorsDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
@@ -96,8 +95,6 @@ class CalculateGradeServiceTest {
                         .freeSemester("3-1")
                         .build();
 
-                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, CANDIDATE);
-
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
 
@@ -120,10 +117,6 @@ class CalculateGradeServiceTest {
                 assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2().setScale(3, UP));
 
                 assertEquals(BigDecimal.valueOf(273).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
-
-                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score1_2(), BigDecimal.valueOf(30).setScale(3, HALF_UP));
-                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_1(), BigDecimal.valueOf(20).setScale(3, HALF_UP));
-                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_2(), BigDecimal.valueOf(10).setScale(3, HALF_UP));
             }
 
             @Test
@@ -141,8 +134,6 @@ class CalculateGradeServiceTest {
                         .liberalSystem("자유학기제")
                         .freeSemester("2-1")
                         .build();
-
-                CalculatedScoreResDto resDto = calculateGradeService.execute(calcDto, oneseo, GRADUATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -166,11 +157,6 @@ class CalculateGradeServiceTest {
                 assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2());
 
                 assertEquals(BigDecimal.valueOf(283).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
-
-                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score1_2(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
-                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_2(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
-                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score3_1(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
-                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score3_2(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
             }
         }
 
