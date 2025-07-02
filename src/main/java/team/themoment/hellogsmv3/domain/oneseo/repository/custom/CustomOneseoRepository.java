@@ -28,10 +28,11 @@ public interface CustomOneseoRepository {
 
     List<AdmissionTicketsResDto> findAdmissionTickets();
 
-    List<Oneseo> findAllByScreeningDynamic(Screening screening);
-
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndSubmitCode(String phoneNumber, String submitCode);
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndExaminationNumber(String phoneNumber, String examinationNumber);
 
     Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth);
+
+    List<Oneseo> findAllByScreeningWithAllDetails(Screening screening);
+    List<Oneseo> findAllFailedWithAllDetails();
 }
