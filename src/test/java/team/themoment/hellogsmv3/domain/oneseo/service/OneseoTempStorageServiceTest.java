@@ -109,41 +109,43 @@ public class OneseoTempStorageServiceTest {
                 @DisplayName("FoundOneseoResDto를 반환한다.")
                 void it_returns_found_oneseo_res_dto() {
                     FoundOneseoResDto result = oneseoTempStorageService.execute(reqDto, step, memberId);
-                    assertNull(result.oneseoId());
-                    assertNull(result.submitCode());
-                    assertEquals(reqDto.screening(), result.wantedScreening());
-                    assertEquals(reqDto.firstDesiredMajor(), result.desiredMajors().firstDesiredMajor());
-                    assertEquals(reqDto.secondDesiredMajor(), result.desiredMajors().secondDesiredMajor());
-                    assertEquals(reqDto.thirdDesiredMajor(), result.desiredMajors().thirdDesiredMajor());
-                    assertEquals(reqDto.graduationType(), result.privacyDetail().graduationType());
-                    assertEquals(reqDto.graduationDate(), result.privacyDetail().graduationDate());
-                    assertEquals(reqDto.address(), result.privacyDetail().address());
-                    assertEquals(reqDto.detailAddress(), result.privacyDetail().detailAddress());
-                    assertEquals(reqDto.guardianName(), result.privacyDetail().guardianName());
-                    assertEquals(reqDto.guardianPhoneNumber(), result.privacyDetail().guardianPhoneNumber());
-                    assertEquals(reqDto.relationshipWithGuardian(), result.privacyDetail().relationshipWithGuardian());
-                    assertEquals(reqDto.schoolName(), result.privacyDetail().schoolName());
-                    assertEquals(reqDto.schoolAddress(), result.privacyDetail().schoolAddress());
-                    assertEquals(reqDto.schoolTeacherName(), result.privacyDetail().schoolTeacherName());
-                    assertEquals(reqDto.schoolTeacherPhoneNumber(), result.privacyDetail().schoolTeacherPhoneNumber());
-                    assertEquals(reqDto.profileImg(), result.privacyDetail().profileImg());
-                    assertEquals(reqDto.middleSchoolAchievement().achievement1_2(), result.middleSchoolAchievement().achievement1_2());
-                    assertEquals(reqDto.middleSchoolAchievement().achievement2_1(), result.middleSchoolAchievement().achievement2_1());
-                    assertEquals(reqDto.middleSchoolAchievement().achievement2_2(), result.middleSchoolAchievement().achievement2_2());
-                    assertEquals(reqDto.middleSchoolAchievement().achievement3_1(), result.middleSchoolAchievement().achievement3_1());
-                    assertEquals(reqDto.middleSchoolAchievement().achievement3_2(), result.middleSchoolAchievement().achievement3_2());
-                    assertEquals(reqDto.middleSchoolAchievement().generalSubjects(), result.middleSchoolAchievement().generalSubjects());
-                    assertEquals(reqDto.middleSchoolAchievement().newSubjects(), result.middleSchoolAchievement().newSubjects());
-                    assertEquals(reqDto.middleSchoolAchievement().artsPhysicalAchievement(), result.middleSchoolAchievement().artsPhysicalAchievement());
-                    assertEquals(reqDto.middleSchoolAchievement().artsPhysicalSubjects(), result.middleSchoolAchievement().artsPhysicalSubjects());
-                    assertEquals(reqDto.middleSchoolAchievement().absentDays(), result.middleSchoolAchievement().absentDays());
-                    assertEquals(reqDto.middleSchoolAchievement().attendanceDays(), result.middleSchoolAchievement().attendanceDays());
-                    assertEquals(reqDto.middleSchoolAchievement().volunteerTime(), result.middleSchoolAchievement().volunteerTime());
-                    assertEquals(reqDto.middleSchoolAchievement().liberalSystem(), result.middleSchoolAchievement().liberalSystem());
-                    assertEquals(reqDto.middleSchoolAchievement().freeSemester(), result.middleSchoolAchievement().freeSemester());
-                    assertEquals(reqDto.middleSchoolAchievement().gedTotalScore(), result.middleSchoolAchievement().gedTotalScore());
-                    assertEquals(step, result.step());
-
+                    assertDto(result);
+                }
+                private void assertDto(FoundOneseoResDto resDto) {
+                    assertNull(resDto.oneseoId());
+                    assertNull(resDto.submitCode());
+                    assertEquals(reqDto.screening(), resDto.wantedScreening());
+                    assertEquals(reqDto.firstDesiredMajor(), resDto.desiredMajors().firstDesiredMajor());
+                    assertEquals(reqDto.secondDesiredMajor(), resDto.desiredMajors().secondDesiredMajor());
+                    assertEquals(reqDto.thirdDesiredMajor(), resDto.desiredMajors().thirdDesiredMajor());
+                    assertEquals(reqDto.graduationType(), resDto.privacyDetail().graduationType());
+                    assertEquals(reqDto.graduationDate(), resDto.privacyDetail().graduationDate());
+                    assertEquals(reqDto.address(), resDto.privacyDetail().address());
+                    assertEquals(reqDto.detailAddress(), resDto.privacyDetail().detailAddress());
+                    assertEquals(reqDto.guardianName(), resDto.privacyDetail().guardianName());
+                    assertEquals(reqDto.guardianPhoneNumber(), resDto.privacyDetail().guardianPhoneNumber());
+                    assertEquals(reqDto.relationshipWithGuardian(), resDto.privacyDetail().relationshipWithGuardian());
+                    assertEquals(reqDto.schoolName(), resDto.privacyDetail().schoolName());
+                    assertEquals(reqDto.schoolAddress(), resDto.privacyDetail().schoolAddress());
+                    assertEquals(reqDto.schoolTeacherName(), resDto.privacyDetail().schoolTeacherName());
+                    assertEquals(reqDto.schoolTeacherPhoneNumber(), resDto.privacyDetail().schoolTeacherPhoneNumber());
+                    assertEquals(reqDto.profileImg(), resDto.privacyDetail().profileImg());
+                    assertEquals(reqDto.middleSchoolAchievement().achievement1_2(), resDto.middleSchoolAchievement().achievement1_2());
+                    assertEquals(reqDto.middleSchoolAchievement().achievement2_1(), resDto.middleSchoolAchievement().achievement2_1());
+                    assertEquals(reqDto.middleSchoolAchievement().achievement2_2(), resDto.middleSchoolAchievement().achievement2_2());
+                    assertEquals(reqDto.middleSchoolAchievement().achievement3_1(), resDto.middleSchoolAchievement().achievement3_1());
+                    assertEquals(reqDto.middleSchoolAchievement().achievement3_2(), resDto.middleSchoolAchievement().achievement3_2());
+                    assertEquals(reqDto.middleSchoolAchievement().generalSubjects(), resDto.middleSchoolAchievement().generalSubjects());
+                    assertEquals(reqDto.middleSchoolAchievement().newSubjects(), resDto.middleSchoolAchievement().newSubjects());
+                    assertEquals(reqDto.middleSchoolAchievement().artsPhysicalAchievement(), resDto.middleSchoolAchievement().artsPhysicalAchievement());
+                    assertEquals(reqDto.middleSchoolAchievement().artsPhysicalSubjects(), resDto.middleSchoolAchievement().artsPhysicalSubjects());
+                    assertEquals(reqDto.middleSchoolAchievement().absentDays(), resDto.middleSchoolAchievement().absentDays());
+                    assertEquals(reqDto.middleSchoolAchievement().attendanceDays(), resDto.middleSchoolAchievement().attendanceDays());
+                    assertEquals(reqDto.middleSchoolAchievement().volunteerTime(), resDto.middleSchoolAchievement().volunteerTime());
+                    assertEquals(reqDto.middleSchoolAchievement().liberalSystem(), resDto.middleSchoolAchievement().liberalSystem());
+                    assertEquals(reqDto.middleSchoolAchievement().freeSemester(), resDto.middleSchoolAchievement().freeSemester());
+                    assertEquals(reqDto.middleSchoolAchievement().gedTotalScore(), resDto.middleSchoolAchievement().gedTotalScore());
+                    assertEquals(step, resDto.step());
                 }
             }
             @Nested
