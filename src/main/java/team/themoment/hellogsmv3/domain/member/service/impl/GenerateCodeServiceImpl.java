@@ -12,6 +12,8 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.Random;
 
+import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
+
 @Service
 @RequiredArgsConstructor
 public class GenerateCodeServiceImpl extends GenerateCodeService {
@@ -23,7 +25,7 @@ public class GenerateCodeServiceImpl extends GenerateCodeService {
     @Override
     public String execute(Long memberId, GenerateCodeReqDto reqDto) {
 
-        AuthenticationCode authenticationCode = codeRepository.findByMemberId(memberId)
+        AuthenticationCode authenticationCode = codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)
                 .orElse(null);
 
         if (isLimitedRequest(authenticationCode))
@@ -40,6 +42,7 @@ public class GenerateCodeServiceImpl extends GenerateCodeService {
                 memberId,
                 code,
                 phoneNumber,
+                SIGNUP,
                 false));
 
         sendCodeNotificationService.execute(phoneNumber, code);

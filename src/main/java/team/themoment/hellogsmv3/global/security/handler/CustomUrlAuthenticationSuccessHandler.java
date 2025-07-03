@@ -30,7 +30,7 @@ public class CustomUrlAuthenticationSuccessHandler implements AuthenticationSucc
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(authority -> Role.ADMIN.name().equals(authority.getAuthority()));
 
-        String dryrun = request.getHeader(X_HG_ENV.getContent());
+        String dryrun = request.getHeader(X_HG_ENV);
         boolean isDryrun = Boolean.parseBoolean(dryrun != null ? dryrun : "false");
 
         String redirectUrlWithParameter = UriComponentsBuilder

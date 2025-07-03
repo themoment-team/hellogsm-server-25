@@ -1,6 +1,7 @@
 package team.themoment.hellogsmv3.domain.oneseo.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -9,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.bind.annotation.*;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.*;
-import team.themoment.hellogsmv3.domain.application.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.service.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
@@ -38,7 +39,7 @@ public class OneseoController {
     private final CreateOneseoService createOneseoService;
     private final ModifyOneseoService modifyOneseoService;
     private final ModifyRealOneseoArrivedYnService modifyRealOneseoArrivedYnService;
-    private final ModifyAptitudeEvaluationScoreService modifyAptitudeEvaluationScoreService;
+    private final ModifyCompetencyEvaluationScoreService modifyCompetencyEvaluationScoreService;
     private final ModifyInterviewScoreService modifyInterviewScoreService;
     private final QueryAdmissionTicketsService queryAdmissionTicketsService;
     private final DownloadExcelService downloadExcelService;
@@ -77,13 +78,13 @@ public class OneseoController {
         return modifyRealOneseoArrivedYnService.execute(memberId);
     }
 
-    @Operation(summary = "적성 검사 점수 기입", description = "맴버 id로 원서의 적성 검사 점수를 기입합니다.")
-    @PatchMapping("/aptitude-score/{memberId}")
-    public CommonApiResponse modifyAptitudeScore(
+    @Operation(summary = "역량검사 점수 기입", description = "맴버 id로 원서의 역량검사 점수를 기입합니다.")
+    @PatchMapping("/competency-score/{memberId}")
+    public CommonApiResponse modifyCompetencyScore(
             @PathVariable Long memberId,
-            @RequestBody @Valid AptitudeEvaluationScoreReqDto aptitudeEvaluationScoreReqDto
+            @RequestBody @Valid CompetencyEvaluationScoreReqDto competencyEvaluationScoreReqDto
     ) {
-        modifyAptitudeEvaluationScoreService.execute(memberId, aptitudeEvaluationScoreReqDto);
+        modifyCompetencyEvaluationScoreService.execute(memberId, competencyEvaluationScoreReqDto);
         return CommonApiResponse.success("수정되었습니다.");
     }
 
@@ -102,14 +103,27 @@ public class OneseoController {
     public SearchOneseosResDto search(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam(name = "testResultTag") TestResultTag testResultTag,
-            @RequestParam(name = "screeningTag", required = false) ScreeningCategory screeningTag,
-            @RequestParam(name = "isSubmitted", required = false) YesNo isSubmitted,
+            @Schema(description = "합격, 불합격 여부", defaultValue = "ALL", allowableValues = {"ALL", "FIRST_PASS", "FINAL_PASS", "FALL"})
+            @RequestParam(name = "testResultTag") String testResultParam,
+            @Schema(description = "지원 전형", defaultValue = "GENERAL", allowableValues = {"GENERAL", "SPECIAL", "EXTRA"})
+            @RequestParam(name = "screeningTag", required = false) String screeningParam,
+            @Schema(description = "서류 제출 여부", defaultValue = "YES", allowableValues = {"YES", "NO"})
+            @RequestParam(name = "isSubmitted", required = false) String isSubmittedParam,
             @RequestParam(name = "keyword", required = false) String keyword
     ) {
-        if (page < 0 || size < 0)
+        if (page < 0 || size < 0) {
             throw new ExpectedException("page, size는 0 이상만 가능합니다", HttpStatus.BAD_REQUEST);
-        return searchOneseoService.execute(page, size, testResultTag, screeningTag, isSubmitted, keyword);
+        }
+
+        try {
+            TestResultTag tag = TestResultTag.valueOf(testResultParam);
+            ScreeningCategory screeningCategory = (screeningParam != null) ? ScreeningCategory.valueOf(screeningParam) : null;
+            YesNo isSubmitted = (isSubmittedParam != null) ? YesNo.valueOf(isSubmittedParam) : null;
+
+            return searchOneseoService.execute(page, size, tag, screeningCategory, isSubmitted, keyword);
+        } catch (IllegalArgumentException e) {
+            throw new ExpectedException("유효하지 않은 매개변수 값입니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Operation(summary = "내 원서 조회", description = "내 원서 정보를 조회합니다. 임시 저장된 원서가 있다면 임시 저장된 원서를 조회합니다.")

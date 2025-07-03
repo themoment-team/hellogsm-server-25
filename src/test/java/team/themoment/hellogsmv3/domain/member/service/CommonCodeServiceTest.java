@@ -18,8 +18,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
 
 @DisplayName("CommonCodeService 클래스의")
 class CommonCodeServiceTest {
@@ -53,6 +55,7 @@ class CommonCodeServiceTest {
                     validCode,
                     validPhoneNumber,
                     LocalDateTime.now(),
+                    SIGNUP,
                     false
             );
         }
@@ -64,13 +67,13 @@ class CommonCodeServiceTest {
             @BeforeEach
             void setUp() {
                 authenticationCode.authenticatedAuthenticationCode();
-                given(codeRepository.findByMemberId(memberId)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
             }
 
             @Test
             @DisplayName("코드를 삭제한다")
             void it_deletes_the_code() {
-                commonCodeService.validateAndDelete(memberId, validCode, validPhoneNumber);
+                commonCodeService.validateAndDelete(memberId, validCode, validPhoneNumber, SIGNUP);
 
                 verify(codeRepository).delete(authenticationCode);
             }
@@ -82,14 +85,14 @@ class CommonCodeServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(codeRepository.findByMemberId(anyLong())).willReturn(Optional.empty());
+                given(codeRepository.findByMemberIdAndAuthCodeType(anyLong(), eq(SIGNUP))).willReturn(Optional.empty());
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
                 ExpectedException exception = assertThrows(ExpectedException.class, () -> {
-                    commonCodeService.validateAndDelete(memberId, validCode, validPhoneNumber);
+                    commonCodeService.validateAndDelete(memberId, validCode, validPhoneNumber, SIGNUP);
                 });
 
                 assertEquals("사용자의 code가 존재하지 않습니다. 사용자의 ID : " + memberId, exception.getMessage());
@@ -103,14 +106,14 @@ class CommonCodeServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(codeRepository.findByMemberId(memberId)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception_when_code_is_not_authenticated() {
                 ExpectedException exception = assertThrows(ExpectedException.class, () -> {
-                    commonCodeService.validateAndDelete(memberId, validCode, validPhoneNumber);
+                    commonCodeService.validateAndDelete(memberId, validCode, validPhoneNumber, SIGNUP);
                 });
 
                 assertEquals("유효하지 않은 요청입니다. 인증받지 않은 code입니다.", exception.getMessage());
@@ -125,14 +128,14 @@ class CommonCodeServiceTest {
             @BeforeEach
             void setUp() {
                 authenticationCode.authenticatedAuthenticationCode();
-                given(codeRepository.findByMemberId(memberId)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception_when_code_is_invalid() {
                 ExpectedException exception = assertThrows(ExpectedException.class, () -> {
-                    commonCodeService.validateAndDelete(memberId, invalidCode, validPhoneNumber);
+                    commonCodeService.validateAndDelete(memberId, invalidCode, validPhoneNumber, SIGNUP);
                 });
 
                 assertEquals("유효하지 않은 요청입니다. 이전 혹은 잘못된 형식의 code입니다.", exception.getMessage());
@@ -147,14 +150,14 @@ class CommonCodeServiceTest {
             @BeforeEach
             void setUp() {
                 authenticationCode.authenticatedAuthenticationCode();
-                given(codeRepository.findByMemberId(memberId)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
                 ExpectedException exception = assertThrows(ExpectedException.class, () -> {
-                    commonCodeService.validateAndDelete(memberId, validCode, invalidPhoneNumber);
+                    commonCodeService.validateAndDelete(memberId, validCode, invalidPhoneNumber, SIGNUP);
                 });
 
                 assertEquals("유효하지 않은 요청입니다. code인증에 사용되었던 전화번호와 요청에 사용한 전화번호가 일치하지 않습니다.", exception.getMessage());

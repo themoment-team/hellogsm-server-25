@@ -2,10 +2,10 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team.themoment.hellogsmv3.domain.application.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
@@ -16,6 +16,7 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.OneseoPrivacyDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.DesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
+import team.themoment.hellogsmv3.domain.oneseo.event.OneseoApplyEvent;
 import team.themoment.hellogsmv3.domain.oneseo.repository.MiddleSchoolAchievementRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
@@ -36,6 +37,8 @@ public class CreateOneseoService {
     private final MemberService memberService;
     private final CalculateGradeService calculateGradeService;
     private final CalculateGedService calculateGedService;
+    private final OneseoService oneseoService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     @CachePut(value = OneseoService.ONESEO_CACHE_VALUE, key = "#memberId")
@@ -43,7 +46,7 @@ public class CreateOneseoService {
 
         isValidMiddleSchoolInfo(reqDto);
 
-        Member currentMember = memberService.findByIdOrThrow(memberId);
+        Member currentMember = memberService.findByIdForUpdateOrThrow(memberId);
 
         isExistOneseo(currentMember);
 
@@ -51,13 +54,17 @@ public class CreateOneseoService {
         OneseoPrivacyDetail oneseoPrivacyDetail = buildOneseoPrivacyDetail(reqDto, oneseo);
         MiddleSchoolAchievement middleSchoolAchievement = buildMiddleSchoolAchievement(reqDto, oneseo);
 
-        assignSubmitCode(oneseo);
+        oneseoService.assignSubmitCode(oneseo, null);
+
         saveEntities(oneseo, oneseoPrivacyDetail, middleSchoolAchievement);
 
         CalculatedScoreResDto calculatedScoreResDto = calculateMiddleSchoolAchievement(oneseoPrivacyDetail.getGraduationType(), middleSchoolAchievement, oneseo);
 
         OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto = buildOneseoPrivacyDetailResDto(currentMember, oneseoPrivacyDetail);
         MiddleSchoolAchievementResDto middleSchoolAchievementResDto = buildMiddleSchoolAchievementResDto(middleSchoolAchievement);
+
+        sendOneseoApplyEvent(currentMember, oneseo, oneseoPrivacyDetail);
+
         return buildOneseoResDto(
                 oneseo,
                 oneseoPrivacyDetailResDto,
@@ -66,20 +73,15 @@ public class CreateOneseoService {
         );
     }
 
-    private void assignSubmitCode(Oneseo oneseo) {
-        Integer maxSubmitCodeNumber = oneseoRepository.findMaxSubmitCodeByScreening(oneseo.getWantedScreening());
-        int newSubmitCodeNumber = (maxSubmitCodeNumber != null ? maxSubmitCodeNumber : 0) + 1;
+    private void sendOneseoApplyEvent(Member currentMember, Oneseo oneseo, OneseoPrivacyDetail oneseoPrivacyDetail) {
+        OneseoApplyEvent oneseoApplyEvent = OneseoApplyEvent.builder()
+                .name(currentMember.getName())
+                .summitCode(oneseo.getOneseoSubmitCode())
+                .graduationType(oneseoPrivacyDetail.getGraduationType())
+                .screening(oneseo.getWantedScreening())
+                .build();
 
-        String submitCode;
-        ScreeningCategory screeningCategory = oneseo.getWantedScreening().getScreeningCategory();
-        switch (screeningCategory) {
-            case GENERAL -> submitCode = "A-" + newSubmitCodeNumber;
-            case SPECIAL -> submitCode = "B-" + newSubmitCodeNumber;
-            case EXTRA -> submitCode = "C-" + newSubmitCodeNumber;
-            default -> throw new IllegalArgumentException("Unexpected value: " + screeningCategory);
-        }
-
-        oneseo.setOneseoSubmitCode(submitCode);
+        applicationEventPublisher.publishEvent(oneseoApplyEvent);
     }
 
     private OneseoPrivacyDetailResDto buildOneseoPrivacyDetailResDto(

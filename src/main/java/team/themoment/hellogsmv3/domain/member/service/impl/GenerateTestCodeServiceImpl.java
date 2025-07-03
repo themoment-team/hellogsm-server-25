@@ -9,6 +9,8 @@ import team.themoment.hellogsmv3.domain.member.service.GenerateCodeService;
 
 import java.util.Random;
 
+import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
+
 @Service
 @RequiredArgsConstructor
 public class GenerateTestCodeServiceImpl extends GenerateCodeService {
@@ -20,7 +22,7 @@ public class GenerateTestCodeServiceImpl extends GenerateCodeService {
     public String execute(Long memberId, GenerateCodeReqDto reqDto) {
         final String code = generateUniqueCode(RANDOM, codeRepository);
 
-        AuthenticationCode authenticationCode = codeRepository.findByMemberId(memberId)
+        AuthenticationCode authenticationCode = codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)
                 .orElse(null);
 
         codeRepository.save(createAuthenticationCode(
@@ -28,6 +30,7 @@ public class GenerateTestCodeServiceImpl extends GenerateCodeService {
                 memberId,
                 code,
                 reqDto.phoneNumber(),
+                SIGNUP,
                 true));
 
         return code;

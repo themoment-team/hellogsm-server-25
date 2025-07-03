@@ -6,6 +6,13 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+    session:
+      timeout: 3600
+      cookie:
+        name: SESSION
+        http-only: true
+        path: /
+        max-age: 3600
 
 logging:
   config: classpath:logback-spring.xml
@@ -97,7 +104,7 @@ schedule:
   oneseoSubmissionStart: ${ONESEO_SUBMISSION_START}
   oneseoSubmissionEnd: ${ONESEO_SUBMISSION_END}
   firstResultsAnnouncement: ${FIRST_RESULTS_ANNOUNCEMENT}
-  aptitudeEvaluation: ${APTITUDE_EVALUATION}
+  competencyEvaluation: ${COMPETENCY_EVALUATION}
   interview: ${INTERVIEW}
   finalResultsAnnouncement: ${FINAL_RESULTS_ANNOUNCEMENT}
 
@@ -123,3 +130,7 @@ management:
       exposure:
         include: health
       base-path: ${ACTUATOR_BASE_PATH}
+
+discord-alarm:
+  url: ${DISCORD_RELAY_SERVER_URL}
+  api-key: ${DISCORD_RELAY_SERVER_API_KEY}

@@ -10,6 +10,9 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
 
 @Getter
@@ -33,14 +36,28 @@ public class Oneseo {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToOne(mappedBy = "oneseo")
+    @OneToOne(mappedBy = "oneseo", cascade = CascadeType.ALL, orphanRemoval = true)
     private EntranceTestResult entranceTestResult;
 
-    @OneToOne(mappedBy = "oneseo")
+    @OneToOne(mappedBy = "oneseo", cascade = CascadeType.ALL, orphanRemoval = true)
     private OneseoPrivacyDetail oneseoPrivacyDetail;
 
-    @Column(name = "oneseo_submit_code")
+    @OneToOne(mappedBy = "oneseo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MiddleSchoolAchievement middleSchoolAchievement;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "oneseo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WantedScreeningChangeHistory> wantedScreeningChangeHistory = new ArrayList<>();
+
+    @Column(name = "oneseo_submit_code", unique = true)
     private String oneseoSubmitCode;
+
+    @Column(name = "examination_number", length = 4, unique = true)
+    private String examinationNumber;
+
+    @Column(name = "pass_yn")
+    @Enumerated(EnumType.STRING)
+    private YesNo passYn;
 
     @NotNull
     @Embedded
@@ -65,6 +82,22 @@ public class Oneseo {
     @Enumerated(EnumType.STRING)
     @Column(name = "decided_major")
     private Major decidedMajor;
+
+    public void addWantedScreeningChangeHistory(WantedScreeningChangeHistory wantedScreeningChangeHistory) {
+        this.wantedScreeningChangeHistory.add(wantedScreeningChangeHistory);
+    }
+
+    public void modifyOneseoPrivacyDetail(OneseoPrivacyDetail oneseoPrivacyDetail) {
+        this.oneseoPrivacyDetail = oneseoPrivacyDetail;
+    }
+
+    public void modifyMiddleSchoolAchievement(MiddleSchoolAchievement middleSchoolAchievement) {
+        this.middleSchoolAchievement = middleSchoolAchievement;
+    }
+
+    public void modifyEntranceTestResult(EntranceTestResult entranceTestResult) {
+        this.entranceTestResult = entranceTestResult;
+    }
 
     public Oneseo setOneseoSubmitCode(String submitCode) {
         this.oneseoSubmitCode = submitCode;

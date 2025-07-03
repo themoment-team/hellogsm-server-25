@@ -13,7 +13,7 @@ public record AdmissionTicketsResDto(
         LocalDate memberBirth,
         String profileImg,
         String schoolName,
-        Screening appliedScreening,
+        String examinationNumber,
         String oneseoSubmitCode
 ) {
 }

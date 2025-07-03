@@ -17,7 +17,7 @@ public record OneseoTempReqDto(
         String guardianName,
 
         @Schema(description = "보호자 전화번호", defaultValue = "01000000000")
-        @Pattern(regexp = "^0(?:\\d|\\d{2})(?:\\d{3}|\\d{4})\\d{4}$", message = "유요한 전화번호가 아닙니다.")
+        @Pattern(regexp = "^0(?:\\d|\\d{2})(?:\\d{3}|\\d{4})\\d{4}$", message = "유효한 전화번호가 아닙니다.")
         String guardianPhoneNumber,
 
         @Schema(description = "보호자와 관계", defaultValue = "모")
@@ -40,7 +40,7 @@ public record OneseoTempReqDto(
         String schoolTeacherName,
 
         @Schema(description = "담임선생님 전화번호", nullable = true, defaultValue = "01000000000")
-        @Pattern(regexp = "^0(?:\\d|\\d{2})(?:\\d{3}|\\d{4})\\d{4}$", message = "유요한 전화번호가 아닙니다.")
+        @Pattern(regexp = "^0(?:\\d|\\d{2})(?:\\d{3}|\\d{4})\\d{4}$", message = "유효한 전화번호가 아닙니다.")
         String schoolTeacherPhoneNumber,
 
         @Schema(description = "1지망 학과", defaultValue = "SW", allowableValues = {"SW", "AI", "IOT"})
@@ -63,7 +63,7 @@ public record OneseoTempReqDto(
         @Schema(description = "자원자 전형", defaultValue = "GENERAL", allowableValues = {"GENERAL", "SPECIAL", "EXTRA_VETERANS", "EXTRA_ADMISSION"})
         Screening screening,
 
-        @Schema(description = "중학교 졸업연월", defaultValue = "2006-03")
+        @Schema(description = "중학교 졸업년월", defaultValue = "2006-03")
         @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])$")
         String graduationDate
 ) {

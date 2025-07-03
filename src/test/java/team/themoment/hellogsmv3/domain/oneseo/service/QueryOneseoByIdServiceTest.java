@@ -70,9 +70,9 @@ class QueryOneseoByIdServiceTest {
 
             void setUp_it_returns_oneseo() {
                 member = buildMember(memberId);
-                oneseo = buildOneseo(member);
                 oneseoPrivacyDetail = buildOneseoPrivacyDetail();
                 middleSchoolAchievement = buildMiddleSchoolAchievement();
+                oneseo = buildOneseo(member, middleSchoolAchievement, oneseoPrivacyDetail);
 
                 given(memberService.findByIdOrThrow(memberId)).willReturn(member);
                 given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
@@ -199,7 +199,7 @@ class QueryOneseoByIdServiceTest {
                 .build();
     }
 
-    private Oneseo buildOneseo(Member member) {
+    private Oneseo buildOneseo(Member member, MiddleSchoolAchievement middleSchoolAchievement, OneseoPrivacyDetail oneseoPrivacyDetail) {
         return Oneseo.builder()
                 .member(member)
                 .id(1L)
@@ -207,6 +207,8 @@ class QueryOneseoByIdServiceTest {
                 .wantedScreening(Screening.GENERAL)
                 .desiredMajors(new DesiredMajors(Major.SW, Major.IOT, Major.AI))
                 .entranceTestResult(buildEntranceTestResult())
+                .middleSchoolAchievement(middleSchoolAchievement)
+                .oneseoPrivacyDetail(oneseoPrivacyDetail)
                 .build();
     }
 
@@ -240,7 +242,7 @@ class QueryOneseoByIdServiceTest {
                 .achievement3_2(integerList)
                 .generalSubjects(stringList)
                 .newSubjects(stringList)
-                .artsPhysicalAchievement(integerList)
+                .artsPhysicalAchievement(List.of(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3))
                 .artsPhysicalSubjects(stringList)
                 .absentDays(integerList)
                 .attendanceDays(integerList)

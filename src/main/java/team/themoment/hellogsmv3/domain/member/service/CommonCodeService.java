@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
+import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
 import team.themoment.hellogsmv3.domain.member.repo.CodeRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
@@ -13,8 +14,8 @@ public class CommonCodeService {
 
     private final CodeRepository codeRepository;
 
-    public void validateAndDelete(Long memberId, String inputCode, String inputPhoneNumber) {
-        AuthenticationCode code = codeRepository.findByMemberId(memberId)
+    public void validateAndDelete(Long memberId, String inputCode, String inputPhoneNumber, AuthCodeType authCodeType) {
+        AuthenticationCode code = codeRepository.findByMemberIdAndAuthCodeType(memberId, authCodeType)
                 .orElseThrow(() -> new ExpectedException("사용자의 code가 존재하지 않습니다. 사용자의 ID : " + memberId, HttpStatus.BAD_REQUEST));
 
         if (!code.getAuthenticated()) {

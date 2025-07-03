@@ -15,10 +15,7 @@ import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.repo.MemberRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType.*;
 
@@ -46,7 +43,12 @@ public class CustomOauth2UserService implements OAuth2UserService {
 
         switch (provider.toLowerCase()) {
             case "kakao" -> {
-                providerId = ((Map<String, Object>) oAuthAttributes.get("kakao_account")).get("email").toString();
+                Map<String, Object> kakaoAccount = (Map<String, Object>) oAuthAttributes.get("kakao_account");
+                providerId = Optional.ofNullable(kakaoAccount)
+                        .map(account -> account.get("email"))
+                        .map(Object::toString)
+                        .orElse(oAuthAttributes.get("id").toString());
+
                 authRefType = KAKAO;
             }
             case "google" -> {

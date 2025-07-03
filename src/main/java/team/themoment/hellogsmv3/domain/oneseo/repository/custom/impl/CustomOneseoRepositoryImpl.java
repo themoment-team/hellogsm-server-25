@@ -4,29 +4,32 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
-import team.themoment.hellogsmv3.domain.oneseo.entity.QOneseo;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import team.themoment.hellogsmv3.domain.application.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.TestResultTag;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.custom.CustomOneseoRepository;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 import static com.querydsl.core.types.ExpressionUtils.anyOf;
 import static team.themoment.hellogsmv3.domain.member.entity.QMember.member;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.QEntranceTestFactorsDetail.entranceTestFactorsDetail;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QEntranceTestResult.entranceTestResult;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.QMiddleSchoolAchievement.middleSchoolAchievement;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QOneseo.oneseo;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.QOneseoPrivacyDetail.oneseoPrivacyDetail;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
-
-import java.util.List;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.YES;
 
 @Repository
 @RequiredArgsConstructor
@@ -43,14 +46,42 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                                 oneseo.member.birth,
                                 oneseoPrivacyDetail.profileImg,
                                 oneseoPrivacyDetail.schoolName,
-                                oneseo.appliedScreening,
+                                oneseo.examinationNumber,
                                 oneseo.oneseoSubmitCode
                         )
                 )
                 .from(oneseo)
                 .join(oneseo.member, member)
                 .join(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail)
+                .join(oneseo.entranceTestResult, entranceTestResult)
+                .where(entranceTestResult.firstTestPassYn.eq(YES))
                 .fetch();
+    }
+
+    @Override
+    public Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndSubmitCode(String phoneNumber, String submitCode) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(oneseo)
+                        .join(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail)
+                        .where(
+                                oneseoPrivacyDetail.guardianPhoneNumber.eq(phoneNumber)
+                                        .or(oneseoPrivacyDetail.schoolTeacherPhoneNumber.eq(phoneNumber))
+                                        .and(oneseo.oneseoSubmitCode.eq(submitCode))
+                        ).fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndExaminationNumber(String phoneNumber, String examinationNumber) {
+         return Optional.ofNullable(
+                 queryFactory.selectFrom(oneseo)
+                    .join(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail)
+                    .where(
+                            oneseoPrivacyDetail.guardianPhoneNumber.eq(phoneNumber)
+                                    .or(oneseoPrivacyDetail.schoolTeacherPhoneNumber.eq(phoneNumber))
+                                    .and(oneseo.examinationNumber.eq(examinationNumber))
+                    ).fetchOne()
+         );
     }
 
     @Override
@@ -92,7 +123,7 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                         oneseo.oneseoPrivacyDetail.guardianPhoneNumber,
                         oneseo.oneseoPrivacyDetail.schoolTeacherPhoneNumber,
                         oneseo.entranceTestResult.firstTestPassYn,
-                        oneseo.entranceTestResult.aptitudeEvaluationScore,
+                        oneseo.entranceTestResult.competencyEvaluationScore,
                         oneseo.entranceTestResult.interviewScore,
                         oneseo.entranceTestResult.secondTestPassYn,
                         oneseo.entranceIntentionYn
@@ -108,6 +139,63 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .fetch();
 
         return PageableExecutionUtils.getPage(oneseos, pageable, () -> getTotalCount(builder));
+    }
+
+    @Override
+    public Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(oneseo)
+                        .leftJoin(oneseo.member, member)
+                        .fetchJoin()
+                        .leftJoin(oneseo.entranceTestResult, entranceTestResult)
+                        .fetchJoin()
+                        .leftJoin(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail)
+                        .fetchJoin()
+                        .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement)
+                        .fetchJoin()
+                        .where(
+                                member.name.eq(memberName)
+                                        .and(member.phoneNumber.eq(phoneNumber))
+                                        .and(member.birth.eq(memberBirth))
+                        ).fetchOne()
+        );
+    }
+
+    @Override
+    public List<Oneseo> findAllByScreeningWithAllDetails(Screening screening) {
+        boolean isExistAppliedScreening = queryFactory
+                .selectOne()
+                .from(oneseo)
+                .where(oneseo.appliedScreening.isNotNull())
+                .fetchFirst() != null;
+
+        return queryFactory
+                .selectFrom(oneseo)
+                .join(oneseo.member, member).fetchJoin()
+                .join(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail).fetchJoin()
+                .join(oneseo.entranceTestResult, entranceTestResult).fetchJoin()
+                .join(entranceTestResult.entranceTestFactorsDetail, entranceTestFactorsDetail).fetchJoin()
+                .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement).fetchJoin()
+                .where(isExistAppliedScreening
+                        ? oneseo.appliedScreening.eq(screening)
+                        : oneseo.wantedScreening.eq(screening))
+                .orderBy(entranceTestResult.documentEvaluationScore.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Oneseo> findAllFailedWithAllDetails() {
+        return queryFactory
+                .selectFrom(oneseo)
+                .join(oneseo.member, member).fetchJoin()
+                .join(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail).fetchJoin()
+                .join(oneseo.entranceTestResult, entranceTestResult).fetchJoin()
+                .join(entranceTestResult.entranceTestFactorsDetail, entranceTestFactorsDetail).fetchJoin()
+                .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement).fetchJoin()
+                .where(entranceTestResult.firstTestPassYn.eq(NO)
+                        .or(entranceTestResult.secondTestPassYn.eq(NO)))
+                .orderBy(entranceTestResult.documentEvaluationScore.desc())
+                .fetch();
     }
 
     private long getTotalCount(BooleanBuilder builder) {
@@ -182,11 +270,11 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
         switch (isSubmitted) {
             case YES ->
                     builder.and(
-                            oneseo.realOneseoArrivedYn.eq(YesNo.YES)
+                            oneseo.realOneseoArrivedYn.eq(YES)
                     );
             case NO ->
                     builder.and(
-                            oneseo.realOneseoArrivedYn.eq(YesNo.NO)
+                            oneseo.realOneseoArrivedYn.eq(NO)
                     );
         }
     }
@@ -199,16 +287,16 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
         switch (testResultTag) {
             case FIRST_PASS ->
                     builder.and(
-                            entranceTestResult.firstTestPassYn.eq(YesNo.YES)
+                            entranceTestResult.firstTestPassYn.eq(YES)
                     );
             case FINAL_PASS ->
                     builder.and(
-                            entranceTestResult.secondTestPassYn.eq(YesNo.YES)
+                            entranceTestResult.secondTestPassYn.eq(YES)
                     );
             case FALL ->
                     builder.andAnyOf(
-                            entranceTestResult.firstTestPassYn.eq(YesNo.NO),
-                            entranceTestResult.secondTestPassYn.eq(YesNo.NO)
+                            entranceTestResult.firstTestPassYn.eq(NO),
+                            entranceTestResult.secondTestPassYn.eq(NO)
                     );
         }
     }

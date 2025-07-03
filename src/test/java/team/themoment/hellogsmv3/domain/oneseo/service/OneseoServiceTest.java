@@ -20,8 +20,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.CANDIDATE;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.GED;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.*;
 
 @DisplayName("OneseoService 클래스의")
 public class OneseoServiceTest {
@@ -182,6 +185,32 @@ public class OneseoServiceTest {
 
                 assertEquals("중학교 졸업예정인 지원자는 현재 재학 중인 중학교 정보를 필수로 입력해야 합니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("assignSubmitCode 메소드는")
+    class Describe_assignSubmitCode {
+
+        private final int maxSubmitCodeNumber = 10;
+        private final Oneseo oneseo = mock(Oneseo.class);
+
+        @Nested
+        @DisplayName("일반전형 원서가 주어지면")
+        class Context_with_existing_member_and_oneseo {
+
+            @BeforeEach
+            void setUp() {
+                given(oneseo.getWantedScreening()).willReturn(GENERAL);
+                given(oneseoRepository.findMaxSubmitCodeByScreening(oneseo.getWantedScreening())).willReturn(maxSubmitCodeNumber);
+            }
+
+            @Test
+            @DisplayName("A-N 번대의 접수번호가 생성된다.")
+            void it_returns_oneseo() {
+                oneseoService.assignSubmitCode(oneseo, null);
+                verify(oneseo).setOneseoSubmitCode("A-" + (maxSubmitCodeNumber + 1));
             }
         }
     }

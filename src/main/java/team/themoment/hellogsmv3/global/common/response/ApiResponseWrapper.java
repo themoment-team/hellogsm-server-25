@@ -49,6 +49,11 @@ public class ApiResponseWrapper implements ResponseBodyAdvice<Object> {
             if (errorResponse != null) return errorResponse;
         }
 
+        if (body == null) {
+            response.setStatusCode(HttpStatus.NO_CONTENT);
+            return null;
+        }
+
         CommonApiResponse<Object> commonApiResponse = new CommonApiResponse<>(
                 HttpStatus.OK,
                 HttpStatus.OK.value(),

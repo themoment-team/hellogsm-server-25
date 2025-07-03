@@ -2,6 +2,7 @@ package team.themoment.hellogsmv3.domain.member.service;
 
 import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
+import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
 import team.themoment.hellogsmv3.domain.member.repo.CodeRepository;
 
 import java.time.LocalDateTime;
@@ -19,10 +20,11 @@ public abstract class GenerateCodeService {
             Long memberId,
             String code,
             String phoneNumber,
+            AuthCodeType authCodeType,
             boolean isTest) {
 
         return authCode == null ?
-                new AuthenticationCode(memberId, code, phoneNumber, LocalDateTime.now(), isTest) :
+                new AuthenticationCode(memberId, code, phoneNumber, LocalDateTime.now(), authCodeType, isTest) :
                 authCode.updatedCode(code, LocalDateTime.now(), isTest);
     }
 
