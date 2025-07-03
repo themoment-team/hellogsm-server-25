@@ -26,5 +26,4 @@ public class QueryMyFirstTestResultService {
         return new FoundMemberFirstTestResDto(entranceTestResult.getFirstTestPassYn());
     }
 
-
 }
