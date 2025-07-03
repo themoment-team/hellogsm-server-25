@@ -21,6 +21,8 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.ScreeningChangeHistoryRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -111,6 +113,7 @@ class ModifyOneseoServiceTest {
         String schoolName = "금호중앙중학교";
         String schoolAddress = "광주 어딘가";
         Screening screening = GENERAL;
+        String graduationDate = "2020-02";
         DesiredMajors desiredMajors = DesiredMajors.builder()
                 .firstDesiredMajor(firstDesiredMajor)
                 .secondDesiredMajor(secondDesiredMajor)
@@ -133,7 +136,8 @@ class ModifyOneseoServiceTest {
                 middleSchoolAchievementReqDto,
                 schoolName,
                 schoolAddress,
-                screening
+                screening,
+                graduationDate
         );
 
         @Nested
@@ -150,6 +154,7 @@ class ModifyOneseoServiceTest {
                         .entranceTestResult(EntranceTestResult.builder()
                                 .firstTestPassYn(null)
                                 .build())
+                        .wantedScreeningChangeHistory(new ArrayList<>())
                         .build();
 
                 OneseoPrivacyDetail oneseoPrivacyDetail = OneseoPrivacyDetail.builder()
@@ -192,8 +197,9 @@ class ModifyOneseoServiceTest {
                 assertEquals(screening, capturedOneseo.getWantedScreening());
 
                 assertEquals(oneseoPrivacyDetail.getId(), capturedPrivacyDetail.getId());
-                assertEquals(oneseoPrivacyDetail.getOneseo(), capturedPrivacyDetail.getOneseo());
+                assertEquals(oneseoPrivacyDetail.getOneseo().getId(), capturedPrivacyDetail.getOneseo().getId());
                 assertEquals(graduationType, capturedPrivacyDetail.getGraduationType());
+                assertEquals(graduationDate, capturedPrivacyDetail.getGraduationDate());
                 assertEquals(address, capturedPrivacyDetail.getAddress());
                 assertEquals(detailAddress, capturedPrivacyDetail.getDetailAddress());
                 assertEquals(profileImg, capturedPrivacyDetail.getProfileImg());
@@ -206,7 +212,7 @@ class ModifyOneseoServiceTest {
                 assertEquals(schoolTeacherPhoneNumber, capturedPrivacyDetail.getSchoolTeacherPhoneNumber());
 
                 assertEquals(middleSchoolAchievement.getId(), capturedAchievement.getId());
-                assertEquals(middleSchoolAchievement.getOneseo(), capturedAchievement.getOneseo());
+                assertEquals(middleSchoolAchievement.getOneseo().getId(), capturedAchievement.getOneseo().getId());
                 assertEquals(null, capturedAchievement.getAchievement1_2());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
@@ -237,6 +243,7 @@ class ModifyOneseoServiceTest {
                         .entranceTestResult(EntranceTestResult.builder()
                                 .firstTestPassYn(null)
                                 .build())
+                        .wantedScreeningChangeHistory(new ArrayList<>())
                         .build();
 
                 Member existingMember = mock(Member.class);

@@ -61,17 +61,18 @@ public class ModifyInterviewScoreServiceTest {
                         .id(memberId)
                         .build();
 
-                Oneseo oneseo = Oneseo.builder()
-                        .member(member)
-                        .build();
-
                 entranceTestResult = EntranceTestResult.builder()
                         .interviewScore(BigDecimal.valueOf(75))
+                        .firstTestPassYn(null)
+                        .build();
+
+                Oneseo oneseo = Oneseo.builder()
+                        .member(member)
+                        .entranceTestResult(entranceTestResult)
                         .build();
 
                 given(memberService.findByIdOrThrow(memberId)).willReturn(member);
                 given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
-                given(entranceTestResultRepository.findByOneseo(oneseo)).willReturn(entranceTestResult);
             }
 
             @Test

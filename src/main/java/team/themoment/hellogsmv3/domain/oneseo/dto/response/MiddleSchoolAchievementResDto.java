@@ -18,6 +18,7 @@ public record MiddleSchoolAchievementResDto(
         List<Integer> artsPhysicalAchievement,
         List<String> artsPhysicalSubjects,
         List<Integer> absentDays,
+        Integer absentDaysCount,
         List<Integer> attendanceDays,
         List<Integer> volunteerTime,
         String liberalSystem,

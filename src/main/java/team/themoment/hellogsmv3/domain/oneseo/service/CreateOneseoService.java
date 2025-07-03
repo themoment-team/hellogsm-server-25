@@ -2,23 +2,21 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team.themoment.hellogsmv3.domain.application.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.DesiredMajorsResDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.FoundOneseoResDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.MiddleSchoolAchievementResDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.OneseoPrivacyDetailResDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.MiddleSchoolAchievement;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.OneseoPrivacyDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.DesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
+import team.themoment.hellogsmv3.domain.oneseo.event.OneseoApplyEvent;
 import team.themoment.hellogsmv3.domain.oneseo.repository.MiddleSchoolAchievementRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
@@ -27,6 +25,7 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import java.util.List;
 
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.isValidMiddleSchoolInfo;
 
 @Service
 @RequiredArgsConstructor
@@ -38,11 +37,16 @@ public class CreateOneseoService {
     private final MemberService memberService;
     private final CalculateGradeService calculateGradeService;
     private final CalculateGedService calculateGedService;
+    private final OneseoService oneseoService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     @CachePut(value = OneseoService.ONESEO_CACHE_VALUE, key = "#memberId")
     public FoundOneseoResDto execute(OneseoReqDto reqDto, Long memberId) {
-        Member currentMember = memberService.findByIdOrThrow(memberId);
+
+        isValidMiddleSchoolInfo(reqDto);
+
+        Member currentMember = memberService.findByIdForUpdateOrThrow(memberId);
 
         isExistOneseo(currentMember);
 
@@ -50,34 +54,34 @@ public class CreateOneseoService {
         OneseoPrivacyDetail oneseoPrivacyDetail = buildOneseoPrivacyDetail(reqDto, oneseo);
         MiddleSchoolAchievement middleSchoolAchievement = buildMiddleSchoolAchievement(reqDto, oneseo);
 
-        assignSubmitCode(oneseo);
+        oneseoService.assignSubmitCode(oneseo, null);
+
         saveEntities(oneseo, oneseoPrivacyDetail, middleSchoolAchievement);
 
-        calculateMiddleSchoolAchievement(oneseoPrivacyDetail.getGraduationType(), middleSchoolAchievement, oneseo);
+        CalculatedScoreResDto calculatedScoreResDto = calculateMiddleSchoolAchievement(oneseoPrivacyDetail.getGraduationType(), middleSchoolAchievement, oneseo);
 
         OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto = buildOneseoPrivacyDetailResDto(currentMember, oneseoPrivacyDetail);
         MiddleSchoolAchievementResDto middleSchoolAchievementResDto = buildMiddleSchoolAchievementResDto(middleSchoolAchievement);
+
+        sendOneseoApplyEvent(currentMember, oneseo, oneseoPrivacyDetail);
+
         return buildOneseoResDto(
                 oneseo,
                 oneseoPrivacyDetailResDto,
-                middleSchoolAchievementResDto
+                middleSchoolAchievementResDto,
+                calculatedScoreResDto
         );
     }
 
-    private void assignSubmitCode(Oneseo oneseo) {
-        Integer maxSubmitCodeNumber = oneseoRepository.findMaxSubmitCodeByScreening(oneseo.getWantedScreening());
-        int newSubmitCodeNumber = (maxSubmitCodeNumber != null ? maxSubmitCodeNumber : 0) + 1;
+    private void sendOneseoApplyEvent(Member currentMember, Oneseo oneseo, OneseoPrivacyDetail oneseoPrivacyDetail) {
+        OneseoApplyEvent oneseoApplyEvent = OneseoApplyEvent.builder()
+                .name(currentMember.getName())
+                .summitCode(oneseo.getOneseoSubmitCode())
+                .graduationType(oneseoPrivacyDetail.getGraduationType())
+                .screening(oneseo.getWantedScreening())
+                .build();
 
-        String submitCode;
-        ScreeningCategory screeningCategory = oneseo.getWantedScreening().getScreeningCategory();
-        switch (screeningCategory) {
-            case GENERAL -> submitCode = "A-" + newSubmitCodeNumber;
-            case SPECIAL -> submitCode = "B-" + newSubmitCodeNumber;
-            case EXTRA -> submitCode = "C-" + newSubmitCodeNumber;
-            default -> throw new IllegalArgumentException("Unexpected value: " + screeningCategory);
-        }
-
-        oneseo.setOneseoSubmitCode(submitCode);
+        applicationEventPublisher.publishEvent(oneseoApplyEvent);
     }
 
     private OneseoPrivacyDetailResDto buildOneseoPrivacyDetailResDto(
@@ -90,6 +94,7 @@ public class CreateOneseoService {
                 .birth(member.getBirth())
                 .phoneNumber(member.getPhoneNumber())
                 .graduationType(oneseoPrivacyDetail.getGraduationType())
+                .graduationDate(oneseoPrivacyDetail.getGraduationDate())
                 .address(oneseoPrivacyDetail.getAddress())
                 .detailAddress(oneseoPrivacyDetail.getDetailAddress())
                 .guardianName(oneseoPrivacyDetail.getGuardianName())
@@ -106,6 +111,11 @@ public class CreateOneseoService {
     private MiddleSchoolAchievementResDto buildMiddleSchoolAchievementResDto(
             MiddleSchoolAchievement middleSchoolAchievement
     ) {
+
+        List<Integer> absentDays = middleSchoolAchievement.getAbsentDays();
+        List<Integer> attendanceDays = middleSchoolAchievement.getAttendanceDays();
+        Integer absentDaysCount = OneseoService.calcAbsentDaysCount(absentDays, attendanceDays);
+
         return MiddleSchoolAchievementResDto.builder()
                 .achievement1_2(middleSchoolAchievement.getAchievement1_2())
                 .achievement2_1(middleSchoolAchievement.getAchievement2_1())
@@ -116,8 +126,9 @@ public class CreateOneseoService {
                 .newSubjects(middleSchoolAchievement.getNewSubjects())
                 .artsPhysicalAchievement(middleSchoolAchievement.getArtsPhysicalAchievement())
                 .artsPhysicalSubjects(middleSchoolAchievement.getArtsPhysicalSubjects())
-                .absentDays(middleSchoolAchievement.getAbsentDays())
-                .attendanceDays(middleSchoolAchievement.getAttendanceDays())
+                .absentDays(absentDays)
+                .absentDaysCount(absentDaysCount)
+                .attendanceDays(attendanceDays)
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
@@ -128,7 +139,8 @@ public class CreateOneseoService {
     private FoundOneseoResDto buildOneseoResDto(
             Oneseo oneseo,
             OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto,
-            MiddleSchoolAchievementResDto middleSchoolAchievementResDto
+            MiddleSchoolAchievementResDto middleSchoolAchievementResDto,
+            CalculatedScoreResDto calculatedScoreResDto
     ) {
         DesiredMajors desiredMajors = oneseo.getDesiredMajors();
 
@@ -143,10 +155,11 @@ public class CreateOneseoService {
                         .build())
                 .privacyDetail(oneseoPrivacyDetailResDto)
                 .middleSchoolAchievement(middleSchoolAchievementResDto)
+                .calculatedScore(calculatedScoreResDto)
                 .build();
     }
 
-    private void calculateMiddleSchoolAchievement(GraduationType graduationType, MiddleSchoolAchievement middleSchoolAchievement, Oneseo oneseo) {
+    private CalculatedScoreResDto calculateMiddleSchoolAchievement(GraduationType graduationType, MiddleSchoolAchievement middleSchoolAchievement, Oneseo oneseo) {
         MiddleSchoolAchievementReqDto data = MiddleSchoolAchievementReqDto.builder()
                 .achievement1_2(middleSchoolAchievement.getAchievement1_2())
                 .achievement2_1(middleSchoolAchievement.getAchievement2_1())
@@ -162,10 +175,10 @@ public class CreateOneseoService {
                 .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
                 .build();
 
-        switch (graduationType) {
+        return switch (graduationType) {
             case CANDIDATE, GRADUATE -> calculateGradeService.execute(data, oneseo, graduationType);
             case GED -> calculateGedService.execute(data, oneseo, graduationType);
-        }
+        };
     }
 
     private void saveEntities(Oneseo oneseo, OneseoPrivacyDetail oneseoPrivacyDetail, MiddleSchoolAchievement middleSchoolAchievement) {
@@ -191,6 +204,7 @@ public class CreateOneseoService {
         return OneseoPrivacyDetail.builder()
                 .oneseo(oneseo)
                 .graduationType(reqDto.graduationType())
+                .graduationDate(reqDto.graduationDate())
                 .address(reqDto.address())
                 .detailAddress(reqDto.detailAddress())
                 .profileImg(reqDto.profileImg())

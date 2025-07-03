@@ -40,7 +40,7 @@ public class QueryAdmissionTicketsServiceTest {
                 .memberBirth(LocalDate.parse("2024-07-28"))
                 .profileImg("profileImg.com")
                 .schoolName("광주소프트웨어마이스터고등학교")
-                .appliedScreening(Screening.GENERAL)
+                .examinationNumber("1010")
                 .oneseoSubmitCode("A-1")
                 .build();
 
@@ -49,7 +49,7 @@ public class QueryAdmissionTicketsServiceTest {
                 .memberBirth(LocalDate.parse("2024-07-28"))
                 .profileImg("profileImg.com")
                 .schoolName("광주소프트웨어마이스터고등학교")
-                .appliedScreening(Screening.GENERAL)
+                .examinationNumber("1020")
                 .oneseoSubmitCode("A-1")
                 .build();
 

@@ -70,9 +70,9 @@ class QueryOneseoByIdServiceTest {
 
             void setUp_it_returns_oneseo() {
                 member = buildMember(memberId);
-                oneseo = buildOneseo(member);
                 oneseoPrivacyDetail = buildOneseoPrivacyDetail();
                 middleSchoolAchievement = buildMiddleSchoolAchievement();
+                oneseo = buildOneseo(member, middleSchoolAchievement, oneseoPrivacyDetail);
 
                 given(memberService.findByIdOrThrow(memberId)).willReturn(member);
                 given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
@@ -102,6 +102,7 @@ class QueryOneseoByIdServiceTest {
                 assertEquals(member.getBirth(), oneseoPrivacyDetailResDto.birth());
                 assertEquals(member.getPhoneNumber(), oneseoPrivacyDetailResDto.phoneNumber());
                 assertEquals(oneseoPrivacyDetail.getGraduationType(), oneseoPrivacyDetailResDto.graduationType());
+                assertEquals(oneseoPrivacyDetail.getGraduationDate(), oneseoPrivacyDetailResDto.graduationDate());
                 assertEquals(oneseoPrivacyDetail.getAddress(), oneseoPrivacyDetailResDto.address());
                 assertEquals(oneseoPrivacyDetail.getDetailAddress(), oneseoPrivacyDetailResDto.detailAddress());
                 assertEquals(oneseoPrivacyDetail.getGuardianName(), oneseoPrivacyDetailResDto.guardianName());
@@ -188,19 +189,33 @@ class QueryOneseoByIdServiceTest {
                 .build();
     }
 
-    private Oneseo buildOneseo(Member member) {
+    private EntranceTestFactorsDetail buildEntranceTestFactorsDetail() {
+        return EntranceTestFactorsDetail.builder().build();
+    }
+
+    private EntranceTestResult buildEntranceTestResult() {
+        return EntranceTestResult.builder()
+                .entranceTestFactorsDetail(buildEntranceTestFactorsDetail())
+                .build();
+    }
+
+    private Oneseo buildOneseo(Member member, MiddleSchoolAchievement middleSchoolAchievement, OneseoPrivacyDetail oneseoPrivacyDetail) {
         return Oneseo.builder()
                 .member(member)
                 .id(1L)
                 .oneseoSubmitCode("submitCode")
                 .wantedScreening(Screening.GENERAL)
                 .desiredMajors(new DesiredMajors(Major.SW, Major.IOT, Major.AI))
+                .entranceTestResult(buildEntranceTestResult())
+                .middleSchoolAchievement(middleSchoolAchievement)
+                .oneseoPrivacyDetail(oneseoPrivacyDetail)
                 .build();
     }
 
     private OneseoPrivacyDetail buildOneseoPrivacyDetail() {
         return OneseoPrivacyDetail.builder()
                 .graduationType(GraduationType.GRADUATE)
+                .graduationDate("2020-02")
                 .address("거주 주소")
                 .detailAddress("상세 주소")
                 .guardianName("홍길동")
@@ -227,7 +242,7 @@ class QueryOneseoByIdServiceTest {
                 .achievement3_2(integerList)
                 .generalSubjects(stringList)
                 .newSubjects(stringList)
-                .artsPhysicalAchievement(integerList)
+                .artsPhysicalAchievement(List.of(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3))
                 .artsPhysicalSubjects(stringList)
                 .absentDays(integerList)
                 .attendanceDays(integerList)

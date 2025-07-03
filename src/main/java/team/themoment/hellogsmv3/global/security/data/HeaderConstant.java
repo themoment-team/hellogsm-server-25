@@ -1,12 +1,6 @@
 package team.themoment.hellogsmv3.global.security.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public enum HeaderConstant {
-    X_HG_ENV("X-HG-ENV");
-
-    private final String content;
+public interface HeaderConstant {
+    String X_HG_ENV = "X-HG-ENV";
+    String X_HG_API_KEY = "x-hg-api-key";
 }

@@ -24,6 +24,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
     @Override
     public List<String> convertToEntityAttribute(String data) {
         try {
+            if (data == null) return null;
             return mapper.readValue(data, List.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

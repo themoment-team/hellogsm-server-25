@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.response.MockScoreResDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestFactorsDetailRepository;
@@ -23,7 +23,7 @@ public class CalculateGedService {
     private final EntranceTestResultRepository entranceTestResultRepository;
     private final EntranceTestFactorsDetailRepository entranceTestFactorsDetailRepository;
 
-    public MockScoreResDto execute(MiddleSchoolAchievementReqDto dto, Oneseo oneseo, GraduationType graduationType) {
+    public CalculatedScoreResDto execute(MiddleSchoolAchievementReqDto dto, Oneseo oneseo, GraduationType graduationType) {
 
         if (!graduationType.equals(GED))
             throw new IllegalArgumentException("올바르지 않은 graduationType입니다.");
@@ -82,16 +82,14 @@ public class CalculateGedService {
                 entranceTestFactorsDetailRepository.save(findEntranceTestFactorsDetail);
                 entranceTestResultRepository.save(findEntranceTestResult);
             }
-
-            return null;
-        } else {
-            return MockScoreResDto.builder()
-                    .totalSubjectsScore(gedTotalSubjectsScore)
-                    .attendanceScore(gedAttendanceScore)
-                    .volunteerScore(gedVolunteerScore)
-                    .totalScore(totalScore)
-                    .build();
         }
+
+        return CalculatedScoreResDto.builder()
+                .totalSubjectsScore(gedTotalSubjectsScore)
+                .attendanceScore(gedAttendanceScore)
+                .volunteerScore(gedVolunteerScore)
+                .totalScore(totalScore)
+                .build();
     }
 
     private static BigDecimal calcGedAvgScore(BigDecimal gedTotalScore, BigDecimal gedMaxScore) {

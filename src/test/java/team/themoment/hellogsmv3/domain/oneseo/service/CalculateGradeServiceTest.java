@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestFactorsDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
@@ -86,7 +87,7 @@ class CalculateGradeServiceTest {
                         .achievement1_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement2_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 4))
-                        .artsPhysicalAchievement(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
+                        .artsPhysicalAchievement(Arrays.asList(5, 5, 5, 5, 0, 5, 0, 5, 0))
                         .absentDays(Arrays.asList(3, 0, 0))
                         .attendanceDays(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0))
                         .volunteerTime(Arrays.asList(10, 0, 2))
@@ -94,7 +95,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("3-1")
                         .build();
 
-                calculateGradeService.execute(reqDto, oneseo, CANDIDATE);
+                CalculatedScoreResDto resDto = calculateGradeService.execute(reqDto, oneseo, CANDIDATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -118,6 +119,10 @@ class CalculateGradeServiceTest {
                 assertEquals(BigDecimal.valueOf(0.0).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2().setScale(3, UP));
 
                 assertEquals(BigDecimal.valueOf(272.2).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
+
+                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score1_2(), BigDecimal.valueOf(30).setScale(3, HALF_UP));
+                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_1(), BigDecimal.valueOf(20).setScale(3, HALF_UP));
+                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_2(), BigDecimal.valueOf(10).setScale(3, HALF_UP));
             }
 
             @Test
@@ -128,7 +133,7 @@ class CalculateGradeServiceTest {
                         .achievement2_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 0))
                         .achievement3_1(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
                         .achievement3_2(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
-                        .artsPhysicalAchievement(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5))
+                        .artsPhysicalAchievement(Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5))
                         .absentDays(Arrays.asList(3, 0, 0))
                         .attendanceDays(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0))
                         .volunteerTime(Arrays.asList(10, 0, 10))
@@ -136,7 +141,7 @@ class CalculateGradeServiceTest {
                         .freeSemester("2-1")
                         .build();
 
-                calculateGradeService.execute(reqDto, oneseo, GRADUATE);
+                CalculatedScoreResDto resDto = calculateGradeService.execute(reqDto, oneseo, GRADUATE);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -160,6 +165,11 @@ class CalculateGradeServiceTest {
                 assertEquals(BigDecimal.valueOf(54).setScale(3, UP), capturedEntranceTestFactorsDetailArgument.getScore3_2().setScale(3, UP));
 
                 assertEquals(BigDecimal.valueOf(283).setScale(3, UP), capturedEntranceTestResult.getDocumentEvaluationScore());
+
+                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score1_2(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
+                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score2_2(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
+                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score3_1(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
+                assertEquals(resDto.artsPhysicalSubjectsScoreDetail().score3_2(), BigDecimal.valueOf(15).setScale(3, HALF_UP));
             }
         }
 

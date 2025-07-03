@@ -17,16 +17,10 @@ public class SendCodeNotificationServiceImpl implements SendCodeNotificationServ
     }
 
     private static String createContentMessage(String code) {
-        return String.format(
-                """
-                [Hello, GSM | 광주소프트웨어마이스터고등학교 입학지원시스템]
-                
-                인증번호 [%s]를 입력해주세요.
-                """, code
-        );
+        return String.format("[Hello, GSM] 인증번호 [%s]를 입력해주세요.", code);
     }
 
     private static String createFooterMessage() {
-        return "본인이 요청한게 아니라면 행정실 062-949-6800으로 문의해주세요.";
+        return "본인이 요청한게 아니라면 교무실 062-949-6843 으로 문의해주세요.";
     }
 }

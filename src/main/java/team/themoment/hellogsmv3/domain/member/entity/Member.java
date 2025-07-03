@@ -26,7 +26,7 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)

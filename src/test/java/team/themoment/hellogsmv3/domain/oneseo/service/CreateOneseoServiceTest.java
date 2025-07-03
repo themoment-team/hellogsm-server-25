@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
@@ -24,6 +25,7 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRep
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +49,10 @@ class CreateOneseoServiceTest {
     private MiddleSchoolAchievementRepository middleSchoolAchievementRepository;
     @Mock
     private MemberService memberService;
+    @Mock
+    private OneseoService oneseoService;
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
     @Mock
     private CalculateGradeService calculateGradeService;
     @Mock
@@ -110,6 +116,7 @@ class CreateOneseoServiceTest {
         String schoolName = "금호중앙중학교";
         String schoolAddress = "광주 어딘가";
         Screening screening = GENERAL;
+        String graduationDate = "2020-02";
 
         OneseoReqDto oneseoReqDto = new OneseoReqDto(
                 guardianName,
@@ -127,7 +134,8 @@ class CreateOneseoServiceTest {
                 middleSchoolAchievementReqDto,
                 schoolName,
                 schoolAddress,
-                screening
+                screening,
+                graduationDate
         );
 
         @Nested
@@ -138,7 +146,7 @@ class CreateOneseoServiceTest {
             void setUp() {
                 Member existingMember = mock(Member.class);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
+                given(memberService.findByIdForUpdateOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoRepository.existsByMember(existingMember)).willReturn(false);
             }
 
@@ -159,7 +167,6 @@ class CreateOneseoServiceTest {
                 OneseoPrivacyDetail capturedPrivacyDetail = oneseoPrivacyDetailCaptor.getValue();
                 MiddleSchoolAchievement capturedAchievement = middleSchoolAchievementCaptor.getValue();
 
-                assertEquals("A-1", capturedOneseo.getOneseoSubmitCode());
                 assertEquals(firstDesiredMajor, capturedOneseo.getDesiredMajors().getFirstDesiredMajor());
                 assertEquals(secondDesiredMajor, capturedOneseo.getDesiredMajors().getSecondDesiredMajor());
                 assertEquals(thirdDesiredMajor, capturedOneseo.getDesiredMajors().getThirdDesiredMajor());
@@ -167,6 +174,7 @@ class CreateOneseoServiceTest {
                 assertEquals(screening, capturedOneseo.getWantedScreening());
 
                 assertEquals(graduationType, capturedPrivacyDetail.getGraduationType());
+                assertEquals(graduationDate, capturedPrivacyDetail.getGraduationDate());
                 assertEquals(address, capturedPrivacyDetail.getAddress());
                 assertEquals(detailAddress, capturedPrivacyDetail.getDetailAddress());
                 assertEquals(profileImg, capturedPrivacyDetail.getProfileImg());
@@ -202,8 +210,10 @@ class CreateOneseoServiceTest {
 
             @BeforeEach
             void setUp() {
+                given(reqDto.graduationType()).willReturn(GRADUATE);
+
                 doThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND))
-                        .when(memberService).findByIdOrThrow(memberId);
+                        .when(memberService).findByIdForUpdateOrThrow(memberId);
             }
 
             @Test
@@ -224,7 +234,8 @@ class CreateOneseoServiceTest {
             void setUp() {
                 Member existingMember = mock(Member.class);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
+                given(reqDto.graduationType()).willReturn(GRADUATE);
+                given(memberService.findByIdForUpdateOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoRepository.existsByMember(any(Member.class))).willReturn(true);
             }
 
@@ -249,6 +260,7 @@ class CreateOneseoServiceTest {
             void setUp() {
                 Member existingMember = mock(Member.class);
 
+                given(reqDto.graduationType()).willReturn(GRADUATE);
                 given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoRepository.existsByMember(existingMember)).willReturn(false);
                 given(reqDto.middleSchoolAchievement()).willReturn(invalidMiddleSchoolAchievementReqDto);

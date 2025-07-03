@@ -37,15 +37,14 @@ public class SecurityConfig {
 
     @Bean
     public Filter timeBasedFilter() {
-        LocalDateTime startReception = scheduleEnv.startReceptionDate();
-        LocalDateTime endReception = scheduleEnv.endReceptionDate();
+        LocalDateTime oneseoSubmissionStart = scheduleEnv.oneseoSubmissionStart();
+        LocalDateTime oneseoSubmissionEnd = scheduleEnv.oneseoSubmissionEnd();
 
         return new TimeBasedFilter()
-                .addFilter(HttpMethod.POST, "/oneseo/v3/temp-storage", startReception, endReception)
-                .addFilter(HttpMethod.POST, "/oneseo/v3/oneseo/me", startReception, endReception)
-                .addFilter(HttpMethod.PUT, "/oneseo/v3/oneseo/{memberId}", startReception, endReception)
-                .addFilter(HttpMethod.GET, "/oneseo/v3/oneseo/me", startReception, endReception)
-                .addFilter(HttpMethod.POST, "/oneseo/v3/image", startReception, endReception);
+                .addFilter(HttpMethod.POST, "/oneseo/v3/temp-storage", oneseoSubmissionStart, oneseoSubmissionEnd)
+                .addFilter(HttpMethod.POST, "/oneseo/v3/oneseo/me", oneseoSubmissionStart, oneseoSubmissionEnd)
+                .addFilter(HttpMethod.PUT, "/oneseo/v3/oneseo/{memberId}", oneseoSubmissionStart, oneseoSubmissionEnd)
+                .addFilter(HttpMethod.POST, "/oneseo/v3/image", oneseoSubmissionStart, oneseoSubmissionEnd);
     }
 
     @Configuration
@@ -114,85 +113,12 @@ public class SecurityConfig {
 
     private void authorizeHttpRequests(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(httpRequests -> httpRequests
-                .requestMatchers(HttpMethod.OPTIONS, "/**/*").permitAll() // for CORS
+
+                // for CORS
+                .requestMatchers(HttpMethod.OPTIONS, "/**/*").permitAll()
+
+                // auth
                 .requestMatchers("/auth/v3/**").permitAll()
-                // authentication
-                .requestMatchers(HttpMethod.GET, "/authentication/v3/authentication/me").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers("/authentication/v3/authentication/*").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                // applicant
-                .requestMatchers(HttpMethod.POST, "/applicant/v3/applicant/me").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.PUT, "/applicant/v3/applicant/me").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/applicant/v3/applicant/me").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.POST,
-                        "/applicant/v3/applicant/me/send-code",
-                        "/applicant/v3/applicant/me/auth-code").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/applicant/v3/applicant/{authenticationId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.POST, "/applicant/v3/applicant/me/send-code-test").hasAnyAuthority(
-                        Role.ROOT.name()
-                )
-                // application
-                .requestMatchers("/application/v3/application/me").hasAnyAuthority(
-                        Role.APPLICANT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/application/v3/application/search").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/application/v3/application/all").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.PUT, "/application/v1/final-submit").hasAnyAuthority(
-                        Role.APPLICANT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "application/v3/admission-tickets").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.DELETE, "application/v3/application").hasAnyAuthority(
-                        Role.APPLICANT.name()
-                )
-                .requestMatchers(HttpMethod.POST, "application/v3/image").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/application/v3/application/{applicantId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.PUT, "/application/v3/application/{applicantId}").hasAnyAuthority(
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.PUT, "application/v3/status/{applicantId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
 
                 // member
                 .requestMatchers(HttpMethod.GET, "/member/v3/member/me").hasAnyAuthority(
@@ -231,8 +157,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/member/v3/auth-info/{memberId}").hasAnyAuthority(
                         Role.ADMIN.name()
                 )
-                .requestMatchers(HttpMethod.GET, "/member/v3/test-result/me").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/member/v3/first-test-result/me").hasAnyAuthority(
                         Role.APPLICANT.name(),
+                        Role.ROOT.name()
+                )
+                .requestMatchers(HttpMethod.GET, "/member/v3/second-test-result/me").hasAnyAuthority(
+                        Role.APPLICANT.name(),
+                        Role.ROOT.name()
+                )
+                .requestMatchers(HttpMethod.GET, "/member/v3/check-duplicate").hasAnyAuthority(
+                        Role.UNAUTHENTICATED.name(),
                         Role.ROOT.name()
                 )
 
@@ -247,7 +181,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/arrived-status/{memberId}").hasAnyAuthority(
                         Role.ADMIN.name()
                 )
-                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/aptitude-score/{memberId}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/competency-score/{memberId}").hasAnyAuthority(
                         Role.ADMIN.name()
                 )
                 .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/interview-score/{memberId}").hasAnyAuthority(
@@ -269,7 +203,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/oneseo/v3/final-submit").hasAnyAuthority(
                         Role.APPLICANT.name()
                 )
-                .requestMatchers(HttpMethod.GET, "oneseo/v3/excel").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/oneseo/v3/excel").hasAnyAuthority(
                         Role.ADMIN.name()
                 )
                 .requestMatchers(HttpMethod.GET, "/oneseo/v3/admission-tickets").hasAnyAuthority(
@@ -279,8 +213,31 @@ public class SecurityConfig {
                         Role.ADMIN.name()
                 )
 
-                // mock score calculate
+                // operation test result api
+                .requestMatchers("/operation/**").hasAnyAuthority(
+                        Role.ADMIN.name()
+                )
+
+                // test result api
+                .requestMatchers("/test-result/v3/auth-code").hasAnyAuthority(
+                        Role.UNAUTHENTICATED.name(),
+                        Role.APPLICANT.name()
+                )
+                .requestMatchers("/test-result/v3/send-code").hasAnyAuthority(
+                        Role.UNAUTHENTICATED.name(),
+                        Role.APPLICANT.name()
+                )
+                .requestMatchers("/test-result/v3/my/**").hasAnyAuthority(
+                        Role.UNAUTHENTICATED.name(),
+                        Role.APPLICANT.name()
+                )
+
+                // mock score calculate api
                 .requestMatchers(HttpMethod.POST, "/oneseo/v3/calculate-mock-score").permitAll()
+
+                // common / get date api
+                .requestMatchers(HttpMethod.GET, "/date").permitAll()
+
                 .anyRequest().permitAll()
         );
     }

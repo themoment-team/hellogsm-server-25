@@ -2,6 +2,7 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
@@ -11,6 +12,10 @@ import team.themoment.hellogsmv3.domain.oneseo.dto.response.DesiredMajorsResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.FoundOneseoResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.MiddleSchoolAchievementResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.OneseoPrivacyDetailResDto;
+import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
+import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
+
+import java.util.List;
 
 import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.*;
 
@@ -19,10 +24,13 @@ import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.*;
 public class OneseoTempStorageService {
 
     private final MemberService memberService;
+    private final OneseoRepository oneseoRepository;
 
     @CachePut(value = ONESEO_CACHE_VALUE, key = "#memberId")
     public FoundOneseoResDto execute(OneseoTempReqDto reqDto, Integer step, Long memberId) {
         Member member = memberService.findByIdOrThrow(memberId);
+
+        isNotExistOneseo(member);
 
         OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto = buildOneseoPrivacyDetailResDto(member, reqDto);
         MiddleSchoolAchievementResDto middleSchoolAchievementResDto = buildMiddleSchoolAchievementResDto(reqDto);
@@ -33,6 +41,11 @@ public class OneseoTempStorageService {
                 middleSchoolAchievementResDto,
                 step
         );
+    }
+
+    private void isNotExistOneseo(Member member) {
+        if (oneseoRepository.existsByMember(member))
+            throw new ExpectedException("이미 원서 제출을 하였습니다.", HttpStatus.BAD_REQUEST);
     }
 
     private OneseoPrivacyDetailResDto buildOneseoPrivacyDetailResDto(
@@ -46,6 +59,7 @@ public class OneseoTempStorageService {
                 .birth(member.getBirth())
                 .phoneNumber(member.getPhoneNumber())
                 .graduationType(reqDto.graduationType())
+                .graduationDate(reqDto.graduationDate())
                 .address(reqDto.address())
                 .detailAddress(reqDto.detailAddress())
                 .guardianName(reqDto.guardianName())
@@ -64,6 +78,10 @@ public class OneseoTempStorageService {
     ) {
         MiddleSchoolAchievementReqDto middleSchoolAchievement = reqDto.middleSchoolAchievement();
 
+        List<Integer> absentDays = middleSchoolAchievement.absentDays();
+        List<Integer> attendanceDays = middleSchoolAchievement.attendanceDays();
+        Integer absentDaysCount = OneseoService.calcAbsentDaysCount(absentDays, attendanceDays);
+
         return MiddleSchoolAchievementResDto.builder()
                 .achievement1_2(middleSchoolAchievement.achievement1_2())
                 .achievement2_1(middleSchoolAchievement.achievement2_1())
@@ -74,8 +92,9 @@ public class OneseoTempStorageService {
                 .newSubjects(middleSchoolAchievement.newSubjects())
                 .artsPhysicalAchievement(middleSchoolAchievement.artsPhysicalAchievement())
                 .artsPhysicalSubjects(middleSchoolAchievement.artsPhysicalSubjects())
-                .absentDays(middleSchoolAchievement.absentDays())
-                .attendanceDays(middleSchoolAchievement.attendanceDays())
+                .absentDays(absentDays)
+                .absentDaysCount(absentDaysCount)
+                .attendanceDays(attendanceDays)
                 .volunteerTime(middleSchoolAchievement.volunteerTime())
                 .liberalSystem(middleSchoolAchievement.liberalSystem())
                 .freeSemester(middleSchoolAchievement.freeSemester())

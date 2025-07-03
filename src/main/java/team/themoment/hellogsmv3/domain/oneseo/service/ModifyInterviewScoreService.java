@@ -1,7 +1,6 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
@@ -10,7 +9,8 @@ import team.themoment.hellogsmv3.domain.oneseo.dto.request.InterviewScoreReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
-import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +22,15 @@ public class ModifyInterviewScoreService {
 
     @Transactional
     public void execute(Long memberId, InterviewScoreReqDto reqDto) {
-
         Member member = memberService.findByIdOrThrow(memberId);
         Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
 
-        EntranceTestResult entranceTestResult = entranceTestResultRepository.findByOneseo(oneseo);
+        EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
+        OneseoService.isBeforeSecondTest(entranceTestResult.getSecondTestPassYn());
 
-        entranceTestResult.modifyInterviewScore(reqDto.interviewScore());
+        BigDecimal interviewScore = reqDto.interviewScore();
+        entranceTestResult.modifyInterviewScore(interviewScore);
+
         entranceTestResultRepository.save(entranceTestResult);
     }
 

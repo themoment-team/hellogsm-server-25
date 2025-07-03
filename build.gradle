@@ -45,6 +45,7 @@ dependencies {
 
     /** test **/
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-inline:4.9.0'
 
     /** validation **/
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -75,6 +76,19 @@ dependencies {
 
     /** logging **/
     implementation group: 'ca.pjer', name: 'logback-awslogs-appender', version: '1.6.0'
+
+    /** open feign **/
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+}
+
+ext {
+    set('springCloudVersion', "2022.0.3")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 def querydslSrcDir = "$projectDir/build/generated"
