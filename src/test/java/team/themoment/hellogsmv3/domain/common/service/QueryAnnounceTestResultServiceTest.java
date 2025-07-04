@@ -34,13 +34,15 @@ public class QueryAnnounceTestResultServiceTest {
     @DisplayName("execute 메소드는")
     class Describe_execute {
 
-        OperationTestResult testResult = OperationTestResult.builder()
-                .firstTestResultAnnouncementYn(NO)
-                .secondTestResultAnnouncementYn(NO)
-                .build();
+        OperationTestResult testResult;
 
         @BeforeEach
         void setup() {
+            testResult = OperationTestResult.builder()
+                    .firstTestResultAnnouncementYn(NO)
+                    .secondTestResultAnnouncementYn(NO)
+                    .build();
+
             given(operationTestResultRepository.findTestResult()).willReturn(testResult);
         }
 
