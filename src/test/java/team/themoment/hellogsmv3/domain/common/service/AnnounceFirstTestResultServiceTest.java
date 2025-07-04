@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.domain.common;
+package team.themoment.hellogsmv3.domain.common.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
