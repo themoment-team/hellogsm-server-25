@@ -1,6 +1,7 @@
 package team.themoment.hellogsmv3.domain.oneseo.repository.custom;
 
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import org.springframework.data.domain.Page;
@@ -35,4 +36,6 @@ public interface CustomOneseoRepository {
 
     List<Oneseo> findAllByScreeningWithAllDetails(Screening screening);
     List<Oneseo> findAllFailedWithAllDetails();
+
+    Optional<EntranceTestResult> findEntranceTestResultByExaminationNumber(String examinationNumber);
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.TestResultTag;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
@@ -299,5 +300,14 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                             entranceTestResult.secondTestPassYn.eq(NO)
                     );
         }
+    }
+    @Override
+    public Optional<EntranceTestResult> findEntranceTestResultByExaminationNumber(String examinationNumber) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(entranceTestResult)
+                        .join(entranceTestResult.oneseo, oneseo)
+                        .where(oneseo.examinationNumber.eq(examinationNumber))
+                        .fetchOne()
+        );
     }
 }
