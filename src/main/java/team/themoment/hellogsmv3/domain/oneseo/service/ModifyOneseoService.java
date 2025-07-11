@@ -21,7 +21,6 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.ScreeningChangeHistory
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.isValidMiddleSchoolInfo;
 
@@ -122,7 +121,7 @@ public class ModifyOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedTotalScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
     }
 
@@ -162,7 +161,7 @@ public class ModifyOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedTotalScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
 
         return switch (graduationType) {
@@ -235,7 +234,7 @@ public class ModifyOneseoService {
                 .volunteerTime(updatedMiddleSchoolAchievement.volunteerTime())
                 .liberalSystem(updatedMiddleSchoolAchievement.liberalSystem())
                 .freeSemester(updatedMiddleSchoolAchievement.freeSemester())
-                .gedTotalScore(updatedMiddleSchoolAchievement.gedTotalScore())
+                .gedTotalScore(updatedMiddleSchoolAchievement.gedAvgScore())
                 .build();
 
         oneseo.modifyMiddleSchoolAchievement(modifiedMiddleSchoolAchievement);

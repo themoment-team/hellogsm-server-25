@@ -25,7 +25,6 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRep
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -200,7 +199,7 @@ class CreateOneseoServiceTest {
                 assertEquals(volunteerTime, capturedAchievement.getVolunteerTime());
                 assertEquals(liberalSystem, capturedAchievement.getLiberalSystem());
                 assertEquals(freeSemester, capturedAchievement.getFreeSemester());
-                assertEquals(null, capturedAchievement.getGedTotalScore());
+                assertEquals(null, capturedAchievement.getGedAvgScore());
             }
         }
 

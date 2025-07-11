@@ -132,7 +132,7 @@ public class CreateOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
     }
 
@@ -172,7 +172,7 @@ public class CreateOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
 
         return switch (graduationType) {
@@ -237,7 +237,7 @@ public class CreateOneseoService {
                 .volunteerTime(middleSchoolAchievement.volunteerTime())
                 .liberalSystem(middleSchoolAchievement.liberalSystem())
                 .freeSemester(middleSchoolAchievement.freeSemester())
-                .gedTotalScore(middleSchoolAchievement.gedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.gedAvgScore())
                 .build();
     }
 

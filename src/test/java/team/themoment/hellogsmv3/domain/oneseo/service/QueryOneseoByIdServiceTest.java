@@ -129,7 +129,7 @@ class QueryOneseoByIdServiceTest {
                 assertEquals(middleSchoolAchievement.getVolunteerTime(), middleSchoolAchievementResDto.volunteerTime());
                 assertEquals(middleSchoolAchievement.getLiberalSystem(), middleSchoolAchievementResDto.liberalSystem());
                 assertEquals(middleSchoolAchievement.getFreeSemester(), middleSchoolAchievementResDto.freeSemester());
-                assertEquals(middleSchoolAchievement.getGedTotalScore(), middleSchoolAchievementResDto.gedTotalScore());
+                assertEquals(middleSchoolAchievement.getGedAvgScore(), middleSchoolAchievementResDto.gedAvgScore());
             }
 
             void setUp_it_throws_expected_exception() {
