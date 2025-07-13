@@ -25,7 +25,7 @@ public class AuthController {
 
     private final OAuthAuthenticationService oAuthAuthenticationService;
 
-    @Operation(summary = "OAuth 인증", description = "OAuth Authorization Code를 받아 인증을 처리합니다.")
+    @Operation(summary = "OAuth 인증", description = "프론트엔드에서 받은 Authorization Code로 인증을 처리합니다.")
     @PostMapping("/auth/{provider}")
     public CommonApiResponse authenticateWithOAuth(
             @PathVariable String provider,
@@ -33,8 +33,12 @@ public class AuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        oAuthAuthenticationService.authenticate(provider, reqDto.code(), request, response);
-        return CommonApiResponse.success("인증이 완료되었습니다.");
+        try {
+            oAuthAuthenticationService.authenticate(provider, reqDto.code(), request, response);
+            return CommonApiResponse.success("인증이 완료되었습니다.");
+        } catch (ExpectedException e) {
+            return CommonApiResponse.error(e.getMessage(),HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
