@@ -49,44 +49,46 @@ class QueryTestResultServiceTest {
     private final String oneseoCode = "A-1";
     private final String examinationNumber = "0101";
 
+    private final Member firstTestMember = Member.builder()
+            .id(memberId)
+            .name("홍길동")
+            .birth(LocalDate.of(2009, 1, 1))
+            .phoneNumber(phoneNumber)
+            .sex(Sex.MALE)
+            .build();
+
+    private final Member secondTestMember = Member.builder()
+            .id(memberId)
+            .name("김철수")
+            .birth(LocalDate.of(2009, 1, 1))
+            .phoneNumber(phoneNumber)
+            .sex(Sex.MALE)
+            .build();
+
+    private final Oneseo firstTestOneseo = Oneseo.builder()
+            .id(1L)
+            .member(firstTestMember)
+            .entranceTestResult(EntranceTestResult.builder()
+                    .id(1L)
+                    .firstTestPassYn(YesNo.YES)
+                    .secondTestPassYn(YesNo.NO)
+                    .build())
+            .build();
+
+    private final Oneseo secondTestOneseo = Oneseo.builder()
+            .id(1L)
+            .member(secondTestMember)
+            .entranceTestResult(EntranceTestResult.builder()
+                    .id(1L)
+                    .firstTestPassYn(YesNo.YES)
+                    .secondTestPassYn(YesNo.YES)
+                    .build())
+            .decidedMajor(Major.SW)
+            .build();
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    private Member buildMember(String name) {
-        return Member.builder()
-                .id(memberId)
-                .name(name)
-                .birth(LocalDate.of(2009, 1, 1))
-                .phoneNumber(phoneNumber)
-                .sex(Sex.MALE)
-                .build();
-    }
-
-    private Oneseo buildFirstTestOneseo(Member member) {
-        return Oneseo.builder()
-                .id(1L)
-                .member(member)
-                .entranceTestResult(EntranceTestResult.builder()
-                        .id(1L)
-                        .firstTestPassYn(YesNo.YES)
-                        .secondTestPassYn(YesNo.NO)
-                        .build())
-                .build();
-    }
-
-    private Oneseo buildSecondTestOneseo(Member member) {
-        return Oneseo.builder()
-                .id(1L)
-                .member(member)
-                .entranceTestResult(EntranceTestResult.builder()
-                        .id(1L)
-                        .firstTestPassYn(YesNo.YES)
-                        .secondTestPassYn(YesNo.YES)
-                        .build())
-                .decidedMajor(Major.SW)
-                .build();
     }
 
     @Nested
@@ -104,12 +106,9 @@ class QueryTestResultServiceTest {
                 @Test
                 @DisplayName("1차 전형 결과를 반환한다")
                 void it_returns_first_test_result() {
-                    Member member = buildMember("홍길동");
-                    Oneseo oneseo = buildFirstTestOneseo(member);
-
                     given(oneseoService.validateFirstTestResultAnnouncement()).willReturn(false);
                     given(oneseoRepository.findByGuardianOrTeacherPhoneNumberAndSubmitCode(phoneNumber, oneseoCode))
-                            .willReturn(Optional.of(oneseo));
+                            .willReturn(Optional.of(firstTestOneseo));
                     doNothing().when(commonCodeService).validateAndDelete(anyLong(), anyString(), anyString(), any());
 
                     FoundTestResultResDto result = queryTestResultService.execute(memberId, code, phoneNumber, oneseoCode, FIRST);
@@ -169,12 +168,9 @@ class QueryTestResultServiceTest {
                 @Test
                 @DisplayName("2차 전형 결과를 반환한다")
                 void it_returns_second_test_result() {
-                    Member member = buildMember("김철수");
-                    Oneseo oneseo = buildSecondTestOneseo(member);
-
                     given(oneseoService.validateSecondTestResultAnnouncement()).willReturn(false);
                     given(oneseoRepository.findByGuardianOrTeacherPhoneNumberAndExaminationNumber(phoneNumber, examinationNumber))
-                            .willReturn(Optional.of(oneseo));
+                            .willReturn(Optional.of(secondTestOneseo));
                     doNothing().when(commonCodeService).validateAndDelete(anyLong(), anyString(), anyString(), any());
 
                     FoundTestResultResDto result = queryTestResultService.execute(memberId, code, phoneNumber, examinationNumber, SECOND);
