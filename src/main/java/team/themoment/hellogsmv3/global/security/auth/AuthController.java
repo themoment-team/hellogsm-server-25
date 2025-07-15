@@ -37,13 +37,13 @@ public class AuthController {
             oAuthAuthenticationService.authenticate(provider, reqDto.code(), request, response);
             return CommonApiResponse.success("인증이 완료되었습니다.");
         } catch (ExpectedException e) {
-            return CommonApiResponse.error(e.getMessage(),HttpStatus.UNAUTHORIZED);
+            return CommonApiResponse.error(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     @GetMapping("/logout")
-    public CommonApiResponse logout(HttpServletRequest req, HttpServletResponse res){
+    public CommonApiResponse logout(HttpServletRequest req, HttpServletResponse res) {
         logoutProcess(req, res, SecurityContextHolder.getContext().getAuthentication());
         return CommonApiResponse.success("로그아웃 되었습니다.");
     }
@@ -55,5 +55,4 @@ public class AuthController {
             throw new ExpectedException("인증 정보가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
     }
-
 }
