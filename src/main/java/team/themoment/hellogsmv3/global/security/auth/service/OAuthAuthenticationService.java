@@ -3,7 +3,7 @@ package team.themoment.hellogsmv3.global.security.auth.service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-    import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -139,7 +139,6 @@ public class OAuthAuthenticationService {
         ));
         
         Collection<GrantedAuthority> authorities = createAuthorities(role);
-        
         return new DefaultOAuth2User(authorities, attributes, nameAttribute);
     }
 
@@ -154,7 +153,6 @@ public class OAuthAuthenticationService {
 
     private void setSecurityContext(HttpServletRequest request, Authentication authentication) {
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        
         HttpSession session = request.getSession(true);
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
