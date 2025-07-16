@@ -30,11 +30,10 @@ public class AuthController {
     public CommonApiResponse authenticateWithOAuth(
             @PathVariable String provider,
             @RequestBody @Valid OAuthCodeReqDto reqDto,
-            HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletRequest request
     ) {
         try {
-            oAuthAuthenticationService.authenticate(provider, reqDto.code(), request, response);
+            oAuthAuthenticationService.execute(provider, reqDto.code(), request);
             return CommonApiResponse.success("인증이 완료되었습니다.");
         } catch (ExpectedException e) {
             return CommonApiResponse.error(e.getMessage(), HttpStatus.UNAUTHORIZED);
