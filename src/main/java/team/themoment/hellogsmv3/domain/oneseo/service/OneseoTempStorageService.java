@@ -98,7 +98,7 @@ public class OneseoTempStorageService {
                 .volunteerTime(middleSchoolAchievement.volunteerTime())
                 .liberalSystem(middleSchoolAchievement.liberalSystem())
                 .freeSemester(middleSchoolAchievement.freeSemester())
-                .gedTotalScore(middleSchoolAchievement.gedAvgScore())
+                .gedAvgScore(middleSchoolAchievement.gedAvgScore())
                 .build();
     }
 

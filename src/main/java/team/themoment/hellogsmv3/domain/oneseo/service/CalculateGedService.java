@@ -32,7 +32,7 @@ public class CalculateGedService {
         BigDecimal averageScore = dto.gedAvgScore();
 
         if (averageScore.compareTo(BigDecimal.valueOf(60)) < 0 || averageScore.compareTo(BigDecimal.valueOf(100)) > 0)
-            throw new ExpectedException("검정고시 총점은 60점 이상, 100점 이하여야 합니다.", HttpStatus.BAD_REQUEST);
+            throw new ExpectedException("검정고시 평균점은 60점 이상, 100점 이하여야 합니다.", HttpStatus.BAD_REQUEST);
 
 
         // 검정고시 교과 성적 환산 점수 (총점: 240점)
