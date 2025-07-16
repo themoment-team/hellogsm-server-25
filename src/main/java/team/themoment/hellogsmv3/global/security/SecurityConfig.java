@@ -1,7 +1,6 @@
 package team.themoment.hellogsmv3.global.security;
 
 import jakarta.servlet.Filter;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,7 +61,6 @@ public class SecurityConfig {
 
             basicSetting(http);
             cors(http);
-            oauth2Login(http);
             exceptionHandling(http);
             authorizeHttpRequests(http);
             addLoggingFilter(http);
@@ -98,50 +96,6 @@ public class SecurityConfig {
     private void cors(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
-    }
-
-    // TODO 추후 제거
-    private void oauth2Login(HttpSecurity http) throws Exception {
-        // OAuth2 설정으로 인증 시작, 성공 시 Authorization Code를 포함해서 리다이렉트
-        http.oauth2Login(oauth2Login ->
-                oauth2Login
-                        .authorizationEndpoint(authorizationEndpointConfig ->
-                                authorizationEndpointConfig.baseUri(authEnv.loginEndPointBaseUri()))
-                        .loginProcessingUrl(authEnv.loginProcessingUri())
-                        .successHandler((request, response, authentication) -> {
-                            // 성공 시: Authorization Code를 추출해서 리다이렉트
-                            String code = request.getParameter("code");
-                            String state = request.getParameter("state");
-                            String provider = extractProviderFromRequest(request);
-
-                            String redirectUrl = "http://localhost:3000/auth/test" +
-                                    "?code=" + (code != null ? code : "none") +
-                                    "&provider=" + provider +
-                                    "&state=" + (state != null ? state : "none") +
-                                    "&status=success";
-
-                            try {
-                                response.sendRedirect(redirectUrl);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            try {
-                                response.sendRedirect("http://localhost:3000/auth/error?error=" + exception.getMessage());
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-        );
-    }
-
-    // TODO 추후 제거
-    private String extractProviderFromRequest(HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        if (requestURI.contains("/google")) return "google";
-        if (requestURI.contains("/kakao")) return "kakao";
-        return "unknown";
     }
 
     private void exceptionHandling(HttpSecurity http) throws Exception {
