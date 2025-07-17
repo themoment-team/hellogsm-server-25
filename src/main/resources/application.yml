@@ -91,13 +91,7 @@ spring:
       max-request-size: 5MB
 
 auth:
-  redirect-url:
-    hg-student: http://localhost:8080
-    hg-admin: http://localhost:8080/admin
-    dry-run: http://localhost:3000
-    loginEndPointBaseUri: /auth/v3/oauth2/authorization
-    loginProcessingUri: /login/oauth2/code/*
-    allowed-origins:
+  allowed-origins:
       - '*'
 
 schedule:
