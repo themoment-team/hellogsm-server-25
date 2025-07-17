@@ -39,9 +39,9 @@ public class UploadExcelService {
         Workbook workbook = createWorkbookFromFile(file);
         Sheet sheet = workbook.getSheetAt(0);
         // 0번쨰 행은 헤더
-        for(int i = 1;i<sheet.getLastRowNum();i++) {
+        for(int i = 1;i<=sheet.getLastRowNum();i++) {
             Row row = sheet.getRow(i);
-            if(row == null) break;
+            if(row == null) continue;
             String examinationNumber = readCell(row, CellIndex.EXAMINATION_NUMBER);
             BigDecimal competencyEvaluationScore = readScoreCell(row, CellIndex.COMPETENCY_EVALUATION_SCORE);
             BigDecimal interviewScore = readScoreCell(row, CellIndex.INTERVIEW_SCORE);
