@@ -2,10 +2,7 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,6 +77,8 @@ public class UploadExcelService {
     private String readCell(Row row, CellIndex cellIndex){
         if (row.getCell(cellIndex.getIndex()) == null) {
             throw new ExpectedException("엑셀 파일에 필수 정보가 누락되었습니다.", HttpStatus.BAD_REQUEST);
+        }else if(row.getCell(cellIndex.getIndex()).getCellType() != CellType.STRING){
+            throw new ExpectedException("엑셀 파일의 셀 타입이 잘못되었습니다. 문자열 타입이어야 합니다.", HttpStatus.BAD_REQUEST);
         }
         return row.getCell(cellIndex.getIndex()).getStringCellValue();
     }
