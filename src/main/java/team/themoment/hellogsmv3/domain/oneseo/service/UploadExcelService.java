@@ -72,7 +72,11 @@ public class UploadExcelService {
     }
     private BigDecimal readScoreCell(Row row, CellIndex cellIndex) {
         String cellValue = readCell(row, cellIndex);
-        return (new BigDecimal(cellValue)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal score = new BigDecimal(cellValue).setScale(2, RoundingMode.HALF_UP);
+        if(score.compareTo(BigDecimal.ZERO) < 0 || score.compareTo(new BigDecimal("100")) > 0) {
+            throw new ExpectedException("점수는 0 이상 100 이하의 값이어야 합니다.", HttpStatus.BAD_REQUEST);
+        }
+        return score;
     }
     private String readCell(Row row, CellIndex cellIndex){
         if (row.getCell(cellIndex.getIndex()) == null) {
