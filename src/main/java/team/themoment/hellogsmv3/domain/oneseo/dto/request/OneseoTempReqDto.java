@@ -4,13 +4,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import team.themoment.hellogsmv3.domain.oneseo.annotation.ValidDesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 
 import java.time.LocalDate;
-
+@Builder
 public record OneseoTempReqDto(
         @Schema(description = "보호자 이름", defaultValue = "김보호")
         String guardianName,
