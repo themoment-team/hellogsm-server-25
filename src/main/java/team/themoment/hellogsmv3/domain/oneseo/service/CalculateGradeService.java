@@ -302,6 +302,13 @@ public class CalculateGradeService {
 
     private void validFreeSemester(String liberalSystem, String freeSemester) {
         List<String> validSemesterList = List.of("", "1-1", "1-2", "2-1", "2-2", "3-1", "3-2");
+        /*학년제일경우 freeSemester는 null임
+        * 학기제일 경우 freeSemester는 "1-1", "1-2", "2-1", "2-2", "3-1", "3-2" 중 하나임
+        * 시행한 학기제가 만약 `입력 받는 성적` 외부에 있다면 공백임
+        * ex) 졸업자는 2,3학년 성적만 받는데, 1-1 또는 1-2에 자유학기제를 시행한 경우
+        *
+        * + 2025년도 코드부터는 freeSemester를 더 이상 계산을 위해 사용하지 않으므로 BE에서 따로 사용/처리하지는 않음.
+        */
 
         // liberalSystem가 null이거나 자유학기제 or 자유학년제가 아니라면 예외 발생
         if (liberalSystem == null || (!liberalSystem.equals("자유학기제") && !liberalSystem.equals("자유학년제")))
