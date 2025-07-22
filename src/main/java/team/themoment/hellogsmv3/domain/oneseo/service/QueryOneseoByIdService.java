@@ -124,7 +124,7 @@ public class QueryOneseoByIdService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
     }
 

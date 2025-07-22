@@ -62,7 +62,7 @@ class CalculateGedServiceTest {
             @DisplayName("성적을 계산하고 결과를 저장한다")
             void it_calculates_and_saves_results() {
                 calcDto = MiddleSchoolAchievementCalcDto.builder()
-                        .gedTotalScore(BigDecimal.valueOf(480))
+                        .gedAvgScore(BigDecimal.valueOf(80))
                         .build();
 
                 calculateGedService.execute(calcDto, oneseo, GED);
@@ -74,8 +74,9 @@ class CalculateGedServiceTest {
             @Test
             @DisplayName("graduationType이 GED라면 올바른 내신 성적을 계산하고 결과를 저장한다")
             void it_ged_calculates_and_save_results() {
+
                 calcDto = MiddleSchoolAchievementCalcDto.builder()
-                        .gedTotalScore(BigDecimal.valueOf(536.91))
+                        .gedAvgScore(BigDecimal.valueOf(89.485))
                         .build();
 
                 calculateGedService.execute(calcDto, oneseo, GED);
@@ -107,7 +108,7 @@ class CalculateGedServiceTest {
             @DisplayName("예외를 던진다")
             void it_throw_exception() {
                 calcDto = MiddleSchoolAchievementCalcDto.builder()
-                        .gedTotalScore(BigDecimal.valueOf(480))
+                        .gedAvgScore(BigDecimal.valueOf(90))
                         .build();
 
                 IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () ->

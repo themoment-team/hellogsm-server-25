@@ -74,7 +74,7 @@ public class OneseoTempStorageServiceTest {
                         .volunteerTime(List.of(7, 3, 4))
                         .liberalSystem("자유학년제")
                         .freeSemester(null)
-                        .gedTotalScore(null)
+                        .gedAvgScore(null)
                         .build())
                 .firstDesiredMajor(Major.SW)
                 .secondDesiredMajor(Major.AI)
@@ -144,7 +144,7 @@ public class OneseoTempStorageServiceTest {
                     assertEquals(reqDto.middleSchoolAchievement().volunteerTime(), resDto.middleSchoolAchievement().volunteerTime());
                     assertEquals(reqDto.middleSchoolAchievement().liberalSystem(), resDto.middleSchoolAchievement().liberalSystem());
                     assertEquals(reqDto.middleSchoolAchievement().freeSemester(), resDto.middleSchoolAchievement().freeSemester());
-                    assertEquals(reqDto.middleSchoolAchievement().gedTotalScore(), resDto.middleSchoolAchievement().gedTotalScore());
+                    assertEquals(reqDto.middleSchoolAchievement().gedAvgScore(), resDto.middleSchoolAchievement().gedAvgScore());
                     assertEquals(step, resDto.step());
                 }
             }

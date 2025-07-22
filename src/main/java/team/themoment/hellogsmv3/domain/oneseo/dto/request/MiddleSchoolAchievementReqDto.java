@@ -41,7 +41,7 @@ public record MiddleSchoolAchievementReqDto(
         String liberalSystem,
         @Schema(description = "자유학기제 학기", nullable = true, defaultValue = "null", allowableValues = {"1-1", "1-2", "2-1", "2-2", "3-1", "3-2"})
         String freeSemester,
-        @Schema(description = "검정고시 전과목 득점 합계", nullable = true, defaultValue = "null")
-        BigDecimal gedTotalScore
+        @Schema(description = "검정고시 전과목 득점 평균", nullable = true, defaultValue = "null")
+        BigDecimal gedAvgScore
 ) {
 }

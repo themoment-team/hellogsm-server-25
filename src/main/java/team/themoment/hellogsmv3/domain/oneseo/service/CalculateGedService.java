@@ -28,14 +28,12 @@ public class CalculateGedService {
         if (!graduationType.equals(GED))
             throw new IllegalArgumentException("올바르지 않은 graduationType입니다.");
 
-        BigDecimal gedTotalScore = dto.gedTotalScore();
-        BigDecimal gedMaxScore = BigDecimal.valueOf(600);
-
-        if (gedTotalScore.compareTo(BigDecimal.ZERO) < 0 || gedTotalScore.compareTo(gedMaxScore) > 0)
-            throw new ExpectedException("검정고시 총점은 0점 이상, 600점 이하여야 합니다.", HttpStatus.BAD_REQUEST);
-
         // 검정고시 평균 점수
-        BigDecimal averageScore = calcGedAvgScore(gedTotalScore, gedMaxScore);
+        BigDecimal averageScore = dto.gedAvgScore();
+
+        if (averageScore.compareTo(BigDecimal.valueOf(60)) < 0 || averageScore.compareTo(BigDecimal.valueOf(100)) > 0)
+            throw new ExpectedException("검정고시 평균점은 60점 이상, 100점 이하여야 합니다.", HttpStatus.BAD_REQUEST);
+
 
         // 검정고시 교과 성적 환산 점수 (총점: 240점)
         BigDecimal gedTotalSubjectsScore = calcGedTotalSubjectsScore(averageScore);
@@ -90,16 +88,6 @@ public class CalculateGedService {
                 .volunteerScore(gedVolunteerScore)
                 .totalScore(totalScore)
                 .build();
-    }
-
-    private static BigDecimal calcGedAvgScore(BigDecimal gedTotalScore, BigDecimal gedMaxScore) {
-        BigDecimal avgScore = gedTotalScore.divide(gedMaxScore, 5, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
-
-        // 검정고시 평균 점수가 0점 미만이라면 0점 처리
-        return avgScore.compareTo(BigDecimal.ZERO) < 0
-                ? BigDecimal.ZERO
-                : avgScore;
     }
 
     private BigDecimal calcGedTotalSubjectsScore(BigDecimal averageScore) {
