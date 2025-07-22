@@ -2,9 +2,6 @@ package team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Google User Info Response DTO
- */
 public record GoogleUserInfoResDto(
     @JsonProperty("id")
     String id,
