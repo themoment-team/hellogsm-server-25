@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
@@ -25,6 +26,7 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import java.util.List;
 
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.buildCalcDtoWithFillEmpty;
 import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.isValidMiddleSchoolInfo;
 
 @Service
@@ -160,7 +162,7 @@ public class CreateOneseoService {
     }
 
     private CalculatedScoreResDto calculateMiddleSchoolAchievement(GraduationType graduationType, MiddleSchoolAchievement middleSchoolAchievement, Oneseo oneseo) {
-        MiddleSchoolAchievementReqDto data = MiddleSchoolAchievementReqDto.builder()
+        MiddleSchoolAchievementCalcDto data = MiddleSchoolAchievementCalcDto.builder()
                 .achievement1_2(middleSchoolAchievement.getAchievement1_2())
                 .achievement2_1(middleSchoolAchievement.getAchievement2_1())
                 .achievement2_2(middleSchoolAchievement.getAchievement2_2())
@@ -219,26 +221,30 @@ public class CreateOneseoService {
     }
 
     private MiddleSchoolAchievement buildMiddleSchoolAchievement(OneseoReqDto reqDto, Oneseo oneseo) {
+        MiddleSchoolAchievement.MiddleSchoolAchievementBuilder builder = MiddleSchoolAchievement.builder();
         MiddleSchoolAchievementReqDto middleSchoolAchievement = reqDto.middleSchoolAchievement();
+        //calcDto를 통해 성적복사 처리
+        MiddleSchoolAchievementCalcDto calcDto = buildCalcDtoWithFillEmpty(reqDto.middleSchoolAchievement(),reqDto.graduationType());
 
-        return MiddleSchoolAchievement.builder()
+        builder
                 .oneseo(oneseo)
-                .achievement1_2(validationGeneralAchievement(middleSchoolAchievement.achievement1_2()))
-                .achievement2_1(validationGeneralAchievement(middleSchoolAchievement.achievement2_1()))
-                .achievement2_2(validationGeneralAchievement(middleSchoolAchievement.achievement2_2()))
-                .achievement3_1(validationGeneralAchievement(middleSchoolAchievement.achievement3_1()))
-                .achievement3_2(validationGeneralAchievement(middleSchoolAchievement.achievement3_2()))
+                .achievement1_2(calcDto.achievement1_2())
+                .achievement2_1(calcDto.achievement2_1())
+                .achievement2_2(calcDto.achievement2_2())
+                .achievement3_1(calcDto.achievement3_1())
+                .achievement3_2(calcDto.achievement3_2())
                 .generalSubjects(middleSchoolAchievement.generalSubjects())
                 .newSubjects(middleSchoolAchievement.newSubjects())
-                .artsPhysicalAchievement(validationArtsPhysicalAchievement(middleSchoolAchievement.artsPhysicalAchievement()))
+                .artsPhysicalAchievement(calcDto.artsPhysicalAchievement())
                 .artsPhysicalSubjects(middleSchoolAchievement.artsPhysicalSubjects())
-                .absentDays(middleSchoolAchievement.absentDays())
-                .attendanceDays(middleSchoolAchievement.attendanceDays())
-                .volunteerTime(middleSchoolAchievement.volunteerTime())
-                .liberalSystem(middleSchoolAchievement.liberalSystem())
-                .freeSemester(middleSchoolAchievement.freeSemester())
-                .gedTotalScore(middleSchoolAchievement.gedTotalScore())
-                .build();
+                .absentDays(calcDto.absentDays())
+                .attendanceDays(calcDto.attendanceDays())
+                .volunteerTime(calcDto.volunteerTime())
+                .liberalSystem(calcDto.liberalSystem())
+                .freeSemester(calcDto.freeSemester())
+                .gedTotalScore(calcDto.gedTotalScore());
+
+        return builder.build();
     }
 
     private void isExistOneseo(Member currentMember) {

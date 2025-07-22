@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
 import team.themoment.hellogsmv3.domain.common.operation.repo.OperationTestResultRepository;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
@@ -17,7 +19,6 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,6 +51,61 @@ public class OneseoService {
 
             oneseo.setOneseoSubmitCode(submitCode);
         }
+    }
+
+    public static MiddleSchoolAchievementCalcDto buildCalcDtoWithFillEmpty(MiddleSchoolAchievementReqDto dto,GraduationType graduationType){
+        MiddleSchoolAchievementCalcDto.MiddleSchoolAchievementCalcDtoBuilder builder = MiddleSchoolAchievementCalcDto.builder();
+        List<Integer> tmpAchievement1_2 = dto.achievement1_2();
+        List<Integer> tmpAchievement2_1 = dto.achievement2_1();
+        if(graduationType == GraduationType.GED) {
+            builder
+                    .gedTotalScore(dto.gedTotalScore());
+            return builder.build();
+        }
+        // 졸업예정자 & 졸업자는 없는 성적을 복사하여 사용
+        // 자유학기제는 1-1,1-2,2-1 에서만 시행 가능하므로 나머지는 성적이 있는것으로 간주
+        if(graduationType == GraduationType.CANDIDATE && dto.achievement1_2() == null){
+            if(dto.achievement1_1() == null){
+                tmpAchievement1_2 = dto.achievement2_2();
+            } else {
+                tmpAchievement1_2 = dto.achievement1_1();
+            }
+        }
+        if(tmpAchievement2_1 == null){
+            tmpAchievement2_1 = dto.achievement2_2();
+        }
+        builder
+                .achievement1_2(validationGeneralAchievement(tmpAchievement1_2))
+                .achievement2_1(validationGeneralAchievement(tmpAchievement2_1))
+                .achievement2_2(validationGeneralAchievement(dto.achievement2_2()))
+                .achievement3_1(validationGeneralAchievement(dto.achievement3_1()))
+                .achievement3_2(validationGeneralAchievement(dto.achievement3_2()))
+                .artsPhysicalAchievement(validationArtsPhysicalAchievement(dto.artsPhysicalAchievement()))
+                .absentDays(dto.absentDays())
+                .attendanceDays(dto.attendanceDays())
+                .volunteerTime(dto.volunteerTime())
+                .liberalSystem(dto.liberalSystem())
+                .freeSemester(dto.freeSemester())
+                .gedTotalScore(dto.gedTotalScore());
+        return builder.build();
+    }
+    private static List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements)  {
+        if (achievements == null) return null;
+
+        achievements.forEach(achievement -> {
+            if (achievement != 0 && (achievement > 5 || achievement < 3)) throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+        });
+
+        return achievements;
+    }
+    private static List<Integer> validationGeneralAchievement(List<Integer> achievements)  {
+        if (achievements == null) return null;
+
+        achievements.forEach(achievement -> {
+            if (achievement > 5 || achievement < 0) throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+        });
+
+        return achievements;
     }
 
     public static Integer calcAbsentDaysCount(List<Integer> absentDays, List<Integer> attendanceDays) {

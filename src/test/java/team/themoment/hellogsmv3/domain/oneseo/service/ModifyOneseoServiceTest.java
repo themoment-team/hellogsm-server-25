@@ -8,6 +8,7 @@ import org.mockito.*;
 import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.*;
@@ -21,7 +22,6 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.ScreeningChangeHistoryRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -184,7 +184,7 @@ class ModifyOneseoServiceTest {
                 verify(oneseoRepository).save(oneseoCaptor.capture());
                 verify(oneseoPrivacyDetailRepository).save(oneseoPrivacyDetailCaptor.capture());
                 verify(middleSchoolAchievementRepository).save(middleSchoolAchievementCaptor.capture());
-                verify(calculateGradeService).execute(any(MiddleSchoolAchievementReqDto.class), eq(oneseo), eq(CANDIDATE));
+                verify(calculateGradeService).execute(any(MiddleSchoolAchievementCalcDto.class), eq(oneseo), eq(CANDIDATE));
 
                 Oneseo capturedOneseo = oneseoCaptor.getValue();
                 OneseoPrivacyDetail capturedPrivacyDetail = oneseoPrivacyDetailCaptor.getValue();
@@ -260,7 +260,7 @@ class ModifyOneseoServiceTest {
                 ArgumentCaptor<WantedScreeningChangeHistory> screeningChangeHistoryArgumentCaptor = ArgumentCaptor.forClass(WantedScreeningChangeHistory.class);
 
                 verify(screeningChangeHistoryRepository).save(screeningChangeHistoryArgumentCaptor.capture());
-                verify(calculateGedService).execute(any(MiddleSchoolAchievementReqDto.class), eq(oneseo), eq(GED));
+                verify(calculateGedService).execute(any(MiddleSchoolAchievementCalcDto.class), eq(oneseo), eq(GED));
 
                 WantedScreeningChangeHistory capturedScreeningChangeHistory = screeningChangeHistoryArgumentCaptor.getValue();
 
