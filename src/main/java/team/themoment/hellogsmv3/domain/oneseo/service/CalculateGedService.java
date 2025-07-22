@@ -3,7 +3,7 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
@@ -23,7 +23,7 @@ public class CalculateGedService {
     private final EntranceTestResultRepository entranceTestResultRepository;
     private final EntranceTestFactorsDetailRepository entranceTestFactorsDetailRepository;
 
-    public CalculatedScoreResDto execute(MiddleSchoolAchievementReqDto dto, Oneseo oneseo, GraduationType graduationType) {
+    public CalculatedScoreResDto execute(MiddleSchoolAchievementCalcDto dto, Oneseo oneseo, GraduationType graduationType) {
 
         if (!graduationType.equals(GED))
             throw new IllegalArgumentException("올바르지 않은 graduationType입니다.");

@@ -7,9 +7,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
+/**  중학교 성적 Request DTO
+ *   Request 용도로만 사용되어야 하고, 아직 성적이 복사되지 않은 상태의 DTO입니다.
+ */
 public record MiddleSchoolAchievementReqDto(
-
-        @Schema(description = "1학년 2학기 일반교과 성취점수", nullable = true, defaultValue = "null")
+        @Schema(description = "1학년 1학기 일반교과 성취점수", nullable = true, defaultValue = "null")
+        List<Integer> achievement1_1,
+        @Schema(description = "1학년 2학기 일반교과 성취점수", nullable = true, defaultValue = "[4, 5, 3, 5, 4, 5, 3, 5, 2]")
         List<Integer> achievement1_2,
         @Schema(description = "2학년 1학기 일반교과 성취점수", nullable = true, defaultValue = "[4, 5, 3, 5, 4, 5, 3, 5, 2]")
         List<Integer> achievement2_1,
