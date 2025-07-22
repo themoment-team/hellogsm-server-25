@@ -59,7 +59,7 @@ public class OneseoService {
         List<Integer> tmpAchievement2_1 = dto.achievement2_1();
         if(graduationType == GraduationType.GED) {
             builder
-                    .gedTotalScore(dto.gedTotalScore());
+                    .gedAvgScore(dto.gedAvgScore());
             return builder.build();
         }
         // 졸업예정자 & 졸업자는 없는 성적을 복사하여 사용
@@ -86,7 +86,7 @@ public class OneseoService {
                 .volunteerTime(dto.volunteerTime())
                 .liberalSystem(dto.liberalSystem())
                 .freeSemester(dto.freeSemester())
-                .gedTotalScore(dto.gedTotalScore());
+                .gedAvgScore(dto.gedAvgScore());
         return builder.build();
     }
     private static List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements)  {

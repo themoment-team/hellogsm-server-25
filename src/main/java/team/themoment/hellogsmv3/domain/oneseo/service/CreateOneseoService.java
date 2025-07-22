@@ -242,7 +242,7 @@ public class CreateOneseoService {
                 .volunteerTime(calcDto.volunteerTime())
                 .liberalSystem(calcDto.liberalSystem())
                 .freeSemester(calcDto.freeSemester())
-                .gedTotalScore(calcDto.gedTotalScore());
+                .gedAvgScore(calcDto.gedAvgScore());
 
         return builder.build();
     }
@@ -251,26 +251,6 @@ public class CreateOneseoService {
         if (oneseoRepository.existsByMember(currentMember)) {
             throw new ExpectedException("이미 원서가 존재합니다.", HttpStatus.BAD_REQUEST);
         }
-    }
-
-    private List<Integer> validationGeneralAchievement(List<Integer> achievements)  {
-        if (achievements == null) return null;
-
-        achievements.forEach(achievement -> {
-            if (achievement > 5 || achievement < 0) throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
-        });
-
-        return achievements;
-    }
-
-    private List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements)  {
-        if (achievements == null) return null;
-
-        achievements.forEach(achievement -> {
-            if (achievement != 0 && (achievement > 5 || achievement < 3)) throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
-        });
-
-        return achievements;
     }
 
 }
