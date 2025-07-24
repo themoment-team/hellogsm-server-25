@@ -3,7 +3,6 @@ package team.themoment.hellogsmv3.global.security.auth.service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +10,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -20,21 +21,28 @@ import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.repo.MemberRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.response.GoogleTokenResDto;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.response.GoogleUserInfoResDto;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.response.KakaoTokenResDto;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.response.KakaoUserInfoResDto;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.oauth.google.GoogleOAuth2Client;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.oauth.google.GoogleUserInfoClient;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.oauth.kakao.KakaoOAuth2Client;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.oauth.kakao.KakaoUserInfoClient;
-import feign.FeignException;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OAuthAuthenticationService {
 
+    private final ClientRegistrationRepository clientRegistrationRepository;
+    private final GoogleOAuth2Client googleOAuth2Client;
     private final GoogleUserInfoClient googleUserInfoClient;
+    private final KakaoOAuth2Client kakaoOAuth2Client;
     private final KakaoUserInfoClient kakaoUserInfoClient;
     private final MemberRepository memberRepository;
 
@@ -42,30 +50,60 @@ public class OAuthAuthenticationService {
     private static final String GOOGLE_PROVIDER = "google";
     private static final String KAKAO_PROVIDER = "kakao";
 
-    public void execute(String provider, String accessToken, HttpServletRequest request) {
+    public void execute(String provider, String code, HttpServletRequest request) {
+        String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
+        
         try {
             switch (provider.toLowerCase()) {
-                case GOOGLE_PROVIDER -> authenticateWithGoogle(accessToken, request);
-                case KAKAO_PROVIDER -> authenticateWithKakao(accessToken, request);
+                case GOOGLE_PROVIDER -> authenticateWithGoogle(decodedCode, request);
+                case KAKAO_PROVIDER -> authenticateWithKakao(decodedCode, request);
                 default -> throw new ExpectedException("지원하지 않는 OAuth Provider입니다: " + provider, HttpStatus.BAD_REQUEST);
             }
-        } catch (FeignException e) {
-            log.error("외부 API 통신 중 에러가 발생했습니다. provider: {}, token: {}, status: {}, body: {}", provider, accessToken, e.status(), e.contentUTF8());
-            throw new ExpectedException("외부 API 통신 중 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (ExpectedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ExpectedException("OAuth 인증 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void authenticateWithGoogle(String accessToken, HttpServletRequest request) {
-        GoogleUserInfoResDto userInfo = googleUserInfoClient.getUserInfo(TOKEN_PREFIX + accessToken);
+    private void authenticateWithGoogle(String code, HttpServletRequest request) {
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(GOOGLE_PROVIDER);
+        GoogleTokenResDto tokenResponse;
+        try {
+            tokenResponse = googleOAuth2Client.exchangeCodeForToken(
+                    clientRegistration.getAuthorizationGrantType().getValue(),
+                    clientRegistration.getClientId(),
+                    clientRegistration.getClientSecret(),
+                    code,
+                    clientRegistration.getRedirectUri()
+            );
+        } catch (Exception e) {
+            throw new ExpectedException("Google OAuth 토큰 교환에 실패했습니다", HttpStatus.UNAUTHORIZED);
+        }
+        GoogleUserInfoResDto userInfo = googleUserInfoClient.getUserInfo(TOKEN_PREFIX + tokenResponse.accessToken());
         completeAuthentication(GOOGLE_PROVIDER, userInfo.email(), AuthReferrerType.GOOGLE, request);
     }
 
-    private void authenticateWithKakao(String accessToken, HttpServletRequest request) {
-        KakaoUserInfoResDto userInfo = kakaoUserInfoClient.getUserInfo(TOKEN_PREFIX + accessToken);
+    private void authenticateWithKakao(String code, HttpServletRequest request) {
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(KAKAO_PROVIDER);
+
+        KakaoTokenResDto tokenResponse;
+        try {
+            tokenResponse = kakaoOAuth2Client.exchangeCodeForToken(
+                    clientRegistration.getAuthorizationGrantType().getValue(),
+                    clientRegistration.getClientId(),
+                    clientRegistration.getClientSecret(),
+                    code,
+                    clientRegistration.getRedirectUri()
+            );
+        } catch (Exception e) {
+            throw new ExpectedException("Kakao OAuth 토큰 교환에 실패했습니다", HttpStatus.UNAUTHORIZED);
+        }
+        KakaoUserInfoResDto userInfo = kakaoUserInfoClient.getUserInfo(TOKEN_PREFIX + tokenResponse.accessToken());
         completeAuthentication(KAKAO_PROVIDER, userInfo.getEmail(), AuthReferrerType.KAKAO, request);
     }
 
-    private void completeAuthentication(String provider, String providerId,
+    private void completeAuthentication(String provider, String providerId, 
                                         AuthReferrerType authReferrerType, HttpServletRequest request) {
         Member member = getUser(providerId, authReferrerType);
         OAuth2User oauth2User = createOAuth2User(member, provider, providerId);
