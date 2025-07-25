@@ -21,6 +21,7 @@ import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.CANDIDATE;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
@@ -109,7 +110,11 @@ public class OneseoService {
     }
 
     public static Integer calcAbsentDaysCount(List<Integer> absentDays, List<Integer> attendanceDays) {
-        if (absentDays == null || attendanceDays == null || absentDays.contains(null) || attendanceDays.contains(null)) {
+        if (absentDays == null || attendanceDays == null) {
+            return null;
+        }
+
+        if (absentDays.stream().anyMatch(Objects::isNull) || attendanceDays.stream().anyMatch(Objects::isNull)) {
             return null;
         }
 
