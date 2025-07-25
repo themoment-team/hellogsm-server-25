@@ -19,8 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -119,7 +118,7 @@ public class OneseoServiceTest {
             @DisplayName("null 값을 반환한다.")
             void it_returns_oneseo() {
                 Integer absentDaysCount = OneseoService.calcAbsentDaysCount(nullAbsentDays, nullAttendanceDays);
-                assertEquals(absentDaysCount, null);
+                assertNull(absentDaysCount);
             }
         }
 
@@ -134,7 +133,7 @@ public class OneseoServiceTest {
             @DisplayName("null 값을 반환한다.")
             void it_returns_oneseo() {
                 Integer absentDaysCount = OneseoService.calcAbsentDaysCount(nullInAbsentDays, nullInAttendanceDays);
-                assertEquals(absentDaysCount, null);
+                assertNull(absentDaysCount);
             }
         }
     }
