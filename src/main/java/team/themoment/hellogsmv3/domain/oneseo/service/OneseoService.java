@@ -109,7 +109,7 @@ public class OneseoService {
     }
 
     public static Integer calcAbsentDaysCount(List<Integer> absentDays, List<Integer> attendanceDays) {
-        if (absentDays == null || attendanceDays == null) {
+        if (absentDays == null || attendanceDays == null || absentDays.contains(null) || attendanceDays.contains(null)) {
             return null;
         }
 
