@@ -6,6 +6,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.SecondTestResultDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
@@ -13,6 +15,11 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,29 +42,57 @@ public class UploadExcelService {
     public void execute(MultipartFile file) {
         Workbook workbook = createWorkbookFromFile(file);
         Sheet sheet = workbook.getSheetAt(0);
+        Map<String,SecondTestResultDto> excelResults = getExcelTestResult(sheet);
+
+        Set<String> examinationNumberToProcess = excelResults.keySet();
+        Map<String, EntranceTestResult> queryResult = oneseoRepository.findEntranceTestResultByExaminationNumbersIn(examinationNumberToProcess.stream().toList());
+
+        validateNotFoundExaminationNumbers(examinationNumberToProcess, queryResult.keySet());
+
+        saveAllEntranceTestResults(queryResult, excelResults);
+    }
+
+    private Map<String,SecondTestResultDto> getExcelTestResult(Sheet sheet){
+        Map<String,SecondTestResultDto> excelResults = new HashMap<>();
+        Set<String> seenExaminationNumbers = new HashSet<>();
+        Set<String> duplicateExaminationNumbers = new HashSet<>();
         // 0번쨰 행은 헤더
         for(int i = 1;i<=sheet.getLastRowNum();i++) {
             Row row = sheet.getRow(i);
             if(row == null) continue;
+
             String examinationNumber = readCell(row, CellIndex.EXAMINATION_NUMBER);
             BigDecimal competencyEvaluationScore = readScoreCell(row, CellIndex.COMPETENCY_EVALUATION_SCORE);
             BigDecimal interviewScore = readScoreCell(row, CellIndex.INTERVIEW_SCORE);
-            saveSecondTestResult(examinationNumber, competencyEvaluationScore, interviewScore);
+
+            if(!seenExaminationNumbers.add(examinationNumber)){
+                duplicateExaminationNumbers.add(examinationNumber);
+            }
+
+            excelResults.put(examinationNumber, new SecondTestResultDto(competencyEvaluationScore, interviewScore));
+        }
+        if(!duplicateExaminationNumbers.isEmpty()){
+            throw new ExpectedException("다음 수험번호가 중복되었습니다: " + String.join(", ", duplicateExaminationNumbers), HttpStatus.BAD_REQUEST);
+        }
+        return excelResults;
+    }
+
+    private void validateNotFoundExaminationNumbers(Set<String> expected,Set<String> found){
+        Set<String> notFoundExaminationNumbers = expected.stream()
+                .filter(examinationNumber -> !found.contains(examinationNumber))
+                .collect(Collectors.toSet());
+        if (!notFoundExaminationNumbers.isEmpty()) {
+            throw new ExpectedException("다음 수험번호에 대한 응시결과(원서)가 존재하지 않습니다: " + String.join(", ", notFoundExaminationNumbers), HttpStatus.NOT_FOUND);
         }
     }
 
-    private void saveSecondTestResult(String examinationNumber, BigDecimal competencyEvaluationScore, BigDecimal interviewScore) {
-        oneseoRepository.findEntranceTestResultByExaminationNumber(examinationNumber)
-                .ifPresentOrElse(
-                        entranceTestResult -> {
-                            entranceTestResult.modifyInterviewScore(interviewScore);
-                            entranceTestResult.modifyCompetencyEvaluationScore(competencyEvaluationScore);
-                            entranceTestResultRepository.save(entranceTestResult);
-                        },
-                        () -> {
-                            throw new ExpectedException("해당 수험번호에 대한 응시결과(원서)가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
-                        }
-                );
+    private void saveAllEntranceTestResults(Map<String, EntranceTestResult> resultToModify,
+                                            Map<String, SecondTestResultDto> excelResults) {
+        resultToModify.forEach((examinationNumber, entranceTestResult) -> {
+            entranceTestResult.modifyCompetencyEvaluationScore(excelResults.get(examinationNumber).competencyEvaluationScore());
+            entranceTestResult.modifyInterviewScore(excelResults.get(examinationNumber).interviewScore());
+        });
+        entranceTestResultRepository.saveAll(resultToModify.values());
     }
 
     private Workbook createWorkbookFromFile(MultipartFile file){

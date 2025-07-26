@@ -13,6 +13,7 @@ import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResD
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CustomOneseoRepository {
@@ -37,5 +38,5 @@ public interface CustomOneseoRepository {
     List<Oneseo> findAllByScreeningWithAllDetails(Screening screening);
     List<Oneseo> findAllFailedWithAllDetails();
 
-    Optional<EntranceTestResult> findEntranceTestResultByExaminationNumber(String examinationNumber);
+    Map<String,EntranceTestResult> findEntranceTestResultByExaminationNumbersIn(List<String> examinationNumbers);
 }

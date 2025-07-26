@@ -20,7 +20,9 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.custom.CustomOneseoRep
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.querydsl.core.types.ExpressionUtils.anyOf;
 import static team.themoment.hellogsmv3.domain.member.entity.QMember.member;
@@ -302,12 +304,18 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
         }
     }
     @Override
-    public Optional<EntranceTestResult> findEntranceTestResultByExaminationNumber(String examinationNumber) {
-        return Optional.ofNullable(
-                queryFactory.selectFrom(entranceTestResult)
-                        .join(entranceTestResult.oneseo, oneseo)
-                        .where(oneseo.examinationNumber.eq(examinationNumber))
-                        .fetchOne()
-        );
+    public Map<String,EntranceTestResult> findEntranceTestResultByExaminationNumbersIn(List<String> examinationNumbers) {
+        return queryFactory.selectFrom(entranceTestResult)
+                .select(oneseo.examinationNumber, entranceTestResult)
+                .join(entranceTestResult.oneseo, oneseo)
+                .where(oneseo.examinationNumber.in(examinationNumbers))
+                .fetch()
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                tuple -> tuple.get(oneseo.examinationNumber),
+                                tuple -> tuple.get(entranceTestResult)
+                        )
+                );
     }
 }
