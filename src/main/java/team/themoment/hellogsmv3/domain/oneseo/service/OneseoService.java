@@ -115,7 +115,7 @@ public class OneseoService {
         }
 
         if (absentDays.stream().anyMatch(Objects::isNull) || attendanceDays.stream().anyMatch(Objects::isNull)) {
-            return null;
+            throw new ExpectedException("결석 횟수나 지각, 조퇴, 결과 횟수에 null 값이 포함되어 있습니다.", HttpStatus.BAD_REQUEST);
         }
 
         int totalAbsentDays = absentDays.stream().mapToInt(Integer::intValue).sum();
