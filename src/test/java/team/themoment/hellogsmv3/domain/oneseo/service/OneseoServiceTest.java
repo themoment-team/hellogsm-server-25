@@ -1,5 +1,6 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import org.apache.commons.math3.analysis.function.Exp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -130,10 +131,14 @@ public class OneseoServiceTest {
             List<Integer> nullInAttendanceDays = Arrays.asList(0, 0, 0, 1, 0, 1, null, 2, 2);
 
             @Test
-            @DisplayName("null 값을 반환한다.")
+            @DisplayName("예외를 던진다.")
             void it_returns_oneseo() {
-                Integer absentDaysCount = OneseoService.calcAbsentDaysCount(nullInAbsentDays, nullInAttendanceDays);
-                assertNull(absentDaysCount);
+                ExpectedException exception = assertThrows(ExpectedException.class, () ->
+                        OneseoService.calcAbsentDaysCount(nullInAbsentDays, nullInAttendanceDays)
+                );
+
+                assertEquals("결석 횟수나 지각, 조퇴, 결과 횟수에 null 값이 포함되어 있습니다.", exception.getMessage());
+                assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
             }
         }
     }
