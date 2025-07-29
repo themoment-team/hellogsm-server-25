@@ -1,5 +1,6 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import org.apache.commons.math3.analysis.function.Exp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,11 +15,12 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -117,7 +119,26 @@ public class OneseoServiceTest {
             @DisplayName("null 값을 반환한다.")
             void it_returns_oneseo() {
                 Integer absentDaysCount = OneseoService.calcAbsentDaysCount(nullAbsentDays, nullAttendanceDays);
-                assertEquals(absentDaysCount, null);
+                assertNull(absentDaysCount);
+            }
+        }
+
+        @Nested
+        @DisplayName("결석 횟수 list나 지각, 조퇴, 결과 횟수 list에 null 값이 포함되어 있으면")
+        class Context_with_null_in_absent_attendance_days_list {
+
+            List<Integer> nullInAbsentDays = Arrays.asList(3, 0, null);
+            List<Integer> nullInAttendanceDays = Arrays.asList(0, 0, 0, 1, 0, 1, null, 2, 2);
+
+            @Test
+            @DisplayName("예외를 던진다.")
+            void it_returns_oneseo() {
+                ExpectedException exception = assertThrows(ExpectedException.class, () ->
+                        OneseoService.calcAbsentDaysCount(nullInAbsentDays, nullInAttendanceDays)
+                );
+
+                assertEquals("결석 횟수나 지각, 조퇴, 결과 횟수에 null 값이 포함되어 있습니다.", exception.getMessage());
+                assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
             }
         }
     }

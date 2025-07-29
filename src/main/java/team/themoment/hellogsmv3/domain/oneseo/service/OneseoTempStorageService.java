@@ -80,7 +80,6 @@ public class OneseoTempStorageService {
 
         List<Integer> absentDays = middleSchoolAchievement.absentDays();
         List<Integer> attendanceDays = middleSchoolAchievement.attendanceDays();
-        Integer absentDaysCount = OneseoService.calcAbsentDaysCount(absentDays, attendanceDays);
 
         return MiddleSchoolAchievementResDto.builder()
                 .achievement1_2(middleSchoolAchievement.achievement1_2())
@@ -93,7 +92,7 @@ public class OneseoTempStorageService {
                 .artsPhysicalAchievement(middleSchoolAchievement.artsPhysicalAchievement())
                 .artsPhysicalSubjects(middleSchoolAchievement.artsPhysicalSubjects())
                 .absentDays(absentDays)
-                .absentDaysCount(absentDaysCount)
+                .absentDaysCount(null)
                 .attendanceDays(attendanceDays)
                 .volunteerTime(middleSchoolAchievement.volunteerTime())
                 .liberalSystem(middleSchoolAchievement.liberalSystem())
