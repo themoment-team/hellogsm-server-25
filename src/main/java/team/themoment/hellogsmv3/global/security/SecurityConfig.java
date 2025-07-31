@@ -203,6 +203,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/oneseo/v3/final-submit").hasAnyAuthority(
                         Role.APPLICANT.name()
                 )
+                .requestMatchers(HttpMethod.POST, "/oneseo/v3/excel").hasAnyAuthority(
+                        Role.ADMIN.name()
+                )
                 .requestMatchers(HttpMethod.GET, "/oneseo/v3/excel").hasAnyAuthority(
                         Role.ADMIN.name()
                 )

@@ -1,6 +1,7 @@
 package team.themoment.hellogsmv3.domain.oneseo.repository.custom;
 
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResD
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CustomOneseoRepository {
@@ -35,4 +37,6 @@ public interface CustomOneseoRepository {
 
     List<Oneseo> findAllByScreeningWithAllDetails(Screening screening);
     List<Oneseo> findAllFailedWithAllDetails();
+
+    Map<String,EntranceTestResult> findEntranceTestResultByExaminationNumbersIn(List<String> examinationNumbers);
 }

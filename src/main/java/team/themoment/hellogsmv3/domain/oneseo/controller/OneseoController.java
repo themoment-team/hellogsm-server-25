@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.*;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
@@ -49,6 +50,7 @@ public class OneseoController {
     private final OneseoTempStorageService oneseoTempStorageService;
     private final ModifyEntranceIntentionService modifyEntranceIntentionService;
     private final QueryOneseoEditabilityService queryOneseoEditabilityService;
+    private final UploadExcelService uploadExcelService;
 
     @Operation(summary = "내 원서 등록", description = "원서를 등록합니다.")
     @PostMapping("/oneseo/me")
@@ -167,6 +169,15 @@ public class OneseoController {
     ) {
         oneseoTempStorageService.execute(reqDto, step, memberId);
         return CommonApiResponse.success("임시저장되었습니다.");
+    }
+
+    @Operation(summary = "엑셀 업로드", description = "엑셀 파일을 업로드하여 2차전형 점수를 입력합니다.")
+    @PostMapping("/excel")
+    public CommonApiResponse uploadExcel(
+            @RequestParam("file") MultipartFile file
+    ){
+        uploadExcelService.execute(file);
+        return CommonApiResponse.success("엑셀 파일이 성공적으로 업로드되었습니다.");
     }
 
     @Operation(summary = "엑셀 출력", description = "모든 원서의 정보를 엑셀 파일로 반환합니다.")

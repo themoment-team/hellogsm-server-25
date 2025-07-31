@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.TestResultTag;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
@@ -19,7 +20,9 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.custom.CustomOneseoRep
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.querydsl.core.types.ExpressionUtils.anyOf;
 import static team.themoment.hellogsmv3.domain.member.entity.QMember.member;
@@ -299,5 +302,20 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                             entranceTestResult.secondTestPassYn.eq(NO)
                     );
         }
+    }
+    @Override
+    public Map<String,EntranceTestResult> findEntranceTestResultByExaminationNumbersIn(List<String> examinationNumbers) {
+        return queryFactory.selectFrom(entranceTestResult)
+                .select(oneseo.examinationNumber, entranceTestResult)
+                .join(entranceTestResult.oneseo, oneseo)
+                .where(oneseo.examinationNumber.in(examinationNumbers))
+                .fetch()
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                tuple -> tuple.get(oneseo.examinationNumber),
+                                tuple -> tuple.get(entranceTestResult)
+                        )
+                );
     }
 }
