@@ -8,8 +8,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -21,7 +23,6 @@ import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 import team.themoment.hellogsmv3.global.security.filter.TimeBasedFilter;
 import team.themoment.hellogsmv3.global.security.handler.CustomAccessDeniedHandler;
 import team.themoment.hellogsmv3.global.security.handler.CustomAuthenticationEntryPoint;
-import team.themoment.hellogsmv3.global.security.handler.CustomUrlAuthenticationSuccessHandler;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -47,6 +48,11 @@ public class SecurityConfig {
                 .addFilter(HttpMethod.POST, "/oneseo/v3/image", oneseoSubmissionStart, oneseoSubmissionEnd);
     }
 
+    @Bean
+    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+        return new DefaultAuthorizationCodeTokenResponseClient();
+    }
+
     @Configuration
     @EnableWebSecurity
     public class LocalSecurityConfig {
@@ -55,7 +61,6 @@ public class SecurityConfig {
 
             basicSetting(http);
             cors(http);
-            oauth2Login(http);
             exceptionHandling(http);
             authorizeHttpRequests(http);
             addLoggingFilter(http);
@@ -85,24 +90,12 @@ public class SecurityConfig {
 
     private void basicSetting(HttpSecurity http) throws Exception {
         http.formLogin(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable);
+                .httpBasic(AbstractHttpConfigurer::disable);
     }
 
     private void cors(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
-    }
-
-    private void oauth2Login(HttpSecurity http) throws Exception {
-        http.oauth2Login(oauth2Login ->
-                oauth2Login
-                        .authorizationEndpoint(authorizationEndpointConfig ->
-                                authorizationEndpointConfig.baseUri(authEnv.loginEndPointBaseUri()))
-                        .loginProcessingUrl(authEnv.loginProcessingUri())
-                        .successHandler(new CustomUrlAuthenticationSuccessHandler(authEnv.dryRun(), authEnv.hgStudent(), authEnv.hgAdmin()))
-                        .failureHandler(new SimpleUrlAuthenticationFailureHandler(authEnv.hgStudent()))
-
-        );
     }
 
     private void exceptionHandling(HttpSecurity http) throws Exception {

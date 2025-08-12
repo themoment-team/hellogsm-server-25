@@ -46,6 +46,7 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
             scope:
               - email
           kakao:
@@ -91,13 +92,7 @@ spring:
       max-request-size: 5MB
 
 auth:
-  redirect-url:
-    hg-student: http://localhost:8080
-    hg-admin: http://localhost:8080/admin
-    dry-run: http://localhost:3000
-    loginEndPointBaseUri: /auth/v3/oauth2/authorization
-    loginProcessingUri: /login/oauth2/code/*
-    allowed-origins:
+  allowed-origins:
       - '*'
 
 schedule:

@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
-import team.themoment.hellogsmv3.global.security.oauth.UserInfo;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class AuthenticatedUserManager {
         newAuthorities.add(new SimpleGrantedAuthority(role.name()));
 
         OAuth2User newOAuth2User =
-                new UserInfo(newAuthorities, newAttributes, "id");
+                new DefaultOAuth2User(newAuthorities, newAttributes, "id");
 
         OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
                 newOAuth2User, newAuthorities, oAuth2AuthenticationToken.getAuthorizedClientRegistrationId());
