@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.SecondTestResultDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
@@ -40,7 +39,6 @@ public class UploadExcelService {
         }
     }
 
-    @Transactional
     public void execute(MultipartFile file) {
         Workbook workbook = createWorkbookFromFile(file);
         Sheet sheet = workbook.getSheetAt(0);
