@@ -39,7 +39,6 @@ spring:
       port: 6379
 
   session:
-    store-type: redis
     redis:
       flush-mode: on-save
       save-mode: on-set-attribute
