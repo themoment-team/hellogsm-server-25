@@ -36,10 +36,10 @@ public class OAuthAuthenticationService {
     private final MemberRepository memberRepository;
 
     public void execute(String provider, String code, HttpServletRequest request) {
-        
+
         String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
         OAuthProvider oAuthProvider = oAuthProviderFactory.getProvider(provider);
-        
+
         UserAuthInfo userAuthInfo = oAuthProvider.authenticate(decodedCode);
         completeAuthentication(userAuthInfo, request);
     }
@@ -86,22 +86,18 @@ public class OAuthAuthenticationService {
     }
 
     private void setSecurityContext(HttpServletRequest request, Authentication authentication) {
-        try {
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            securityContext.setAuthentication(authentication);
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                try {
-                    session.getLastAccessedTime();
-                } catch (IllegalStateException e) {
-                    session = request.getSession(true);
-                }
-            } else {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(authentication);
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            try {
+                session.getLastAccessedTime();
+            } catch (IllegalStateException e) {
                 session = request.getSession(true);
             }
-            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
-        } catch (Exception e) {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            session = request.getSession(true);
         }
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
     }
 }
