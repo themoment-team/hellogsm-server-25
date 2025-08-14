@@ -23,7 +23,10 @@ import team.themoment.hellogsmv3.global.security.auth.service.provider.OAuthProv
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +65,7 @@ public class OAuthAuthenticationService {
         Collection<GrantedAuthority> authorities = createAuthorities(member.getRole());
         return new DefaultOAuth2User(authorities, attributes, "id");
     }
-    
+
     private Map<String, Object> createUserAttributes(Member member, String provider, String email) {
         return Map.of(
                 "id", member.getId(),
@@ -83,10 +86,22 @@ public class OAuthAuthenticationService {
     }
 
     private void setSecurityContext(HttpServletRequest request, Authentication authentication) {
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        HttpSession session = request.getSession(true);
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authentication);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+        try {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(authentication);
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                try {
+                    session.getLastAccessedTime();
+                } catch (IllegalStateException e) {
+                    session = request.getSession(true);
+                }
+            } else {
+                session = request.getSession(true);
+            }
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+        } catch (Exception e) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
     }
 }
