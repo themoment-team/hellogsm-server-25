@@ -38,6 +38,12 @@ spring:
       host: 127.0.0.1
       port: 6379
 
+  session:
+    redis:
+      flush-mode: on-save
+      save-mode: on-set-attribute
+    timeout: 3600s
+
   security:
     oauth2:
       client:
