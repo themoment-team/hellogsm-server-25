@@ -1,14 +1,12 @@
 package team.themoment.hellogsmv3.global.exception.error;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class ExpectedException extends RuntimeException {
 
     private final HttpStatus statusCode;
-
-    public HttpStatus getStatusCode() {
-        return statusCode;
-    }
 
     public ExpectedException(String message, HttpStatus statusCode) {
         super(message);
