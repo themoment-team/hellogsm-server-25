@@ -88,11 +88,13 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
     }
 
     @Override
-    public Integer findMaxSubmitCodeByScreening(Screening screening) {
+    public Integer findMaxSubmitCodeByScreening(ScreeningCategory screeningCategory) {
         return queryFactory
                 .select(oneseo.oneseoSubmitCode.substring(2).castToNum(Integer.class))
                 .from(oneseo)
-                .where(oneseo.wantedScreening.eq(screening))
+                .where(oneseo.wantedScreening.in(
+                        Screening.findAllByScreeningCategory(screeningCategory)
+                ))
                 .orderBy(oneseo.oneseoSubmitCode.substring(2).castToNum(Integer.class).desc())
                 .fetchFirst();
     }
