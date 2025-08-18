@@ -224,7 +224,7 @@ public class OneseoServiceTest {
             @BeforeEach
             void setUp() {
                 given(oneseo.getWantedScreening()).willReturn(GENERAL);
-                given(oneseoRepository.findMaxSubmitCodeByScreening(oneseo.getWantedScreening())).willReturn(maxSubmitCodeNumber);
+                given(oneseoRepository.findMaxSubmitCodeByScreening(oneseo.getWantedScreening().getScreeningCategory())).willReturn(maxSubmitCodeNumber);
             }
 
             @Test
