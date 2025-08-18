@@ -38,11 +38,11 @@ public class OneseoService {
 
     public void assignSubmitCode(Oneseo oneseo, Screening originalScreening) {
         if (oneseo.getWantedScreening() != originalScreening) {
-            Integer maxSubmitCodeNumber = oneseoRepository.findMaxSubmitCodeByScreening(oneseo.getWantedScreening());
+            ScreeningCategory screeningCategory = oneseo.getWantedScreening().getScreeningCategory();
+            Integer maxSubmitCodeNumber = oneseoRepository.findMaxSubmitCodeByScreening(screeningCategory);
             int newSubmitCodeNumber = (maxSubmitCodeNumber != null ? maxSubmitCodeNumber : 0) + 1;
 
             String submitCode;
-            ScreeningCategory screeningCategory = oneseo.getWantedScreening().getScreeningCategory();
             switch (screeningCategory) {
                 case GENERAL -> submitCode = "A-" + newSubmitCodeNumber;
                 case SPECIAL -> submitCode = "B-" + newSubmitCodeNumber;

@@ -18,7 +18,11 @@ import java.util.Optional;
 
 public interface CustomOneseoRepository {
 
-    Integer findMaxSubmitCodeByScreening(Screening screening);
+    /**
+     * 같은 전형의 가장 높은 submitCode를 반환합니다.
+     * Screening.EXTRA_VETERANS,Screening.EXTRA_ADMISSION은 같은 전형으로 간주합니다.
+     */
+    Integer findMaxSubmitCodeByScreening(ScreeningCategory screeningCategory);
 
     Page<SearchOneseoResDto> findAllByKeywordAndScreeningAndSubmissionStatusAndTestResult(
             String keyword,
