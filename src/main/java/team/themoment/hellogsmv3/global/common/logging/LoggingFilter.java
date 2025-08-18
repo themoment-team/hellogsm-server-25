@@ -36,7 +36,7 @@ public class LoggingFilter extends OncePerRequestFilter {
             try {
                 filterChain.doFilter(request, response);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("로깅 제외 경로 예외", e);
             }
 
             return;
@@ -52,15 +52,13 @@ public class LoggingFilter extends OncePerRequestFilter {
             requestLogging(requestWrapper, logId);
             filterChain.doFilter(requestWrapper, responseWrapper);
         } catch (Exception e) {
-            log.error("LoggingFilter의 FilterChain에서 예외가 발생했습니다.");
-            e.printStackTrace();
+            log.error("LoggingFilter의 FilterChain에서 예외가 발생했습니다.", e);
         } finally {
             responseLogging(responseWrapper, startTime, logId);
             try {
                 responseWrapper.copyBodyToResponse();
             } catch (IOException e) {
-                log.error("LoggingFilter에서 response body를 출력하는 도중 예외가 발생했습니다.");
-                e.printStackTrace();
+                log.error("LoggingFilter에서 response body를 출력하는 도중 예외가 발생했습니다.", e);
             }
         }
     }
