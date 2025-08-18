@@ -87,8 +87,6 @@ spring:
         bucket-name: ${AWS_BUCKET_NAME}
       region:
         static: ${AWS_REGION}
-      stack:
-        auto: false
       sns:
         region: ${AWS_SNS_REGION}
 
