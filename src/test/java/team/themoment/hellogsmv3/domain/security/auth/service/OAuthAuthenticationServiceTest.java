@@ -20,7 +20,9 @@ import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
-import team.themoment.hellogsmv3.domain.security.auth.service.provider.OAuthProvider;
+import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticationService;
+import team.themoment.hellogsmv3.global.security.auth.service.OAuthProviderFactory;
+import team.themoment.hellogsmv3.global.security.auth.service.provider.OAuthProvider;
 import team.themoment.hellogsmv3.global.security.auth.dto.UserAuthInfo;
 
 import java.util.Optional;
