@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.domain.member.repo;
+package team.themoment.hellogsmv3.domain.member.repository;
 
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;

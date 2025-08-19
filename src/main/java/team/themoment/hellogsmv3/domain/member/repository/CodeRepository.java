@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.domain.member.repo;
+package team.themoment.hellogsmv3.domain.member.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;

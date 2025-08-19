@@ -3,7 +3,7 @@ package team.themoment.hellogsmv3.domain.member.service;
 import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
-import team.themoment.hellogsmv3.domain.member.repo.CodeRepository;
+import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
 
 import java.time.LocalDateTime;
 import java.util.Random;

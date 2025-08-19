@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
-import team.themoment.hellogsmv3.domain.member.repo.CodeRepository;
+import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.time.LocalDateTime;

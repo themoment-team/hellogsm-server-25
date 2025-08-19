@@ -12,7 +12,7 @@ import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberAuthInfoR
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
-import team.themoment.hellogsmv3.domain.member.repo.MemberRepository;
+import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.Optional;

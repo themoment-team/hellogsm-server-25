@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
-import team.themoment.hellogsmv3.domain.common.operation.repo.OperationTestResultRepository;
+import team.themoment.hellogsmv3.domain.common.operation.repository.OperationTestResultRepository;
 import team.themoment.hellogsmv3.domain.common.operation.service.AnnounceSecondTestResultService;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
