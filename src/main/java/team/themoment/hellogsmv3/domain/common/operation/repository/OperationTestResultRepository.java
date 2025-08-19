@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.domain.common.operation.repo;
+package team.themoment.hellogsmv3.domain.common.operation.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

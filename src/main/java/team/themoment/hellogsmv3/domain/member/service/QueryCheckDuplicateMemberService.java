@@ -3,7 +3,7 @@ package team.themoment.hellogsmv3.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundDuplicateMemberResDto;
-import team.themoment.hellogsmv3.domain.member.repo.MemberRepository;
+import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
 

@@ -8,7 +8,7 @@ import org.mockito.*;
 import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
-import team.themoment.hellogsmv3.domain.member.repo.CodeRepository;
+import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
 import team.themoment.hellogsmv3.domain.member.service.SendCodeNotificationService;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
