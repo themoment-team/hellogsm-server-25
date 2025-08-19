@@ -30,14 +30,14 @@ public class EntranceTestResult {
     @JoinColumn(name = "entrance_test_factors_detail_id")
     private EntranceTestFactorsDetail entranceTestFactorsDetail;
 
-    @Column(name = "document_evaluation_score",scale = 3)
+    @Column(name = "document_evaluation_score", scale = 3)
     private BigDecimal documentEvaluationScore;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "first_test_pass_yn")
     private YesNo firstTestPassYn;
 
-    @Column(name = "competency_evaluation_score",scale = 3)
+    @Column(name = "competency_evaluation_score", scale = 3)
     private BigDecimal competencyEvaluationScore;
 
     @Column(name = "interview_score")
