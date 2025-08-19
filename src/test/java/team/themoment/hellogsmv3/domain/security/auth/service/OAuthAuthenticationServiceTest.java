@@ -110,7 +110,7 @@ class OAuthAuthenticationServiceTest {
                 verify(securityContext).setAuthentication(authCaptor.capture());
 
                 Authentication authentication = authCaptor.getValue();
-                assertTrue(authentication instanceof OAuth2AuthenticationToken);
+                assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
                 OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
 
                 assertEquals(provider, oAuthToken.getAuthorizedClientRegistrationId());
@@ -182,7 +182,7 @@ class OAuthAuthenticationServiceTest {
                 verify(securityContext).setAuthentication(authCaptor.capture());
 
                 Authentication authentication = authCaptor.getValue();
-                assertTrue(authentication instanceof OAuth2AuthenticationToken);
+                assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
 
                 verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
             }
@@ -317,7 +317,7 @@ class OAuthAuthenticationServiceTest {
                 verify(securityContext).setAuthentication(authCaptor.capture());
 
                 Authentication authentication = authCaptor.getValue();
-                assertTrue(authentication instanceof OAuth2AuthenticationToken);
+                assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
                 OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
 
                 assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("UNAUTHENTICATED")));
