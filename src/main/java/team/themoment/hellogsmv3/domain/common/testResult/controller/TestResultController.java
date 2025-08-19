@@ -50,7 +50,7 @@ public class TestResultController {
     }
 
     @Operation(summary = "내 1차 전형 결과 상세 조회", description = "학부모 전화번호와 접수번호로 본인의 1차 전형 결과를 조회합니다.")
-    @GetMapping("/my/first-test")
+    @GetMapping("/first-test")
     public FoundTestResultResDto foundFirstTestResult(
             @AuthRequest Long memberId,
             @RequestParam("phoneNumber") @NotNull String phoneNumber,
@@ -61,7 +61,7 @@ public class TestResultController {
     }
 
     @Operation(summary = "내 2차 전형 결과 상세 조회", description = "학부모 전화번호와 수험번호로 본인의 2차 전형 결과를 조회합니다.")
-    @GetMapping("/my/second-test")
+    @GetMapping("/second-test")
     public FoundTestResultResDto foundSecondTestResult(
             @AuthRequest Long memberId,
             @RequestParam("phoneNumber") @NotNull String phoneNumber,
