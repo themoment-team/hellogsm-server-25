@@ -16,13 +16,15 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.YES;
 
 @DisplayName("AnnounceSecondTestResultService 클래스의")
 class AnnounceSecondTestResultServiceTest {
@@ -45,6 +47,29 @@ class AnnounceSecondTestResultServiceTest {
     @Nested
     @DisplayName("execute 메소드는")
     class Describe_execute {
+
+        @Nested
+        @DisplayName("시험 운영 정보가 없을 경우")
+        class Context_operation_test_result_not_found {
+
+            @BeforeEach
+            void setUp() {
+                given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsBySecondTestPassYnIsNull()).willReturn(false);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.empty());
+            }
+
+            @Test
+            @DisplayName("ExpectedException을 던진다")
+            void it_throws_expected_exception() {
+                ExpectedException exception = assertThrows(ExpectedException.class, () ->
+                        announceSecondTestResultService.execute()
+                );
+
+                assertEquals("시험 운영 정보를 찾을 수 없습니다.", exception.getMessage());
+                assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+            }
+        }
 
         @Nested
         @DisplayName("2차 결과 발표 기간 이전일 경우")
@@ -80,7 +105,7 @@ class AnnounceSecondTestResultServiceTest {
                 OperationTestResult testResult = mock(OperationTestResult.class);
 
                 given(testResult.getSecondTestResultAnnouncementYn()).willReturn(YES);
-                given(operationTestResultRepository.findTestResult()).willReturn(testResult);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
             }
 
             @Test
@@ -106,7 +131,7 @@ class AnnounceSecondTestResultServiceTest {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
                 given(entranceTestResultRepository.existsBySecondTestPassYnIsNull()).willReturn(false);
                 given(testResult.getSecondTestResultAnnouncementYn()).willReturn(NO);
-                given(operationTestResultRepository.findTestResult()).willReturn(testResult);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
             }
 
             @Test
