@@ -67,9 +67,10 @@ public class OAuthAuthenticationService {
     }
 
     private Map<String, Object> createUserAttributes(Member member, String provider, String email) {
+        Role memberRole = Optional.ofNullable(member.getRole()).orElse(Role.UNAUTHENTICATED);
         return Map.of(
                 "id", member.getId(),
-                "role", member.getRole(),
+                "role", memberRole,
                 "provider", provider,
                 "email", email,
                 "last_login_time", LocalDateTime.now()
