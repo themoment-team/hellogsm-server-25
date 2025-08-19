@@ -30,6 +30,8 @@ public class CalculateGedService {
 
         // 검정고시 평균 점수
         BigDecimal averageScore = dto.gedAvgScore();
+        if(averageScore == null)
+            throw new ExpectedException("검정고시 평균점이 null입니다!", HttpStatus.BAD_REQUEST);
 
         if (averageScore.compareTo(BigDecimal.valueOf(60)) < 0 || averageScore.compareTo(BigDecimal.valueOf(100)) > 0)
             throw new ExpectedException("검정고시 평균점은 60점 이상, 100점 이하여야 합니다.", HttpStatus.BAD_REQUEST);
