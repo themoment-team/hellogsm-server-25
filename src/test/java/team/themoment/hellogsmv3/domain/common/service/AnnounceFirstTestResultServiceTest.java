@@ -16,6 +16,7 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,6 +45,29 @@ class AnnounceFirstTestResultServiceTest {
     @Nested
     @DisplayName("execute 메소드는")
     class Describe_execute {
+
+        @Nested
+        @DisplayName("시험 운영 정보가 없을 경우")
+        class Context_operation_test_result_not_found {
+
+            @BeforeEach
+            void setUp() {
+                given(scheduleEnv.firstResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.empty());
+            }
+
+            @Test
+            @DisplayName("ExpectedException을 던진다")
+            void it_throws_expected_exception() {
+                ExpectedException exception = assertThrows(ExpectedException.class, () ->
+                        announceFirstTestResultService.execute()
+                );
+
+                assertEquals("시험 운영 정보를 찾을 수 없습니다.", exception.getMessage());
+                assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+            }
+        }
 
         @Nested
         @DisplayName("1차 결과 발표 기간 이전일 경우")
@@ -79,7 +103,7 @@ class AnnounceFirstTestResultServiceTest {
                 OperationTestResult testResult = mock(OperationTestResult.class);
 
                 given(testResult.getFirstTestResultAnnouncementYn()).willReturn(YES);
-                given(operationTestResultRepository.findTestResult()).willReturn(testResult);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
             }
 
             @Test
@@ -105,7 +129,7 @@ class AnnounceFirstTestResultServiceTest {
                 given(scheduleEnv.firstResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
                 given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(testResult.getFirstTestResultAnnouncementYn()).willReturn(NO);
-                given(operationTestResultRepository.findTestResult()).willReturn(testResult);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
             }
 
             @Test

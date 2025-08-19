@@ -26,7 +26,8 @@ public class AnnounceSecondTestResultService {
     public void execute() {
         validateSecondTestResultAnnouncementPeriod();
 
-        OperationTestResult testResult = operationTestResultRepository.findTestResult();
+        OperationTestResult testResult = operationTestResultRepository.findTestResult()
+                .orElseThrow(() -> new ExpectedException("시험 운영 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
         validateDuplicateAnnouncement(testResult);
 
         testResult.announceSecondTestResult();

@@ -3,7 +3,6 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
 import team.themoment.hellogsmv3.domain.common.operation.repo.OperationTestResultRepository;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
@@ -137,19 +136,19 @@ public class OneseoService {
     }
 
     public boolean validateFirstTestResultAnnouncement() {
-        OperationTestResult testResult = operationTestResultRepository.findTestResult();
-
-        return testResult.getFirstTestResultAnnouncementYn().equals(NO) ||
-                LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
-                entranceTestResultRepository.existsByFirstTestPassYnIsNull();
+        return operationTestResultRepository.findTestResult()
+                .map(testResult -> testResult.getFirstTestResultAnnouncementYn().equals(NO) ||
+                        LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
+                        entranceTestResultRepository.existsByFirstTestPassYnIsNull())
+                .orElse(true);
     }
 
     public boolean validateSecondTestResultAnnouncement() {
-        OperationTestResult testResult = operationTestResultRepository.findTestResult();
-
-        return testResult.getSecondTestResultAnnouncementYn().equals(NO) ||
-                LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
-                entranceTestResultRepository.existsByFirstTestPassYnIsNull();
+        return operationTestResultRepository.findTestResult()
+                .map(testResult -> testResult.getSecondTestResultAnnouncementYn().equals(NO) ||
+                        LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
+                        entranceTestResultRepository.existsByFirstTestPassYnIsNull())
+                .orElse(true);
     }
 
     public static void isValidMiddleSchoolInfo(OneseoReqDto reqDto) {
