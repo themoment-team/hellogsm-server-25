@@ -14,4 +14,6 @@ import java.util.Optional;
 public interface OneseoRepository extends JpaRepository<Oneseo, Long>, CustomOneseoRepository {
     boolean existsByMember(Member member);
     Optional<Oneseo> findByMember(Member member);
+
+    boolean deleteByOneseoSubmitCode(String oneseoSubmitCode);
 }
