@@ -116,7 +116,7 @@ class OAuthAuthenticationServiceTest {
                 assertEquals(provider, oAuthToken.getAuthorizedClientRegistrationId());
                 assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("OAUTH2_USER")));
                 assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("SCOPE_email")));
-                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("APPLICANT")));
+                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority(Role.APPLICANT.name())));
 
                 DefaultOAuth2User oAuth2User = (DefaultOAuth2User) oAuthToken.getPrincipal();
                 assertEquals(memberId, oAuth2User.getAttribute("id"));
@@ -320,7 +320,7 @@ class OAuthAuthenticationServiceTest {
                 assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
                 OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
 
-                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("UNAUTHENTICATED")));
+                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority(Role.UNAUTHENTICATED.name())));
             }
         }
     }
