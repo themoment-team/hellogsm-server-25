@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.domain.common.service;
+package team.themoment.hellogsmv3.domain.common.operation.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.common.operation.dto.response.AnnounceTestResultResDto;
 import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
 import team.themoment.hellogsmv3.domain.common.operation.repository.OperationTestResultRepository;
-import team.themoment.hellogsmv3.domain.common.operation.service.QueryAnnounceTestResultService;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.Optional;
