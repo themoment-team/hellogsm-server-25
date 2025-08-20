@@ -37,7 +37,7 @@ public class EntranceTestResult {
     @Column(name = "first_test_pass_yn")
     private YesNo firstTestPassYn;
 
-    @Column(name = "competency_evaluation_score", scale = 3)
+    @Column(name = "competency_evaluation_score")
     private BigDecimal competencyEvaluationScore;
 
     @Column(name = "interview_score")
