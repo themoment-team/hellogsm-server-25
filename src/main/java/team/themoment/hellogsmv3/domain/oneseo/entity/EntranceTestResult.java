@@ -30,7 +30,7 @@ public class EntranceTestResult {
     @JoinColumn(name = "entrance_test_factors_detail_id")
     private EntranceTestFactorsDetail entranceTestFactorsDetail;
 
-    @Column(name = "document_evaluation_score", scale = 3)
+    @Column(name = "document_evaluation_score", precision = 6, scale = 3)
     private BigDecimal documentEvaluationScore;
 
     @Enumerated(EnumType.STRING)

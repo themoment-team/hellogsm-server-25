@@ -80,6 +80,6 @@ public class MiddleSchoolAchievement {
     @Column(name = "free_semester")
     private String freeSemester;
 
-    @Column(name = "ged_avg_score", scale = 2)
+    @Column(name = "ged_avg_score", precision = 5, scale = 2)
     private BigDecimal gedAvgScore;
 }
