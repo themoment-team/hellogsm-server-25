@@ -18,5 +18,5 @@ public interface OneseoRepository extends JpaRepository<Oneseo, Long>, CustomOne
     @Query("SELECT o.member.id FROM Oneseo o WHERE o.oneseoSubmitCode = :submitCode")
     Optional<Long> findMemberIdByOneseoSubmitCode(@Param("submitCode") String submitCode);
 
-    long deleteByOneseoSubmitCode(String oneseoSubmitCode);
+    void deleteByOneseoSubmitCode(String oneseoSubmitCode);
 }
