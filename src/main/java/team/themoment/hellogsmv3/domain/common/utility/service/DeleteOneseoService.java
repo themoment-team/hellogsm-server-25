@@ -15,7 +15,7 @@ public class DeleteOneseoService {
 
     @Transactional(rollbackFor = Exception.class)
     public void execute(String submitCode) {
-        if (oneseoRepository.deleteByOneseoSubmitCode(submitCode)) {
+        if (oneseoRepository.deleteByOneseoSubmitCode(submitCode) == 0) {
             throw new ExpectedException("해당 접수 번호에 해당하는 원서가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
     }

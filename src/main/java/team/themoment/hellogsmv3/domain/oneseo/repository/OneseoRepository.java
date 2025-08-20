@@ -15,5 +15,5 @@ public interface OneseoRepository extends JpaRepository<Oneseo, Long>, CustomOne
     boolean existsByMember(Member member);
     Optional<Oneseo> findByMember(Member member);
 
-    boolean deleteByOneseoSubmitCode(String oneseoSubmitCode);
+    long deleteByOneseoSubmitCode(String oneseoSubmitCode);
 }
