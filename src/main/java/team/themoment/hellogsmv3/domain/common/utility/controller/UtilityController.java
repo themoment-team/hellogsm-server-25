@@ -3,6 +3,7 @@ package team.themoment.hellogsmv3.domain.common.utility.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 @RequestMapping("/utility/v3")
 @Tag(name = "Utility API", description = "개발용 유틸리티 API입니다.")
 @RequiredArgsConstructor
+@Profile("!prod")
 public class UtilityController {
 
     private final DeleteOneseoService deleteOneseoService;
