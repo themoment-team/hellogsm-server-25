@@ -18,37 +18,37 @@ public class EntranceTestFactorsDetail {
     @Column(name = "entrance_test_factors_detail_id")
     private Long id;
 
-    @Column(name = "general_subjects_score")
+    @Column(name = "general_subjects_score", scale = 3)
     private BigDecimal generalSubjectsScore;
 
-    @Column(name = "arts_physical_subjects_score")
+    @Column(name = "arts_physical_subjects_score", scale = 3)
     private BigDecimal artsPhysicalSubjectsScore;
 
-    @Column(name = "total_subjects_score")
+    @Column(name = "total_subjects_score", scale = 3)
     private BigDecimal totalSubjectsScore;
 
-    @Column(name = "attendance_score")
+    @Column(name = "attendance_score", scale = 3)
     private BigDecimal attendanceScore;
 
-    @Column(name = "volunteer_score")
+    @Column(name = "volunteer_score", scale = 3)
     private BigDecimal volunteerScore;
 
-    @Column(name = "total_non_subjects_score")
+    @Column(name = "total_non_subjects_score", scale = 3)
     private BigDecimal totalNonSubjectsScore;
 
-    @Column(name = "score_1_2")
+    @Column(name = "score_1_2", scale = 3)
     private BigDecimal score1_2;
 
-    @Column(name = "score_2_1")
+    @Column(name = "score_2_1", scale = 3)
     private BigDecimal score2_1;
 
-    @Column(name = "score_2_2")
+    @Column(name = "score_2_2", scale = 3)
     private BigDecimal score2_2;
 
-    @Column(name = "score_3_1")
+    @Column(name = "score_3_1", scale = 3)
     private BigDecimal score3_1;
 
-    @Column(name = "score_3_2")
+    @Column(name = "score_3_2", scale = 3)
     private BigDecimal score3_2;
 
     public void updateGradeEntranceTestFactorsDetail(
