@@ -26,4 +26,12 @@ public class UtilityController {
                 "입력된 접수 번호에 해당하는 원서를 삭제했습니다. 접수 번호: " + submitCode
         );
     }
+
+    @Operation(summary = "회원 탈퇴", description = "입력된 전화 번호에 해당하는 계정을 탈퇴시킵니다.")
+    @DeleteMapping("/member")
+    public CommonApiResponse deleteMember(@RequestParam String phoneNumber) {
+        return CommonApiResponse.success(
+                "입력된 전화 번호에 해당하는 계정을 탈퇴했습니다. 전화 번호: " + phoneNumber
+        );
+    }
 }
