@@ -5,7 +5,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
+import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
 import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
@@ -35,8 +37,15 @@ public class DeleteMemberService {
         Long memberId = member.getId();
         Optional<Oneseo> oneseo = oneseoRepository.findByMember(member);
         oneseo.ifPresent(oneseoRepository::delete);
-        codeRepository.deleteByMemberId(memberId);
+        deleteAuthenticationCodes(memberId);
         memberRepository.delete(member);
         return memberId;
+    }
+    
+    private void deleteAuthenticationCodes(Long memberId) {
+        for (AuthCodeType authCodeType : AuthCodeType.values()) {
+            Optional<AuthenticationCode> authCode = codeRepository.findByMemberIdAndAuthCodeType(memberId, authCodeType);
+            authCode.ifPresent(codeRepository::delete);
+        }
     }
 }
