@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface CodeRepository extends CrudRepository<AuthenticationCode, String> {
     Optional<AuthenticationCode> findByMemberIdAndAuthCodeType(Long memberId, AuthCodeType authCodeType);
     Optional<AuthenticationCode> findByCode(String code);
+    void deleteByMemberId(Long memberId);
 }
