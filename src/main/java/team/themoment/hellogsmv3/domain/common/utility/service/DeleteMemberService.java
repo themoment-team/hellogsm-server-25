@@ -2,6 +2,7 @@ package team.themoment.hellogsmv3.domain.common.utility.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.ONES
 
 @Service
 @RequiredArgsConstructor
+@Profile("!prod")
 public class DeleteMemberService {
 
     private final MemberRepository memberRepository;
