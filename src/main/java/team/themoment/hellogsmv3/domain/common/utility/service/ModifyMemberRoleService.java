@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 
@@ -19,17 +18,7 @@ public class ModifyMemberRoleService {
     public void execute(String phoneNumber, Role role) {
         memberRepository.findByPhoneNumber(phoneNumber)
                 .ifPresent(member -> {
-                    Member.builder()
-                            .id(member.getId())
-                            .name(member.getName())
-                            .phoneNumber(member.getPhoneNumber())
-                            .email(member.getEmail())
-                            .role(role)
-                            .sex(member.getSex())
-                            .birth(member.getBirth())
-                            .authReferrerType(member.getAuthReferrerType())
-                            .build();
-                    memberRepository.save(member);
+                    member.modifyMemberRole(role);
                 });
     }
 }
