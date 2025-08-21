@@ -4,12 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team.themoment.hellogsmv3.domain.common.utility.service.DeleteMemberService;
 import team.themoment.hellogsmv3.domain.common.utility.service.DeleteOneseoService;
+import team.themoment.hellogsmv3.domain.common.utility.service.ModifyMemberRoleService;
+import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 
 @RestController
@@ -21,6 +20,7 @@ public class UtilityController {
 
     private final DeleteOneseoService deleteOneseoService;
     private final DeleteMemberService deleteMemberService;
+    private final ModifyMemberRoleService modifyMemberRoleService;
 
     @Operation(summary = "원서 삭제", description = "입력된 접수 번호에 해당하는 원서를 삭제합니다.")
     @DeleteMapping("/oneseo")
@@ -37,6 +37,18 @@ public class UtilityController {
         deleteMemberService.execute(phoneNumber);
         return CommonApiResponse.success(
                 "입력된 전화 번호에 해당하는 계정을 탈퇴했습니다. 전화 번호: " + phoneNumber
+        );
+    }
+
+    @Operation(summary = "사용자 권한 수정", description = "입력된 전화 번호에 해당하는 사용자의 권한을 수정합니다.")
+    @PatchMapping("/member/role")
+    public CommonApiResponse updateMemberRole(
+            @RequestParam String phoneNumber,
+            @RequestParam Role role
+    ) {
+        modifyMemberRoleService.execute(phoneNumber, role);
+        return CommonApiResponse.success(
+                "입력된 전화 번호에 해당하는 사용자의 권한을 수정했습니다. 전화 번호: " + phoneNumber + ", 권한: " + role
         );
     }
 }
