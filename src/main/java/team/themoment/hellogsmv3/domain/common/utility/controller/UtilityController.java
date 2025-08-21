@@ -1,6 +1,7 @@
 package team.themoment.hellogsmv3.domain.common.utility.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +34,7 @@ public class UtilityController {
             @ApiResponse(
                     responseCode = "404",
                     description = "해당 접수 번호에 해당하는 원서가 존재하지 않음",
-                    content = {}
+                    content = @Content()
             )
     })
     @DeleteMapping("/oneseo")
@@ -53,7 +54,7 @@ public class UtilityController {
             @ApiResponse(
                     responseCode = "404",
                     description = "해당 전화 번호에 해당하는 계정이 존재하지 않음",
-                    content = {}
+                    content = @Content()
             )
     })
     @DeleteMapping("/member")
@@ -73,7 +74,7 @@ public class UtilityController {
             @ApiResponse(
                     responseCode = "404",
                     description = "해당 전화 번호에 해당하는 계정이 존재하지 않음",
-                    content = {}
+                    content = @Content()
             )
     })
     @PatchMapping("/member/role")
