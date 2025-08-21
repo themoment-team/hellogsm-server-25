@@ -234,6 +234,8 @@ public class SecurityConfig {
                 // common / get date api
                 .requestMatchers(HttpMethod.GET, "/date").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/utility/v3/**").permitAll()
+
+                .anyRequest().permitAll()
         );
     }
 
