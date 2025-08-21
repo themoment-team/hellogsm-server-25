@@ -7,12 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
+import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -63,19 +67,21 @@ class ModifyMemberRoleServiceTest {
         class Context_with_non_existing_phone_number {
 
             @Test
-            @DisplayName("아무 동작도 하지 않는다")
-            void it_does_nothing() {
+            @DisplayName("ExpectedException을 던진다")
+            void it_throws_expected_exception() {
                 // given
                 given(memberRepository.findByPhoneNumber(phoneNumber)).willReturn(Optional.empty());
 
-                // when
-                modifyMemberRoleService.execute(phoneNumber, targetRole);
+                // when & then
+                ExpectedException ex = assertThrows(ExpectedException.class,
+                        () -> modifyMemberRoleService.execute(phoneNumber, targetRole));
 
-                // then
+                assertEquals("해당 전화 번호에 해당하는 계정이 존재하지 않습니다.", ex.getMessage());
+                assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+
                 verify(memberRepository).findByPhoneNumber(phoneNumber);
                 verifyNoMoreInteractions(memberRepository);
             }
         }
     }
 }
-
