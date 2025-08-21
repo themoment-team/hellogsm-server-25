@@ -17,8 +17,6 @@ public class ModifyMemberRoleService {
     @Transactional
     public void execute(String phoneNumber, Role role) {
         memberRepository.findByPhoneNumber(phoneNumber)
-                .ifPresent(member -> {
-                    member.modifyMemberRole(role);
-                });
+                .ifPresent(member -> member.modifyMemberRole(role));
     }
 }
