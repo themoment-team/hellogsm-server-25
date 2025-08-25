@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
@@ -42,15 +41,48 @@ public class LoggingFilter extends OncePerRequestFilter {
             return;
         }
 
-        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+        // 멀티파트 요청은 바디 로깅/캐싱 생략, 메타데이터만 기록
+        if (isMultipart(request)) {
+            ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+            UUID logId = UUID.randomUUID();
+            long startTime = System.currentTimeMillis();
+            try {
+                requestLoggingMultipart(request, logId);
+                filterChain.doFilter(request, responseWrapper);
+            } catch (Exception e) {
+                log.error("LoggingFilter의 FilterChain에서 예외가 발생했습니다.", e);
+            } finally {
+                responseLogging(responseWrapper, startTime, logId);
+                try {
+                    responseWrapper.copyBodyToResponse();
+                } catch (IOException e) {
+                    log.error("LoggingFilter에서 response body를 출력하는 도중 예외가 발생했습니다.", e);
+                }
+            }
+            return;
+        }
+
+        CachedBodyRequestWrapper cachedRequest;
+        try {
+            cachedRequest = new CachedBodyRequestWrapper(request);
+        } catch (IOException e) {
+            log.error("요청 바디 캐싱 중 예외 발생 - 원본 요청으로 진행합니다.", e);
+            try {
+                filterChain.doFilter(request, response);
+            } catch (Exception ex) {
+                log.error("LoggingFilter의 FilterChain에서 예외가 발생했습니다.", ex);
+            }
+            return;
+        }
+
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
         UUID logId = UUID.randomUUID();
         long startTime = System.currentTimeMillis();
 
         try {
-            requestLogging(requestWrapper, logId);
-            filterChain.doFilter(requestWrapper, responseWrapper);
+            requestLogging(cachedRequest, logId, cachedRequest.getCachedBody());
+            filterChain.doFilter(cachedRequest, responseWrapper);
         } catch (Exception e) {
             log.error("LoggingFilter의 FilterChain에서 예외가 발생했습니다.", e);
         } finally {
@@ -68,36 +100,27 @@ public class LoggingFilter extends OncePerRequestFilter {
                 .anyMatch(pattern -> matcher.match(pattern, requestURI));
     }
 
-    private void requestLogging(ContentCachingRequestWrapper request, UUID logId) {
-        log.info(
-                String.format(
-                        "Log-ID: %s, IP: %s, URI: %s, Http-Method: %s, Params: %s, Content-Type: %s, User-Cookies: %s, User-Agent: %s, Request-Body: %s",
-                        logId,
-                        request.getRemoteAddr(),
-                        request.getRequestURI(),
-                        request.getMethod(),
-                        request.getQueryString(),
-                        request.getContentType(),
-                        request.getCookies() != null ? String.join(", ", getCookiesAsString(request.getCookies())) : "[none]",
-                        request.getHeader("User-Agent"),
-                        getRequestBody(request.getContentAsByteArray())
-                )
-        );
+    private boolean isMultipart(HttpServletRequest request) {
+        String contentType = request.getContentType();
+        return contentType != null && contentType.toLowerCase().startsWith("multipart/");
+    }
+
+    private void requestLogging(HttpServletRequest request, UUID logId, byte[] cachedBody) {
+        log.info("Log-ID: {}, IP: {}, URI: {}, Http-Method: {}, Params: {}, Content-Type: {}, User-Cookies: {}, User-Agent: {}, Request-Body: {}",
+                logId, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), request.getQueryString(), request.getContentType(), request.getCookies() != null ? String.join(", ", getCookiesAsString(request.getCookies())) : "[none]", request.getHeader("User-Agent"), getRequestBody(cachedBody));
+    }
+
+    private void requestLoggingMultipart(HttpServletRequest request, UUID logId) {
+        String contentLength = request.getHeader("Content-Length");
+        log.info("Log-ID: {}, IP: {}, URI: {}, Http-Method: {}, Params: {}, Content-Type: {}, Content-Length: {}, User-Cookies: {}, User-Agent: {}, Request-Body: {}",
+                logId, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), request.getQueryString(), request.getContentType(), contentLength != null ? contentLength : "[unknown]", request.getCookies() != null ? String.join(", ", getCookiesAsString(request.getCookies())) : "[none]", request.getHeader("User-Agent"), "[multipart omitted]");
     }
 
     private void responseLogging(ContentCachingResponseWrapper response, long startTime, UUID logId) {
         long endTime = System.currentTimeMillis();
         long responseTime = endTime - startTime;
-        log.info(
-                String.format(
-                        "Log-ID: %s, Status-Code: %d, Content-Type: %s, Response Time: %dms, Response-Body: %s",
-                        logId,
-                        response.getStatus(),
-                        response.getContentType(),
-                        responseTime,
-                        new String(response.getContentAsByteArray(), StandardCharsets.UTF_8)
-                )
-        );
+        log.info("Log-ID: {}, Status-Code: {}, Content-Type: {}, Response Time: {}ms, Response-Body: {}",
+                logId, response.getStatus(), response.getContentType(), responseTime, new String(response.getContentAsByteArray(), StandardCharsets.UTF_8));
     }
 
     private String getRequestBody(byte[] byteArrayContent) {
