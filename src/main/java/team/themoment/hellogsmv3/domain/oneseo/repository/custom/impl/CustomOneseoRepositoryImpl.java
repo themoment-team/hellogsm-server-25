@@ -127,6 +127,7 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                         oneseo.member.phoneNumber,
                         oneseo.oneseoPrivacyDetail.guardianPhoneNumber,
                         oneseo.oneseoPrivacyDetail.schoolTeacherPhoneNumber,
+                        oneseo.examinationNumber,
                         oneseo.entranceTestResult.firstTestPassYn,
                         oneseo.entranceTestResult.competencyEvaluationScore,
                         oneseo.entranceTestResult.interviewScore,
