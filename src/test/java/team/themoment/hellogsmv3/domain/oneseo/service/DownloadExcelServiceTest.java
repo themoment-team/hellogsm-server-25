@@ -13,7 +13,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.Sex;
-import team.themoment.hellogsmv3.domain.oneseo.entity.*;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestFactorsDetail;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
+import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
+import team.themoment.hellogsmv3.domain.oneseo.entity.OneseoPrivacyDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.*;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 
@@ -22,10 +25,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.YES;
 
 @DisplayName("DownloadExcelService 클래스의")
 public class DownloadExcelServiceTest {
@@ -37,7 +41,7 @@ public class DownloadExcelServiceTest {
     private DownloadExcelService downloadExcelService;
 
     private final List<String> EXPECTED_HEADER = List.of(
-            "순번", "접수번호", "성명", "1지망", "2지망", "3지망", "생년월일", "성별", "상세주소", "출신학교",
+            "순번", "접수번호", "수험번호", "성명", "1지망", "2지망", "3지망", "생년월일", "성별", "상세주소", "출신학교",
             "학력", "초기전형", "적용되는 전형", "일반교과점수", "예체능점수", "출석점수", "봉사점수", "1차전형총점",
             "역량평가점수", "심층면접점수", "최종점수", "최종학과", "지원자연락처", "보호자연락처", "담임연락처", "1차전형결과", "2차전형결과"
     );
@@ -67,15 +71,15 @@ public class DownloadExcelServiceTest {
                 oneseoFallen = createOneseoWithAllDetails(4L, Screening.GENERAL, "A-4", NO);
 
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
-                    .willReturn(List.of(oneseoGeneral));
+                        .willReturn(List.of(oneseoGeneral));
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
-                    .willReturn(List.of(oneseoSpecial));
+                        .willReturn(List.of(oneseoSpecial));
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
-                    .willReturn(List.of(oneseoExtra));
+                        .willReturn(List.of(oneseoExtra));
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllFailedWithAllDetails())
-                    .willReturn(List.of(oneseoFallen));
+                        .willReturn(List.of(oneseoFallen));
             }
 
             @Test
@@ -117,15 +121,15 @@ public class DownloadExcelServiceTest {
             @BeforeEach
             void setUp() {
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllFailedWithAllDetails())
-                    .willReturn(List.of());
+                        .willReturn(List.of());
             }
 
             @Test
@@ -148,7 +152,7 @@ public class DownloadExcelServiceTest {
         private void assertSheetHeader(Sheet sheet) {
             Row headerRow = sheet.getRow(0);
             assertNotNull(headerRow);
-            
+
             for (int i = 0; i < EXPECTED_HEADER.size(); i++) {
                 Cell cell = headerRow.getCell(i);
                 assertNotNull(cell);
@@ -162,39 +166,43 @@ public class DownloadExcelServiceTest {
 
             assertEquals("1", dataRow.getCell(0).getStringCellValue());
             assertEquals(expectedSubmitCode, dataRow.getCell(1).getStringCellValue());
-            assertEquals(oneseo.getMember().getName(), dataRow.getCell(2).getStringCellValue());
-            assertEquals("AI", dataRow.getCell(3).getStringCellValue());
-            assertEquals("SW", dataRow.getCell(4).getStringCellValue());  
-            assertEquals("IOT", dataRow.getCell(5).getStringCellValue());
-            assertEquals("2024-07-31", dataRow.getCell(6).getStringCellValue());
-            assertEquals("남자", dataRow.getCell(7).getStringCellValue());
-            assertEquals("광주광역시 광산구 송정동 상무대로 312 동행관", dataRow.getCell(8).getStringCellValue());
-            assertEquals("광주소프트웨어마이스터고등학교", dataRow.getCell(9).getStringCellValue());
-            assertEquals("졸업자", dataRow.getCell(10).getStringCellValue());
-            assertEquals(expectedScreening, dataRow.getCell(11).getStringCellValue());
+            assertEquals(oneseo.getExaminationNumber(), dataRow.getCell(2).getStringCellValue());
+            assertEquals(oneseo.getMember().getName(), dataRow.getCell(3).getStringCellValue());
+            assertEquals("AI", dataRow.getCell(4).getStringCellValue());
+            assertEquals("SW", dataRow.getCell(5).getStringCellValue());
+            assertEquals("IOT", dataRow.getCell(6).getStringCellValue());
+            assertEquals("2024-07-31", dataRow.getCell(7).getStringCellValue());
+            assertEquals("남자", dataRow.getCell(8).getStringCellValue());
+            assertEquals("광주광역시 광산구 송정동 상무대로 312 동행관", dataRow.getCell(9).getStringCellValue());
+            assertEquals("광주소프트웨어마이스터고등학교", dataRow.getCell(10).getStringCellValue());
+            assertEquals("졸업자", dataRow.getCell(11).getStringCellValue());
+            assertEquals(expectedScreening, dataRow.getCell(12).getStringCellValue());
+            assertEquals("", dataRow.getCell(13).getStringCellValue());
 
-            assertEquals("80", dataRow.getCell(13).getStringCellValue());
-            assertEquals("70", dataRow.getCell(14).getStringCellValue());
-            assertEquals("60", dataRow.getCell(15).getStringCellValue());
-            assertEquals("50", dataRow.getCell(16).getStringCellValue());
-            assertEquals("80", dataRow.getCell(17).getStringCellValue());
-            assertEquals("70", dataRow.getCell(18).getStringCellValue());
-            assertEquals("60", dataRow.getCell(19).getStringCellValue());
-            
-            assertEquals("46.334", dataRow.getCell(20).getStringCellValue());
-            
-            assertEquals("IOT", dataRow.getCell(21).getStringCellValue());
-            assertEquals("01012345678", dataRow.getCell(22).getStringCellValue());
-            assertEquals("01087654321", dataRow.getCell(23).getStringCellValue());
-            assertEquals("01012344321", dataRow.getCell(24).getStringCellValue());
-            
+            assertEquals("80", dataRow.getCell(14).getStringCellValue());
+            assertEquals("70", dataRow.getCell(15).getStringCellValue());
+            assertEquals("60", dataRow.getCell(16).getStringCellValue());
+            assertEquals("50", dataRow.getCell(17).getStringCellValue());
+            assertEquals("80", dataRow.getCell(18).getStringCellValue());
+            assertEquals("70", dataRow.getCell(19).getStringCellValue());
+            assertEquals("60", dataRow.getCell(20).getStringCellValue());
+
+            assertEquals("46.333", dataRow.getCell(21).getStringCellValue());
+
+            assertEquals("IOT", dataRow.getCell(22).getStringCellValue());
+            assertEquals("01012345678", dataRow.getCell(23).getStringCellValue());
+            assertEquals("01087654321", dataRow.getCell(24).getStringCellValue());
+            assertEquals("01012344321", dataRow.getCell(25).getStringCellValue());
+
             String expectedFirstResult = oneseo.getEntranceTestResult().getFirstTestPassYn() == YES ? "합격" : "불합격";
             String expectedSecondResult = oneseo.getEntranceTestResult().getSecondTestPassYn() == YES ? "합격" : "불합격";
-            assertEquals(expectedFirstResult, dataRow.getCell(25).getStringCellValue());
-            assertEquals(expectedSecondResult, dataRow.getCell(26).getStringCellValue());
+            assertEquals(expectedFirstResult, dataRow.getCell(26).getStringCellValue());
+            assertEquals(expectedSecondResult, dataRow.getCell(27).getStringCellValue());
         }
 
         private Oneseo createOneseoWithAllDetails(Long id, Screening screening, String submitCode, YesNo passYn) {
+            String examinationNumber = String.format("0%d%02d", id, id);
+
             Member member = Member.builder()
                     .id(id)
                     .name("홍길동")
@@ -221,6 +229,7 @@ public class DownloadExcelServiceTest {
                     .id(id)
                     .member(member)
                     .oneseoSubmitCode(submitCode)
+                    .examinationNumber(examinationNumber)
                     .desiredMajors(desiredMajors)
                     .wantedScreening(screening)
                     .decidedMajor(Major.IOT)
@@ -273,28 +282,28 @@ public class DownloadExcelServiceTest {
             @DisplayName("최종 점수를 올바르게 계산한다")
             void it_calculates_final_score_correctly() throws IOException {
                 Oneseo oneseo = createOneseoWithScores(
-                    BigDecimal.valueOf(90),
-                    BigDecimal.valueOf(80),
-                    BigDecimal.valueOf(75)
+                        BigDecimal.valueOf(90),
+                        BigDecimal.valueOf(80),
+                        BigDecimal.valueOf(75)
                 );
-                
+
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
-                    .willReturn(List.of(oneseo));
+                        .willReturn(List.of(oneseo));
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllFailedWithAllDetails())
-                    .willReturn(List.of());
+                        .willReturn(List.of());
 
                 try (Workbook workbook = downloadExcelService.execute()) {
 
                     Sheet sheet = workbook.getSheetAt(0);
                     Row dataRow = sheet.getRow(1);
 
-                    assertEquals("54.000", dataRow.getCell(20).getStringCellValue());
+                    assertEquals("54.000", dataRow.getCell(21).getStringCellValue());
 
                 }
             }
@@ -308,28 +317,28 @@ public class DownloadExcelServiceTest {
             @DisplayName("빈 문자열을 반환한다")
             void it_returns_empty_string_for_null_scores() throws IOException {
                 Oneseo oneseo = createOneseoWithNullScores();
-                
+
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.GENERAL))
-                    .willReturn(List.of(oneseo));
+                        .willReturn(List.of(oneseo));
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.SPECIAL))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_VETERANS))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllByScreeningWithAllDetails(Screening.EXTRA_ADMISSION))
-                    .willReturn(List.of());
+                        .willReturn(List.of());
                 given(oneseoRepository.findAllFailedWithAllDetails())
-                    .willReturn(List.of());
+                        .willReturn(List.of());
 
                 try (Workbook workbook = downloadExcelService.execute()) {
 
                     Sheet sheet = workbook.getSheetAt(0);
                     Row dataRow = sheet.getRow(1);
 
-                    assertEquals("", dataRow.getCell(13).getStringCellValue());
-                    assertEquals("", dataRow.getCell(17).getStringCellValue());
+                    assertEquals("", dataRow.getCell(14).getStringCellValue());
                     assertEquals("", dataRow.getCell(18).getStringCellValue());
                     assertEquals("", dataRow.getCell(19).getStringCellValue());
                     assertEquals("", dataRow.getCell(20).getStringCellValue());
+                    assertEquals("", dataRow.getCell(21).getStringCellValue());
 
                 }
             }
@@ -362,6 +371,7 @@ public class DownloadExcelServiceTest {
                     .id(1L)
                     .member(member)
                     .oneseoSubmitCode("A-1")
+                    .examinationNumber("0101")
                     .desiredMajors(desiredMajors)
                     .wantedScreening(Screening.GENERAL)
                     .decidedMajor(Major.IOT)
@@ -428,6 +438,7 @@ public class DownloadExcelServiceTest {
                     .id(1L)
                     .member(member)
                     .oneseoSubmitCode("A-1")
+                    .examinationNumber("0101")
                     .desiredMajors(desiredMajors)
                     .wantedScreening(Screening.GENERAL)
                     .decidedMajor(Major.IOT)
