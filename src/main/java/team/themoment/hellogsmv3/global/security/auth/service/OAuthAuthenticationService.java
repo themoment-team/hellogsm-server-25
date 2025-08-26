@@ -3,6 +3,7 @@ package team.themoment.hellogsmv3.global.security.auth.service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OAuthAuthenticationService {
 
     private final OAuthProviderFactory oAuthProviderFactory;
@@ -87,18 +89,30 @@ public class OAuthAuthenticationService {
     }
 
     private void setSecurityContext(HttpServletRequest request, Authentication authentication) {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
-        HttpSession session = request.getSession(false);
-        if (session != null) {
+
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
             try {
-                session.getLastAccessedTime();
+                oldSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+                oldSession.getCreationTime();
+                oldSession.getLastAccessedTime();
             } catch (IllegalStateException e) {
-                session = request.getSession(true);
+                try {
+                    oldSession.invalidate();
+                } catch (Exception ex) {
+                    log.error("세션 무효화 중 예외 발생", ex);
+                }
+                oldSession = null;
             }
-        } else {
-            session = request.getSession(true);
         }
+
+        HttpSession session = (oldSession != null) ? oldSession : request.getSession(true);
+
+        SecurityContextHolder.setContext(securityContext);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+        session.setMaxInactiveInterval(3600);
     }
 }
