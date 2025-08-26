@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -57,7 +58,6 @@ class OAuthAuthenticationServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         oAuthAuthenticationService = new OAuthAuthenticationService(oAuthProviderFactory, memberRepository);
-        SecurityContextHolder.setContext(securityContext);
     }
 
     @Nested
@@ -93,39 +93,47 @@ class OAuthAuthenticationServiceTest {
                 given(memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email))
                         .willReturn(Optional.of(existingMember));
                 given(request.getSession(false)).willReturn(session);
+                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)).willReturn(null);
+                given(session.getCreationTime()).willReturn(System.currentTimeMillis());
                 given(session.getLastAccessedTime()).willReturn(System.currentTimeMillis());
             }
 
             @Test
             @DisplayName("OAuth 인증을 완료하고 보안 컨텍스트에 인증 정보를 설정한다")
             void it_completes_oauth_authentication_and_sets_security_context() {
-                oAuthAuthenticationService.execute(provider, code, request);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
 
-                verify(oAuthProviderFactory).getProvider(provider);
-                verify(oAuthProvider).authenticate(code);
-                verify(memberRepository).findByAuthReferrerTypeAndEmail(authReferrerType, email);
-                verify(memberRepository, never()).save(any(Member.class));
+                    oAuthAuthenticationService.execute(provider, code, request);
 
-                ArgumentCaptor<Authentication> authCaptor = ArgumentCaptor.forClass(Authentication.class);
-                verify(securityContext).setAuthentication(authCaptor.capture());
+                    verify(oAuthProviderFactory).getProvider(provider);
+                    verify(oAuthProvider).authenticate(code);
+                    verify(memberRepository).findByAuthReferrerTypeAndEmail(authReferrerType, email);
+                    verify(memberRepository, never()).save(any(Member.class));
 
-                Authentication authentication = authCaptor.getValue();
-                assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
-                OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
+                    ArgumentCaptor<Authentication> authCaptor = ArgumentCaptor.forClass(Authentication.class);
+                    verify(securityContext).setAuthentication(authCaptor.capture());
 
-                assertEquals(provider, oAuthToken.getAuthorizedClientRegistrationId());
-                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("OAUTH2_USER")));
-                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("SCOPE_email")));
-                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority(Role.APPLICANT.name())));
+                    Authentication authentication = authCaptor.getValue();
+                    assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
+                    OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
 
-                DefaultOAuth2User oAuth2User = (DefaultOAuth2User) oAuthToken.getPrincipal();
-                assertEquals(memberId, oAuth2User.getAttribute("id"));
-                assertEquals(Role.APPLICANT, oAuth2User.getAttribute("role"));
-                assertEquals(provider, oAuth2User.getAttribute("provider"));
-                assertEquals(email, oAuth2User.getAttribute("email"));
-                assertNotNull(oAuth2User.getAttribute("last_login_time"));
+                    assertEquals(provider, oAuthToken.getAuthorizedClientRegistrationId());
+                    assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("OAUTH2_USER")));
+                    assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority("SCOPE_email")));
+                    assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority(Role.APPLICANT.name())));
 
-                verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    DefaultOAuth2User oAuth2User = (DefaultOAuth2User) oAuthToken.getPrincipal();
+                    assertEquals(memberId, oAuth2User.getAttribute("id"));
+                    assertEquals(Role.APPLICANT, oAuth2User.getAttribute("role"));
+                    assertEquals(provider, oAuth2User.getAttribute("provider"));
+                    assertEquals(email, oAuth2User.getAttribute("email"));
+                    assertNotNull(oAuth2User.getAttribute("last_login_time"));
+
+                    mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
+                    verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(session).setMaxInactiveInterval(3600);
+                }
             }
         }
 
@@ -159,32 +167,40 @@ class OAuthAuthenticationServiceTest {
                         .willReturn(Optional.empty());
                 given(memberRepository.save(any(Member.class))).willReturn(newMember);
                 given(request.getSession(false)).willReturn(session);
+                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)).willReturn(null);
+                given(session.getCreationTime()).willReturn(System.currentTimeMillis());
                 given(session.getLastAccessedTime()).willReturn(System.currentTimeMillis());
             }
 
             @Test
             @DisplayName("새로운 회원을 생성하고 OAuth 인증을 완료한다")
             void it_creates_new_member_and_completes_oauth_authentication() {
-                oAuthAuthenticationService.execute(provider, code, request);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
 
-                verify(oAuthProviderFactory).getProvider(provider);
-                verify(oAuthProvider).authenticate(code);
-                verify(memberRepository).findByAuthReferrerTypeAndEmail(authReferrerType, email);
+                    oAuthAuthenticationService.execute(provider, code, request);
 
-                ArgumentCaptor<Member> memberCaptor = ArgumentCaptor.forClass(Member.class);
-                verify(memberRepository).save(memberCaptor.capture());
+                    verify(oAuthProviderFactory).getProvider(provider);
+                    verify(oAuthProvider).authenticate(code);
+                    verify(memberRepository).findByAuthReferrerTypeAndEmail(authReferrerType, email);
 
-                Member savedMember = memberCaptor.getValue();
-                assertEquals(email, savedMember.getEmail());
-                assertEquals(authReferrerType, savedMember.getAuthReferrerType());
+                    ArgumentCaptor<Member> memberCaptor = ArgumentCaptor.forClass(Member.class);
+                    verify(memberRepository).save(memberCaptor.capture());
 
-                ArgumentCaptor<Authentication> authCaptor = ArgumentCaptor.forClass(Authentication.class);
-                verify(securityContext).setAuthentication(authCaptor.capture());
+                    Member savedMember = memberCaptor.getValue();
+                    assertEquals(email, savedMember.getEmail());
+                    assertEquals(authReferrerType, savedMember.getAuthReferrerType());
 
-                Authentication authentication = authCaptor.getValue();
-                assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
+                    ArgumentCaptor<Authentication> authCaptor = ArgumentCaptor.forClass(Authentication.class);
+                    verify(securityContext).setAuthentication(authCaptor.capture());
 
-                verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    Authentication authentication = authCaptor.getValue();
+                    assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
+
+                    mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
+                    verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(session).setMaxInactiveInterval(3600);
+                }
             }
         }
 
@@ -218,18 +234,32 @@ class OAuthAuthenticationServiceTest {
                 given(memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email))
                         .willReturn(Optional.of(existingMember));
                 given(request.getSession(false)).willReturn(session);
+
+                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY))
+                        .willThrow(new IllegalStateException("Session invalidated"));
+                given(session.getCreationTime()).willThrow(new IllegalStateException("Session invalidated"));
                 given(session.getLastAccessedTime()).willThrow(new IllegalStateException("Session invalidated"));
+
                 given(request.getSession(true)).willReturn(newSession);
             }
 
             @Test
             @DisplayName("새로운 세션을 생성하고 보안 컨텍스트를 설정한다")
             void it_creates_new_session_and_sets_security_context() {
-                oAuthAuthenticationService.execute(provider, code, request);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
 
-                verify(session).getLastAccessedTime();
-                verify(request).getSession(true);
-                verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    oAuthAuthenticationService.execute(provider, code, request);
+
+                    verify(session).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+                    verify(session).invalidate();
+
+                    verify(request).getSession(true);
+                    verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(newSession).setMaxInactiveInterval(3600);
+
+                    mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
+                }
             }
         }
 
@@ -269,11 +299,18 @@ class OAuthAuthenticationServiceTest {
             @Test
             @DisplayName("새로운 세션을 생성하고 보안 컨텍스트를 설정한다")
             void it_creates_new_session_and_sets_security_context() {
-                oAuthAuthenticationService.execute(provider, code, request);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
 
-                verify(request).getSession(false);
-                verify(request).getSession(true);
-                verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    oAuthAuthenticationService.execute(provider, code, request);
+
+                    verify(request).getSession(false);
+                    verify(request).getSession(true);
+                    verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(newSession).setMaxInactiveInterval(3600);
+
+                    mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
+                }
             }
         }
 
@@ -305,22 +342,31 @@ class OAuthAuthenticationServiceTest {
                 given(memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email))
                         .willReturn(Optional.of(memberWithNullRole));
                 given(request.getSession(false)).willReturn(session);
+                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)).willReturn(null);
+                given(session.getCreationTime()).willReturn(System.currentTimeMillis());
                 given(session.getLastAccessedTime()).willReturn(System.currentTimeMillis());
             }
 
             @Test
             @DisplayName("기본 권한 UNAUTHENTICATED를 설정한다")
             void it_sets_default_unauthenticated_authority() {
-                oAuthAuthenticationService.execute(provider, code, request);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
 
-                ArgumentCaptor<Authentication> authCaptor = ArgumentCaptor.forClass(Authentication.class);
-                verify(securityContext).setAuthentication(authCaptor.capture());
+                    oAuthAuthenticationService.execute(provider, code, request);
 
-                Authentication authentication = authCaptor.getValue();
-                assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
-                OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
+                    ArgumentCaptor<Authentication> authCaptor = ArgumentCaptor.forClass(Authentication.class);
+                    verify(securityContext).setAuthentication(authCaptor.capture());
 
-                assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority(Role.UNAUTHENTICATED.name())));
+                    Authentication authentication = authCaptor.getValue();
+                    assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
+                    OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
+
+                    assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority(Role.UNAUTHENTICATED.name())));
+
+                    verify(session).setMaxInactiveInterval(3600);
+                    mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
+                }
             }
         }
     }
