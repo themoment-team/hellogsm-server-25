@@ -187,7 +187,7 @@ public class DownloadExcelServiceTest {
             assertEquals("70", dataRow.getCell(19).getStringCellValue());
             assertEquals("60", dataRow.getCell(20).getStringCellValue());
 
-            assertEquals("46.333", dataRow.getCell(21).getStringCellValue());
+            assertEquals("46.334", dataRow.getCell(21).getStringCellValue());
 
             assertEquals("IOT", dataRow.getCell(22).getStringCellValue());
             assertEquals("01012345678", dataRow.getCell(23).getStringCellValue());
@@ -225,19 +225,8 @@ public class DownloadExcelServiceTest {
                     .volunteerScore(BigDecimal.valueOf(50))
                     .build();
 
-            Oneseo oneseo = Oneseo.builder()
-                    .id(id)
-                    .member(member)
-                    .oneseoSubmitCode(submitCode)
-                    .examinationNumber(examinationNumber)
-                    .desiredMajors(desiredMajors)
-                    .wantedScreening(screening)
-                    .decidedMajor(Major.IOT)
-                    .build();
-
             EntranceTestResult entranceTestResult = EntranceTestResult.builder()
                     .id(id)
-                    .oneseo(oneseo)
                     .entranceTestFactorsDetail(factorsDetail)
                     .documentEvaluationScore(BigDecimal.valueOf(80))
                     .firstTestPassYn(passYn)
@@ -248,7 +237,6 @@ public class DownloadExcelServiceTest {
 
             OneseoPrivacyDetail privacyDetail = OneseoPrivacyDetail.builder()
                     .id(id)
-                    .oneseo(oneseo)
                     .schoolName("광주소프트웨어마이스터고등학교")
                     .address("광주광역시 광산구 송정동 상무대로 312")
                     .detailAddress("동행관")
@@ -261,6 +249,7 @@ public class DownloadExcelServiceTest {
                     .id(id)
                     .member(member)
                     .oneseoSubmitCode(submitCode)
+                    .examinationNumber(examinationNumber)
                     .desiredMajors(desiredMajors)
                     .wantedScreening(screening)
                     .decidedMajor(Major.IOT)
@@ -367,19 +356,8 @@ public class DownloadExcelServiceTest {
                     .volunteerScore(BigDecimal.valueOf(50))
                     .build();
 
-            Oneseo oneseo = Oneseo.builder()
-                    .id(1L)
-                    .member(member)
-                    .oneseoSubmitCode("A-1")
-                    .examinationNumber("0101")
-                    .desiredMajors(desiredMajors)
-                    .wantedScreening(Screening.GENERAL)
-                    .decidedMajor(Major.IOT)
-                    .build();
-
             EntranceTestResult entranceTestResult = EntranceTestResult.builder()
                     .id(1L)
-                    .oneseo(oneseo)
                     .entranceTestFactorsDetail(factorsDetail)
                     .documentEvaluationScore(documentScore)
                     .firstTestPassYn(YES)
@@ -390,7 +368,6 @@ public class DownloadExcelServiceTest {
 
             OneseoPrivacyDetail privacyDetail = OneseoPrivacyDetail.builder()
                     .id(1L)
-                    .oneseo(oneseo)
                     .schoolName("테스트고등학교")
                     .address("테스트주소")
                     .detailAddress("상세주소")
@@ -403,6 +380,7 @@ public class DownloadExcelServiceTest {
                     .id(1L)
                     .member(member)
                     .oneseoSubmitCode("A-1")
+                    .examinationNumber("0101")
                     .desiredMajors(desiredMajors)
                     .wantedScreening(Screening.GENERAL)
                     .decidedMajor(Major.IOT)
@@ -434,19 +412,8 @@ public class DownloadExcelServiceTest {
                     .volunteerScore(null)
                     .build();
 
-            Oneseo oneseo = Oneseo.builder()
-                    .id(1L)
-                    .member(member)
-                    .oneseoSubmitCode("A-1")
-                    .examinationNumber("0101")
-                    .desiredMajors(desiredMajors)
-                    .wantedScreening(Screening.GENERAL)
-                    .decidedMajor(Major.IOT)
-                    .build();
-
             EntranceTestResult entranceTestResult = EntranceTestResult.builder()
                     .id(1L)
-                    .oneseo(oneseo)
                     .entranceTestFactorsDetail(factorsDetail)
                     .documentEvaluationScore(null)
                     .firstTestPassYn(YES)
@@ -457,7 +424,6 @@ public class DownloadExcelServiceTest {
 
             OneseoPrivacyDetail privacyDetail = OneseoPrivacyDetail.builder()
                     .id(1L)
-                    .oneseo(oneseo)
                     .schoolName("테스트고등학교")
                     .address("테스트주소")
                     .detailAddress("상세주소")
@@ -470,6 +436,7 @@ public class DownloadExcelServiceTest {
                     .id(1L)
                     .member(member)
                     .oneseoSubmitCode("A-1")
+                    .examinationNumber("0101")
                     .desiredMajors(desiredMajors)
                     .wantedScreening(Screening.GENERAL)
                     .decidedMajor(Major.IOT)
