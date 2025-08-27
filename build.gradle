@@ -56,7 +56,7 @@ dependencies {
 
     /** object serialize **/
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
 
     /** aws **/
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1'
