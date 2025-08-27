@@ -63,7 +63,7 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-sns:3.0.1'
 
     /** excel **/
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
 
     /** jackson **/
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
