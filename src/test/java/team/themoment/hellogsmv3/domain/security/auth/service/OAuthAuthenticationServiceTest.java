@@ -26,6 +26,8 @@ import team.themoment.hellogsmv3.global.security.auth.service.OAuthProviderFacto
 import team.themoment.hellogsmv3.global.security.auth.service.provider.OAuthProvider;
 import team.themoment.hellogsmv3.global.security.auth.dto.UserAuthInfo;
 
+import java.time.Duration;
+import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +60,7 @@ class OAuthAuthenticationServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         oAuthAuthenticationService = new OAuthAuthenticationService(oAuthProviderFactory, memberRepository);
+        ReflectionTestUtils.setField(oAuthAuthenticationService, "sessionTimeout", Duration.ofSeconds(3600));
     }
 
     @Nested
