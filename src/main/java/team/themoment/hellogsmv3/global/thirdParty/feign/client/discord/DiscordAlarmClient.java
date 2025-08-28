@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.global.thirdParty.feign.client;
+package team.themoment.hellogsmv3.global.thirdParty.feign.client.discord;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

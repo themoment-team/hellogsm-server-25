@@ -1,17 +1,12 @@
 package team.themoment.hellogsmv3.domain.common.testResult.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import team.themoment.hellogsmv3.domain.common.testResult.dto.response.FoundTestResultResDto;
-import team.themoment.hellogsmv3.domain.common.testResult.service.QueryFirstTestResultByNameAndBirthAndPhoneNumberService;
-import team.themoment.hellogsmv3.domain.common.testResult.service.QuerySecondTestResultByNameAndBirthAndPhoneNumberService;
 import team.themoment.hellogsmv3.domain.common.testResult.service.QueryTestResultService;
 import team.themoment.hellogsmv3.domain.common.testResult.service.impl.GenerateTestResultCodeServiceImpl;
 import team.themoment.hellogsmv3.domain.member.dto.request.AuthenticateCodeReqDto;
@@ -33,8 +28,6 @@ public class TestResultController {
     private final QueryTestResultService queryTestResultService;
     private final AuthenticateCodeService authenticateCodeService;
     private final GenerateTestResultCodeServiceImpl generateTestResultCodeService;
-    private final QueryFirstTestResultByNameAndBirthAndPhoneNumberService queryFirstTestResultByNameAndBirthAndPhoneNumberService;
-    private final QuerySecondTestResultByNameAndBirthAndPhoneNumberService querySecondTestResultByNameAndBirthAndPhoneNumberService;
 
     @Operation(summary = "인증코드 전송", description = "전화번호를 요청받아 인증코드를 전송합니다.")
     @PostMapping("/send-code")
@@ -57,7 +50,7 @@ public class TestResultController {
     }
 
     @Operation(summary = "내 1차 전형 결과 상세 조회", description = "학부모 전화번호와 접수번호로 본인의 1차 전형 결과를 조회합니다.")
-    @GetMapping("/my/first-test")
+    @GetMapping("/first-test")
     public FoundTestResultResDto foundFirstTestResult(
             @AuthRequest Long memberId,
             @RequestParam("phoneNumber") @NotNull String phoneNumber,
@@ -68,7 +61,7 @@ public class TestResultController {
     }
 
     @Operation(summary = "내 2차 전형 결과 상세 조회", description = "학부모 전화번호와 수험번호로 본인의 2차 전형 결과를 조회합니다.")
-    @GetMapping("/my/second-test")
+    @GetMapping("/second-test")
     public FoundTestResultResDto foundSecondTestResult(
             @AuthRequest Long memberId,
             @RequestParam("phoneNumber") @NotNull String phoneNumber,
@@ -76,33 +69,5 @@ public class TestResultController {
             @RequestParam("examinationNumber") @NotNull String examinationNumber
     ) {
         return queryTestResultService.execute(memberId, code, phoneNumber, examinationNumber, SECOND);
-    }
-
-    @Operation(summary = "1차 전형 합불 여부 공개 조회", description = "1차 전형 합불 여부를 이름과 생년월일,학생 전화번호로 공개 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "1차 전형 합격자 조회 성공"),
-            @ApiResponse(responseCode = "204", description = "1차 전형 결과가 아직 발표되지 않았습니다.", content = @Content())
-    })
-    @GetMapping("/public/first-test")
-    public FoundTestResultResDto firstTestResultByNameAndBirth(
-            @RequestParam("name") @NotNull String name,
-            @RequestParam("phoneNumber") @NotNull String phoneNumber,
-            @RequestParam("birth") @NotNull String birth
-    ) {
-        return queryFirstTestResultByNameAndBirthAndPhoneNumberService.execute(name, phoneNumber, birth);
-    }
-
-    @Operation(summary = "최종 합격 여부 공개 조회", description = "최종 합격 여부를 이름과 생년월일,학생 전화번호로 공개 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "최종 합격자 조회 성공"),
-            @ApiResponse(responseCode = "204", description = "최종 합격 결과가 아직 발표되지 않았습니다.", content = @Content())
-    })
-    @GetMapping("/public/second-test")
-    public FoundTestResultResDto secondTestResultByNameAndBirth(
-            @RequestParam("name") @NotNull String name,
-            @RequestParam("phoneNumber") @NotNull String phoneNumber,
-            @RequestParam("birth") @NotNull String birth
-    ) {
-        return querySecondTestResultByNameAndBirthAndPhoneNumberService.execute(name, phoneNumber, birth);
     }
 }

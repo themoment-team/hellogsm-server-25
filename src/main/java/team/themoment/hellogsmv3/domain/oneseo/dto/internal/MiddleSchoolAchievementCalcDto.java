@@ -27,7 +27,7 @@ public record MiddleSchoolAchievementCalcDto(
         String liberalSystem,
         String freeSemester,
 
-        BigDecimal gedTotalScore
+        BigDecimal gedAvgScore
 ) {
 
 }

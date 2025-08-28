@@ -1,6 +1,7 @@
 package team.themoment.hellogsmv3.domain.oneseo.repository.custom;
 
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import org.springframework.data.domain.Page;
@@ -12,11 +13,16 @@ import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResD
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CustomOneseoRepository {
 
-    Integer findMaxSubmitCodeByScreening(Screening screening);
+    /**
+     * 같은 전형의 가장 높은 submitCode를 반환합니다.
+     * Screening.EXTRA_VETERANS,Screening.EXTRA_ADMISSION은 같은 전형으로 간주합니다.
+     */
+    Integer findMaxSubmitCodeByScreening(ScreeningCategory screeningCategory);
 
     Page<SearchOneseoResDto> findAllByKeywordAndScreeningAndSubmissionStatusAndTestResult(
             String keyword,
@@ -28,10 +34,13 @@ public interface CustomOneseoRepository {
 
     List<AdmissionTicketsResDto> findAdmissionTickets();
 
-    List<Oneseo> findAllByScreeningDynamic(Screening screening);
-
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndSubmitCode(String phoneNumber, String submitCode);
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndExaminationNumber(String phoneNumber, String examinationNumber);
 
     Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth);
+
+    List<Oneseo> findAllByScreeningWithAllDetails(Screening screening);
+    List<Oneseo> findAllFailedWithAllDetails();
+
+    Map<String,EntranceTestResult> findEntranceTestResultByExaminationNumbersIn(List<String> examinationNumbers);
 }

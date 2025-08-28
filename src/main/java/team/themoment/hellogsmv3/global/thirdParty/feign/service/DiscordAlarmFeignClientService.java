@@ -3,7 +3,7 @@ package team.themoment.hellogsmv3.global.thirdParty.feign.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import team.themoment.hellogsmv3.global.thirdParty.feign.client.DiscordAlarmClient;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.discord.DiscordAlarmClient;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.DiscordAlarmReqDto;
 
 @Component
