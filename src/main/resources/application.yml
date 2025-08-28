@@ -12,7 +12,7 @@ server:
         name: SESSION
         http-only: true
         path: /
-        max-age: 3600
+        max-age: 7200
 
 logging:
   config: classpath:logback-spring.xml
