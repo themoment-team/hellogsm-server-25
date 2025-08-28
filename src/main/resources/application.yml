@@ -7,7 +7,7 @@ server:
       enabled: true
       force: true
     session:
-      timeout: 3600
+      timeout: 7200
       cookie:
         name: SESSION
         http-only: true
