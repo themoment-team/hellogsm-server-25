@@ -8,7 +8,7 @@ from diagrams.aws.management import Cloudwatch
 from diagrams.onprem.client import User
 from diagrams.onprem.vcs import Github
 
-with Diagram("HelloGSM-2024 Cloud Diagram", show=False):
+with Diagram("HelloGSM-2025 Cloud Diagram", show=False):
 
     # CI/CD
     with Cluster("CI/CD"):
