@@ -43,10 +43,11 @@ public class KakaoOAuthProvider implements OAuthProvider {
         KakaoTokenResDto tokenResponse = exchangeCodeForToken(authorizationCode, clientRegistration);
         KakaoUserInfoResDto userInfo = getUserInfo(tokenResponse.accessToken());
         
-        String email = extractUserEmail(userInfo);
-        validateUserEmail(email);
+        String providerId = extractUserEmail(userInfo);
+        providerId = providerId == null ? userInfo.id().toString() : providerId;
+        validateUserEmail(providerId);
         
-        return new UserAuthInfo(email, PROVIDER_NAME, getAuthReferrerType());
+        return new UserAuthInfo(providerId, PROVIDER_NAME, getAuthReferrerType());
     }
     
     private void validateAuthorizationCode(String code) {
