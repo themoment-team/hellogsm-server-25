@@ -11,7 +11,6 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,8 +35,6 @@ public interface CustomOneseoRepository {
 
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndSubmitCode(String phoneNumber, String submitCode);
     Optional<Oneseo> findByGuardianOrTeacherPhoneNumberAndExaminationNumber(String phoneNumber, String examinationNumber);
-
-    Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth);
 
     List<Oneseo> findAllByScreeningWithAllDetails(Screening screening);
     List<Oneseo> findAllFailedWithAllDetails();

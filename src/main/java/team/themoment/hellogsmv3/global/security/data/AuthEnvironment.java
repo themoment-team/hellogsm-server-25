@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.global.security.auth;
+package team.themoment.hellogsmv3.global.security.data;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

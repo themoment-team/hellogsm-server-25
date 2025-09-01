@@ -8,7 +8,6 @@ import team.themoment.hellogsmv3.domain.member.entity.type.Sex;
 import java.time.LocalDate;
 
 public record CreateMemberReqDto(
-
         @NotBlank String code,
         @NotBlank String name,
         @Pattern(regexp = "^0(?:\\d|\\d{2})(?:\\d{3}|\\d{4})\\d{4}$")

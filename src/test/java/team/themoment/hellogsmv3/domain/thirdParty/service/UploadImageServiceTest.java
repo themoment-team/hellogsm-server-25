@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-import team.themoment.hellogsmv3.global.thirdParty.aws.s3.properties.S3Environment;
+import team.themoment.hellogsmv3.global.thirdParty.aws.s3.data.S3Environment;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.service.UploadImageService;
 
 import java.io.ByteArrayInputStream;

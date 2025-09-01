@@ -17,9 +17,8 @@ import team.themoment.hellogsmv3.global.thirdParty.feign.client.oauth.kakao.Kaka
 @Component
 @RequiredArgsConstructor
 public class KakaoOAuthProvider implements OAuthProvider {
-    
+
     private static final String PROVIDER_NAME = "kakao";
-    private static final String TOKEN_PREFIX = "Bearer ";
     
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final KakaoOAuth2Client kakaoOAuth2Client;
@@ -59,7 +58,7 @@ public class KakaoOAuthProvider implements OAuthProvider {
     private ClientRegistration getClientRegistration() {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(PROVIDER_NAME);
         if (clientRegistration == null) {
-            throw new ExpectedException("Kakao OAuth 클라이언트 설정을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException("Kakao OAuth 클라이언트 설정을 찾을 수 없습니다.");
         }
         return clientRegistration;
     }

@@ -6,7 +6,6 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 
 @Builder
 public record FoundOneseoResDto(
-
         Long oneseoId,
         String submitCode,
         Screening wantedScreening,
