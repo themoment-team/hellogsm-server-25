@@ -32,12 +32,8 @@ public class AuthController {
             @RequestBody @Valid OAuthCodeReqDto reqDto,
             HttpServletRequest request
     ) {
-        try {
-            oAuthAuthenticationService.execute(provider, reqDto.code(), request);
-            return CommonApiResponse.success("인증이 완료되었습니다.");
-        } catch (ExpectedException e) {
-            return CommonApiResponse.error(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }
+        oAuthAuthenticationService.execute(provider, reqDto.code(), request);
+        return CommonApiResponse.success("인증이 완료되었습니다.");
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
