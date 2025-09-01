@@ -53,33 +53,44 @@ public class OneseoService {
         }
     }
 
-    public static MiddleSchoolAchievementCalcDto buildCalcDtoWithFillEmpty(MiddleSchoolAchievementReqDto dto,GraduationType graduationType){
+    public static MiddleSchoolAchievementCalcDto buildCalcDtoWithFillEmpty(MiddleSchoolAchievementReqDto dto, GraduationType graduationType) {
         MiddleSchoolAchievementCalcDto.MiddleSchoolAchievementCalcDtoBuilder builder = MiddleSchoolAchievementCalcDto.builder();
-        List<Integer> tmpAchievement1_2 = dto.achievement1_2();
-        List<Integer> tmpAchievement2_1 = dto.achievement2_1();
-        if(graduationType == GraduationType.GED) {
+        if (graduationType == GraduationType.GED) {
             builder
                     .gedAvgScore(dto.gedAvgScore());
             return builder.build();
         }
         // 졸업예정자 & 졸업자는 없는 성적을 복사하여 사용
-        // 자유학기제는 1-1,1-2,2-1 에서만 시행 가능하므로 나머지는 성적이 있는것으로 간주
-        if(graduationType == GraduationType.CANDIDATE && dto.achievement1_2() == null){
-            if(dto.achievement1_1() == null){
-                tmpAchievement1_2 = dto.achievement2_2();
+        // 자유학년제(1학년)을 제외하고,두개 이상의 빈학기가 없다는 가정
+        List<Integer> tmpAchievement1_1 = dto.achievement1_1();
+        List<Integer> tmpAchievement1_2 = dto.achievement1_2();
+        List<Integer> tmpAchievement2_1 = dto.achievement2_1();
+        List<Integer> tmpAchievement2_2 = dto.achievement2_2();
+        List<Integer> tmpAchievement3_1 = dto.achievement3_1();
+        List<Integer> tmpAchievement3_2 = dto.achievement3_2();
+
+        if (graduationType == GraduationType.GRADUATE && tmpAchievement3_2 == null) {
+            tmpAchievement3_2 = tmpAchievement3_1;
+        } else if (tmpAchievement3_1 == null) {
+            tmpAchievement3_1 = tmpAchievement3_2;
+        } else if (tmpAchievement2_1 == null) {
+            tmpAchievement2_1 = tmpAchievement2_2;
+        } else if (tmpAchievement2_2 == null) {
+            tmpAchievement2_2 = tmpAchievement2_1;
+        } else if (graduationType == GraduationType.CANDIDATE && dto.achievement1_2() == null) {
+            if (dto.achievement1_1() == null) {
+                tmpAchievement1_2 = tmpAchievement2_2;
             } else {
-                tmpAchievement1_2 = dto.achievement1_1();
+                tmpAchievement1_2 = tmpAchievement1_1;
             }
         }
-        if(tmpAchievement2_1 == null){
-            tmpAchievement2_1 = dto.achievement2_2();
-        }
+
         builder
                 .achievement1_2(validationGeneralAchievement(tmpAchievement1_2))
                 .achievement2_1(validationGeneralAchievement(tmpAchievement2_1))
-                .achievement2_2(validationGeneralAchievement(dto.achievement2_2()))
-                .achievement3_1(validationGeneralAchievement(dto.achievement3_1()))
-                .achievement3_2(validationGeneralAchievement(dto.achievement3_2()))
+                .achievement2_2(validationGeneralAchievement(tmpAchievement2_2))
+                .achievement3_1(validationGeneralAchievement(tmpAchievement3_1))
+                .achievement3_2(validationGeneralAchievement(tmpAchievement3_2))
                 .artsPhysicalAchievement(validationArtsPhysicalAchievement(dto.artsPhysicalAchievement()))
                 .absentDays(dto.absentDays())
                 .attendanceDays(dto.attendanceDays())
@@ -89,20 +100,24 @@ public class OneseoService {
                 .gedAvgScore(dto.gedAvgScore());
         return builder.build();
     }
-    private static List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements)  {
+
+    private static List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements) {
         if (achievements == null) return null;
 
         achievements.forEach(achievement -> {
-            if (achievement != 0 && (achievement > 5 || achievement < 3)) throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+            if (achievement != 0 && (achievement > 5 || achievement < 3))
+                throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
         });
 
         return achievements;
     }
-    private static List<Integer> validationGeneralAchievement(List<Integer> achievements)  {
+
+    private static List<Integer> validationGeneralAchievement(List<Integer> achievements) {
         if (achievements == null) return null;
 
         achievements.forEach(achievement -> {
-            if (achievement > 5 || achievement < 0) throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+            if (achievement > 5 || achievement < 0)
+                throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
         });
 
         return achievements;
@@ -155,9 +170,9 @@ public class OneseoService {
         if (
                 reqDto.graduationType().equals(CANDIDATE) && (
                         isBlankString(reqDto.schoolTeacherName()) ||
-                        isBlankString(reqDto.schoolTeacherPhoneNumber()) ||
-                        isBlankString(reqDto.schoolName()) ||
-                        isBlankString(reqDto.schoolAddress())
+                                isBlankString(reqDto.schoolTeacherPhoneNumber()) ||
+                                isBlankString(reqDto.schoolName()) ||
+                                isBlankString(reqDto.schoolAddress())
                 )
         ) {
             throw new ExpectedException("중학교 졸업예정인 지원자는 현재 재학 중인 중학교 정보를 필수로 입력해야 합니다.", HttpStatus.BAD_REQUEST);
