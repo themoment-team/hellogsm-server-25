@@ -2,11 +2,13 @@ package team.themoment.hellogsmv3.domain.oneseo.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import team.themoment.hellogsmv3.domain.oneseo.annotation.ValidSubjectName;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
+@ValidSubjectName
 /**  중학교 성적 Request DTO
  *   Request 용도로만 사용되어야 하고, 아직 성적이 복사되지 않은 상태의 DTO입니다.
  */
