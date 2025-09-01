@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.global.common.logging.LoggingFilter;
-import team.themoment.hellogsmv3.global.security.auth.AuthEnvironment;
+import team.themoment.hellogsmv3.global.security.data.AuthEnvironment;
 import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 import team.themoment.hellogsmv3.global.security.filter.TimeBasedFilter;
 import team.themoment.hellogsmv3.global.security.handler.CustomAccessDeniedHandler;
