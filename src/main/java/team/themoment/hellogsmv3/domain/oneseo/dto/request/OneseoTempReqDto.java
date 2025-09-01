@@ -1,6 +1,7 @@
 package team.themoment.hellogsmv3.domain.oneseo.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -52,6 +53,7 @@ public record OneseoTempReqDto(
         @Schema(description = "3지망 학과", defaultValue = "IOT", allowableValues = {"SW", "AI", "IOT"})
         Major thirdDesiredMajor,
 
+        @Valid
         MiddleSchoolAchievementReqDto middleSchoolAchievement,
 
         @Schema(description = "중학교 이름", nullable = true, defaultValue = "금호중앙중학교")
