@@ -7,7 +7,6 @@ import java.util.List;
 
 @Builder
 public record MiddleSchoolAchievementResDto(
-
         List<Integer> achievement1_2,
         List<Integer> achievement2_1,
         List<Integer> achievement2_2,

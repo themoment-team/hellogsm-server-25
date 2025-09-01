@@ -13,7 +13,6 @@ import java.time.LocalDate;
 
 @Builder
 public record OneseoPrivacyDetailResDto(
-
         String name,
         Sex sex,
         @JsonSerialize(using = LocalDateSerializer.class)
