@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-import team.themoment.hellogsmv3.global.thirdParty.aws.s3.properties.S3Environment;
+import team.themoment.hellogsmv3.global.thirdParty.aws.s3.data.S3Environment;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
