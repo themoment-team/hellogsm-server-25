@@ -14,6 +14,9 @@ public class DuplicatePhoneNumberValidator implements ConstraintValidator<ValidD
 
     @Override
     public boolean isValid(OneseoReqDto dto, ConstraintValidatorContext context) {
+        if(dto.guardianPhoneNumber() == null || dto.schoolTeacherPhoneNumber() == null) {
+            return true;
+        }
         if (dto.guardianPhoneNumber().equals(dto.schoolTeacherPhoneNumber())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(annotation.message()).addConstraintViolation();
