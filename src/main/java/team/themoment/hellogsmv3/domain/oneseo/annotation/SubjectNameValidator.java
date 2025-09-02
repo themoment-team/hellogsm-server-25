@@ -18,11 +18,11 @@ public class SubjectNameValidator implements ConstraintValidator<ValidSubjectNam
     @Override
     public boolean isValid(MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto, ConstraintValidatorContext context) {
 
-        if(
+        if (
                 middleSchoolAchievementReqDto.generalSubjects() == null ||
-                middleSchoolAchievementReqDto.artsPhysicalSubjects() == null||
+                middleSchoolAchievementReqDto.artsPhysicalSubjects() == null ||
                 middleSchoolAchievementReqDto.newSubjects() == null
-        ){
+        ) {
             return true;
         }
 
@@ -37,7 +37,7 @@ public class SubjectNameValidator implements ConstraintValidator<ValidSubjectNam
                 middleSchoolAchievementReqDto.generalSubjects()
         );
 
-        if(!isValid){
+        if (!isValid) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(annotation.message()).addConstraintViolation();
             return false;
