@@ -81,6 +81,23 @@ public class DuplicatePhoneNumberValidatorTest {
                 assertTrue(result);
             }
         }
+        @DisplayName("보호자와 담임선생님의 전화번호가 null 이면")
+        @Nested
+        class Context_with_null_phone_numbers {
+            @BeforeEach
+            void setUp() {
+                oneseoReqDto = createFilledDtoBuilder()
+                        .guardianPhoneNumber(null)
+                        .schoolTeacherPhoneNumber(null)
+                        .build();
+            }
+            @DisplayName("ConstraintViolation을 발생시키지 않는다.")
+            @Test
+            void it_doesnt_make_constraint_violation() {
+                boolean result = validator.isValid(oneseoReqDto, context);
+                assertTrue(result);
+            }
+        }
     }
     private OneseoReqDto.OneseoReqDtoBuilder createFilledDtoBuilder(){
         List<Integer> achievement = Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5);
