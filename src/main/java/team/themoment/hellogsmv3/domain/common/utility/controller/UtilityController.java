@@ -49,7 +49,7 @@ public class UtilityController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "원서 삭제 성공"
+                    description = "회원탈퇴 및 해당하는 계정의 원서 삭제 성공"
             ),
             @ApiResponse(
                     responseCode = "404",
