@@ -21,11 +21,14 @@ public class SubjectNameValidator implements ConstraintValidator<ValidSubjectNam
     public boolean isValid(MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto, ConstraintValidatorContext context) {
         if(middleSchoolAchievementReqDto == null ||
                 middleSchoolAchievementReqDto.generalSubjects() == null ||
-                middleSchoolAchievementReqDto.artsPhysicalSubjects() == null ||
-                middleSchoolAchievementReqDto.newSubjects() == null
+                middleSchoolAchievementReqDto.artsPhysicalSubjects() == null
         ){
-            throw new ExpectedException("과목명이 입력되지 않았습니다.", HttpStatus.BAD_REQUEST);
+            throw new ExpectedException("middleSchoolAchievementReqDto 입력이 잘못되었습니다.", HttpStatus.BAD_REQUEST);
         }
+        if(middleSchoolAchievementReqDto.newSubjects() == null){
+            return true;
+        }
+
         boolean isValid = Collections.disjoint(
                 middleSchoolAchievementReqDto.generalSubjects(),
                 middleSchoolAchievementReqDto.newSubjects()
