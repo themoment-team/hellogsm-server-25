@@ -86,5 +86,27 @@ public class SubjectNameValidatorTest {
                 verify(context).buildConstraintViolationWithTemplate(annotation.message());
             }
         }
+
+        @DisplayName("필요한 필드가 null이면")
+        @Nested
+        class Context_with_null_fields {
+
+            @BeforeEach
+            void setUp() {
+                middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder()
+                        .generalSubjects(Arrays.asList("국어", "도덕", "사회", "역사", "수학", "과학", "기술가정", "영어"))
+                        .newSubjects(null)
+                        .artsPhysicalSubjects(Arrays.asList("체육", "미술", "음악"))
+                        .build();
+            }
+
+            @DisplayName("ConstraintViolation을 발생시키지 않는다.")
+            @Test
+            void it_doesnt_make_constraint_violation() {
+                boolean result = validator.isValid(middleSchoolAchievementReqDto, context);
+                assertTrue(result);
+            }
+        }
+
     }
 }
