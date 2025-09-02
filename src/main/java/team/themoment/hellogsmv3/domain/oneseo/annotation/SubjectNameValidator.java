@@ -18,7 +18,11 @@ public class SubjectNameValidator implements ConstraintValidator<ValidSubjectNam
     @Override
     public boolean isValid(MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto, ConstraintValidatorContext context) {
 
-        if(middleSchoolAchievementReqDto.newSubjects() == null){
+        if(
+                middleSchoolAchievementReqDto.generalSubjects() == null ||
+                middleSchoolAchievementReqDto.artsPhysicalSubjects() == null||
+                middleSchoolAchievementReqDto.newSubjects() == null
+        ){
             return true;
         }
 
