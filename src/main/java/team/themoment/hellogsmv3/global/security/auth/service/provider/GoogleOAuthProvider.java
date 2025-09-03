@@ -19,7 +19,6 @@ import team.themoment.hellogsmv3.global.thirdParty.feign.client.oauth.google.Goo
 public class GoogleOAuthProvider implements OAuthProvider {
     
     private static final String PROVIDER_NAME = "google";
-    private static final String TOKEN_PREFIX = "Bearer ";
     
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final GoogleOAuth2Client googleOAuth2Client;
@@ -57,7 +56,7 @@ public class GoogleOAuthProvider implements OAuthProvider {
     private ClientRegistration getClientRegistration() {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(PROVIDER_NAME);
         if (clientRegistration == null) {
-            throw new ExpectedException("Google OAuth 클라이언트 설정을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException("Google OAuth 클라이언트 설정을 찾을 수 없습니다.");
         }
         return clientRegistration;
     }

@@ -18,7 +18,6 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.custom.CustomOneseoRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -145,26 +144,6 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .fetch();
 
         return PageableExecutionUtils.getPage(oneseos, pageable, () -> getTotalCount(builder));
-    }
-
-    @Override
-    public Optional<Oneseo> findByMemberNameAndMemberBirthAndPhoneNumber(String memberName, String phoneNumber, LocalDate memberBirth) {
-        return Optional.ofNullable(
-                queryFactory.selectFrom(oneseo)
-                        .leftJoin(oneseo.member, member)
-                        .fetchJoin()
-                        .leftJoin(oneseo.entranceTestResult, entranceTestResult)
-                        .fetchJoin()
-                        .leftJoin(oneseo.oneseoPrivacyDetail, oneseoPrivacyDetail)
-                        .fetchJoin()
-                        .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement)
-                        .fetchJoin()
-                        .where(
-                                member.name.eq(memberName)
-                                        .and(member.phoneNumber.eq(phoneNumber))
-                                        .and(member.birth.eq(memberBirth))
-                        ).fetchOne()
-        );
     }
 
     @Override

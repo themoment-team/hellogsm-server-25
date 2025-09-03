@@ -4,7 +4,7 @@ EXPOSE 8080
 
 WORKDIR /hellogsm-server-v3
 
-COPY build/libs/hellogsm-server-24-0.0.1-SNAPSHOT.jar hellogsm-stage-server.jar
+COPY build/libs/hellogsm-server-25-0.0.1-SNAPSHOT.jar hellogsm-stage-server.jar
 
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 

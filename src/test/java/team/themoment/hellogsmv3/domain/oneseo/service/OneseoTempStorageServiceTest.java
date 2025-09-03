@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+
 @DisplayName("OneseoTempStorageService 클래스의")
 public class OneseoTempStorageServiceTest {
 

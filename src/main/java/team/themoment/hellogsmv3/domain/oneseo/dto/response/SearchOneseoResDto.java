@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 @Builder
 public record SearchOneseoResDto(
-
         Long memberId,
         String submitCode,
         YesNo realOneseoArrivedYn,

@@ -1,4 +1,4 @@
-package team.themoment.hellogsmv3.global.thirdParty.aws.s3.properties;
+package team.themoment.hellogsmv3.global.thirdParty.aws.s3.data;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
