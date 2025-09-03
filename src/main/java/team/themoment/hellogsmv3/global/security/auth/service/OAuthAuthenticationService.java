@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,7 @@ import team.themoment.hellogsmv3.global.security.auth.service.provider.OAuthProv
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,9 @@ public class OAuthAuthenticationService {
 
     private final OAuthProviderFactory oAuthProviderFactory;
     private final MemberRepository memberRepository;
+
+    @Value("${spring.session.timeout:${server.servlet.session.timeout}}")
+    private Duration sessionTimeout;
 
     public void execute(String provider, String code, HttpServletRequest request) {
 
@@ -113,6 +118,6 @@ public class OAuthAuthenticationService {
         SecurityContextHolder.setContext(securityContext);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
-        session.setMaxInactiveInterval(3600);
+        session.setMaxInactiveInterval((int) sessionTimeout.getSeconds());
     }
 }

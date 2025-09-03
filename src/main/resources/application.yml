@@ -7,12 +7,12 @@ server:
       enabled: true
       force: true
     session:
-      timeout: 3600
+      timeout: 10800
       cookie:
         name: SESSION
         http-only: true
         path: /
-        max-age: 3600
+        max-age: 10800
 
 logging:
   config: classpath:logback-spring.xml
@@ -42,7 +42,7 @@ spring:
     redis:
       flush-mode: on-save
       save-mode: on-set-attribute
-    timeout: 3600s
+    timeout: 10800s
 
   security:
     oauth2:
