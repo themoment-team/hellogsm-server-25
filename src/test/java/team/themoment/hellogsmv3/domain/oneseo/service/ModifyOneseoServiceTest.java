@@ -195,6 +195,8 @@ class ModifyOneseoServiceTest {
                 verify(oneseoPrivacyDetailRepository).save(oneseoPrivacyDetailCaptor.capture());
                 verify(middleSchoolAchievementRepository).save(middleSchoolAchievementCaptor.capture());
                 verify(lambdaScoreCalculatorClient).calculateScore(any(LambdaScoreCalculatorReqDto.class));
+                verify(entranceTestFactorsDetailRepository).save(any(EntranceTestFactorsDetail.class));
+                verify(entranceTestResultRepository).save(any(EntranceTestResult.class));
 
                 Oneseo capturedOneseo = oneseoCaptor.getValue();
                 OneseoPrivacyDetail capturedPrivacyDetail = oneseoPrivacyDetailCaptor.getValue();
@@ -223,11 +225,11 @@ class ModifyOneseoServiceTest {
 
                 assertEquals(middleSchoolAchievement.getId(), capturedAchievement.getId());
                 assertEquals(middleSchoolAchievement.getOneseo().getId(), capturedAchievement.getOneseo().getId());
-                assertEquals(null, capturedAchievement.getAchievement1_2());
+                assertNull(capturedAchievement.getAchievement1_2());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
-                assertEquals(achievement, capturedAchievement.getAchievement2_1());
+                assertEquals(achievement, capturedAchievement.getAchievement2_2());
                 assertEquals(achievement, capturedAchievement.getAchievement3_1());
-                assertEquals(null, capturedAchievement.getAchievement3_2());
+                assertNull(capturedAchievement.getAchievement3_2());
                 assertEquals(generalSubjects, capturedAchievement.getGeneralSubjects());
                 assertEquals(newSubjects, capturedAchievement.getNewSubjects());
                 assertEquals(artsPhysicalAchievement, capturedAchievement.getArtsPhysicalAchievement());
@@ -237,7 +239,7 @@ class ModifyOneseoServiceTest {
                 assertEquals(volunteerTime, capturedAchievement.getVolunteerTime());
                 assertEquals(liberalSystem, capturedAchievement.getLiberalSystem());
                 assertEquals(freeSemester, capturedAchievement.getFreeSemester());
-                assertEquals(null, capturedAchievement.getGedAvgScore());
+                assertNull(capturedAchievement.getGedAvgScore());
             }
 
             @Test
@@ -264,7 +266,10 @@ class ModifyOneseoServiceTest {
                 given(oneseoService.findByMemberOrThrow(existingMember)).willReturn(oneseo);
                 given(oneseoPrivacyDetailRepository.findByOneseo(oneseo)).willReturn(existingPrivacyDetail);
                 given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(existingAchievement);
-                given(existingPrivacyDetail.getGraduationType()).willReturn(GED);
+                given(entranceTestResultRepository.findByOneseo(any(Oneseo.class))).willReturn(null);
+                CalculatedScoreResDto mockCalculatedScore = mock(CalculatedScoreResDto.class);
+                given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class)))
+                        .willReturn(mockCalculatedScore);
 
                 modifyOneseoService.execute(oneseoReqDto, memberId);
                 ArgumentCaptor<WantedScreeningChangeHistory> screeningChangeHistoryArgumentCaptor = ArgumentCaptor.forClass(WantedScreeningChangeHistory.class);
