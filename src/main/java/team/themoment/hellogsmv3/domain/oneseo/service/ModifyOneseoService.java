@@ -1,13 +1,13 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
-import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
@@ -15,15 +15,10 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.DesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
-import team.themoment.hellogsmv3.domain.oneseo.repository.MiddleSchoolAchievementRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.ScreeningChangeHistoryRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestFactorsDetailRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
+import team.themoment.hellogsmv3.domain.oneseo.repository.*;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-import team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda.LambdaScoreCalculatorClient;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.LambdaScoreCalculatorReqDto;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda.LambdaScoreCalculatorClient;
 
 import java.util.List;
 
@@ -42,6 +37,9 @@ public class ModifyOneseoService {
     private final OneseoService oneseoService;
     private final MemberService memberService;
     private final LambdaScoreCalculatorClient lambdaScoreCalculatorClient;
+
+    @Value("${lambda-score-calculator.api-key}")
+    private String lambdaApiKey;
 
     @Transactional
     @CachePut(value = OneseoService.ONESEO_CACHE_VALUE, key = "#memberId")
@@ -156,12 +154,12 @@ public class ModifyOneseoService {
 
     private CalculatedScoreResDto calculateMiddleSchoolAchievement(GraduationType graduationType, MiddleSchoolAchievementReqDto middleSchoolAchievement, Oneseo oneseo) {
         LambdaScoreCalculatorReqDto lambdaRequest = LambdaScoreCalculatorReqDto.from(middleSchoolAchievement, graduationType);
-        CalculatedScoreResDto calculatedScore = lambdaScoreCalculatorClient.calculateScore(lambdaRequest);
+        CalculatedScoreResDto calculatedScore = lambdaScoreCalculatorClient.calculateScore(lambdaRequest, lambdaApiKey);
         saveCalculatedScoreToDb(calculatedScore, oneseo);
-        
+
         return calculatedScore;
     }
-    
+
     private void saveCalculatedScoreToDb(CalculatedScoreResDto calculatedScore, Oneseo oneseo) {
         EntranceTestResult findEntranceTestResult = entranceTestResultRepository.findByOneseo(oneseo);
 
@@ -305,21 +303,23 @@ public class ModifyOneseoService {
         }
     }
 
-    private List<Integer> validationGeneralAchievement(List<Integer> achievements)  {
+    private List<Integer> validationGeneralAchievement(List<Integer> achievements) {
         if (achievements == null) return null;
 
         achievements.forEach(achievement -> {
-            if (achievement > 5 || achievement < 0) throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+            if (achievement > 5 || achievement < 0)
+                throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
         });
 
         return achievements;
     }
 
-    private List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements)  {
+    private List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements) {
         if (achievements == null) return null;
 
         achievements.forEach(achievement -> {
-            if (achievement != 0 && (achievement > 5 || achievement < 3)) throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+            if (achievement != 0 && (achievement > 5 || achievement < 3))
+                throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
         });
 
         return achievements;
