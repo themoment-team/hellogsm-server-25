@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
@@ -66,6 +67,7 @@ class CreateOneseoServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        ReflectionTestUtils.setField(createOneseoService, "lambdaApiKey", "test-api-key");
     }
 
     @Nested
@@ -150,7 +152,7 @@ class CreateOneseoServiceTest {
 
                 given(memberService.findByIdForUpdateOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoRepository.existsByMember(existingMember)).willReturn(false);
-                given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class)))
+                given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class), any(String.class)))
                         .willReturn(mockCalculatedScore);
                 given(entranceTestResultRepository.findByOneseo(any(Oneseo.class))).willReturn(null);
             }
@@ -193,7 +195,7 @@ class CreateOneseoServiceTest {
 
                 assertEquals(achievement, capturedAchievement.getAchievement1_2());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
-                assertEquals(achievement, capturedAchievement.getAchievement2_1());
+                assertEquals(achievement, capturedAchievement.getAchievement2_2());
                 assertEquals(achievement, capturedAchievement.getAchievement3_1());
                 assertEquals(generalSubjects, capturedAchievement.getGeneralSubjects());
                 assertEquals(newSubjects, capturedAchievement.getNewSubjects());
