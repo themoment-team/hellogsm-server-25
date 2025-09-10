@@ -2,14 +2,20 @@ package team.themoment.hellogsmv3.domain.oneseo.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import team.themoment.hellogsmv3.domain.oneseo.annotation.ValidSubjectName;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
+@ValidSubjectName
+/**  중학교 성적 Request DTO
+ *   Request 용도로만 사용되어야 하고, 아직 성적이 복사되지 않은 상태의 DTO입니다.
+ */
 public record MiddleSchoolAchievementReqDto(
-
-        @Schema(description = "1학년 2학기 일반교과 성취점수", nullable = true, defaultValue = "null")
+        @Schema(description = "1학년 1학기 일반교과 성취점수", nullable = true, defaultValue = "null")
+        List<Integer> achievement1_1,
+        @Schema(description = "1학년 2학기 일반교과 성취점수", nullable = true, defaultValue = "[4, 5, 3, 5, 4, 5, 3, 5, 2]")
         List<Integer> achievement1_2,
         @Schema(description = "2학년 1학기 일반교과 성취점수", nullable = true, defaultValue = "[4, 5, 3, 5, 4, 5, 3, 5, 2]")
         List<Integer> achievement2_1,
@@ -37,7 +43,7 @@ public record MiddleSchoolAchievementReqDto(
         String liberalSystem,
         @Schema(description = "자유학기제 학기", nullable = true, defaultValue = "null", allowableValues = {"1-1", "1-2", "2-1", "2-2", "3-1", "3-2"})
         String freeSemester,
-        @Schema(description = "검정고시 전과목 득점 합계", nullable = true, defaultValue = "null")
-        BigDecimal gedTotalScore
+        @Schema(description = "검정고시 전과목 득점 평균", nullable = true, defaultValue = "null")
+        BigDecimal gedAvgScore
 ) {
 }

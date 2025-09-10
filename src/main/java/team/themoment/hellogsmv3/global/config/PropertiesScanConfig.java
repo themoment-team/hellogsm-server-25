@@ -5,8 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationPropertiesScan(basePackages = {
-                "team.themoment.hellogsmv3.global.security.data",
-                "team.themoment.hellogsmv3.global.security.auth",
-                "team.themoment.hellogsmv3.global.thirdParty.aws.s3.properties"})
+        "team.themoment.hellogsmv3.global.security.data",
+        "team.themoment.hellogsmv3.global.thirdParty.aws.s3.data"})
 public class PropertiesScanConfig {
 }

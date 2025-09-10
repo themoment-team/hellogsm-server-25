@@ -3,12 +3,13 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
-import team.themoment.hellogsmv3.domain.common.operation.repo.OperationTestResultRepository;
+import team.themoment.hellogsmv3.domain.common.operation.repository.OperationTestResultRepository;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
@@ -17,9 +18,9 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.CANDIDATE;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
@@ -36,11 +37,11 @@ public class OneseoService {
 
     public void assignSubmitCode(Oneseo oneseo, Screening originalScreening) {
         if (oneseo.getWantedScreening() != originalScreening) {
-            Integer maxSubmitCodeNumber = oneseoRepository.findMaxSubmitCodeByScreening(oneseo.getWantedScreening());
+            ScreeningCategory screeningCategory = oneseo.getWantedScreening().getScreeningCategory();
+            Integer maxSubmitCodeNumber = oneseoRepository.findMaxSubmitCodeByScreening(screeningCategory);
             int newSubmitCodeNumber = (maxSubmitCodeNumber != null ? maxSubmitCodeNumber : 0) + 1;
 
             String submitCode;
-            ScreeningCategory screeningCategory = oneseo.getWantedScreening().getScreeningCategory();
             switch (screeningCategory) {
                 case GENERAL -> submitCode = "A-" + newSubmitCodeNumber;
                 case SPECIAL -> submitCode = "B-" + newSubmitCodeNumber;
@@ -52,9 +53,83 @@ public class OneseoService {
         }
     }
 
+    public static MiddleSchoolAchievementCalcDto buildCalcDtoWithFillEmpty(MiddleSchoolAchievementReqDto dto, GraduationType graduationType) {
+        MiddleSchoolAchievementCalcDto.MiddleSchoolAchievementCalcDtoBuilder builder = MiddleSchoolAchievementCalcDto.builder();
+        if (graduationType == GraduationType.GED) {
+            builder
+                    .gedAvgScore(dto.gedAvgScore());
+            return builder.build();
+        }
+        // 졸업예정자 & 졸업자는 없는 성적을 복사하여 사용
+        // 자유학년제(1학년)을 제외하고,두개 이상의 빈학기가 없다는 가정
+        List<Integer> tmpAchievement1_1 = dto.achievement1_1();
+        List<Integer> tmpAchievement1_2 = dto.achievement1_2();
+        List<Integer> tmpAchievement2_1 = dto.achievement2_1();
+        List<Integer> tmpAchievement2_2 = dto.achievement2_2();
+        List<Integer> tmpAchievement3_1 = dto.achievement3_1();
+        List<Integer> tmpAchievement3_2 = dto.achievement3_2();
+
+        if (graduationType == GraduationType.GRADUATE && tmpAchievement3_2 == null) {
+            tmpAchievement3_2 = tmpAchievement3_1;
+        } else if (tmpAchievement3_1 == null) {
+            tmpAchievement3_1 = tmpAchievement3_2;
+        } else if (tmpAchievement2_1 == null) {
+            tmpAchievement2_1 = tmpAchievement2_2;
+        } else if (tmpAchievement2_2 == null) {
+            tmpAchievement2_2 = tmpAchievement2_1;
+        } else if (graduationType == GraduationType.CANDIDATE && dto.achievement1_2() == null) {
+            if (dto.achievement1_1() == null) {
+                tmpAchievement1_2 = tmpAchievement2_2;
+            } else {
+                tmpAchievement1_2 = tmpAchievement1_1;
+            }
+        }
+
+        builder
+                .achievement1_2(validationGeneralAchievement(tmpAchievement1_2))
+                .achievement2_1(validationGeneralAchievement(tmpAchievement2_1))
+                .achievement2_2(validationGeneralAchievement(tmpAchievement2_2))
+                .achievement3_1(validationGeneralAchievement(tmpAchievement3_1))
+                .achievement3_2(validationGeneralAchievement(tmpAchievement3_2))
+                .artsPhysicalAchievement(validationArtsPhysicalAchievement(dto.artsPhysicalAchievement()))
+                .absentDays(dto.absentDays())
+                .attendanceDays(dto.attendanceDays())
+                .volunteerTime(dto.volunteerTime())
+                .liberalSystem(dto.liberalSystem())
+                .freeSemester(dto.freeSemester())
+                .gedAvgScore(dto.gedAvgScore());
+        return builder.build();
+    }
+
+    private static List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements) {
+        if (achievements == null) return null;
+
+        achievements.forEach(achievement -> {
+            if (achievement != 0 && (achievement > 5 || achievement < 3))
+                throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+        });
+
+        return achievements;
+    }
+
+    private static List<Integer> validationGeneralAchievement(List<Integer> achievements) {
+        if (achievements == null) return null;
+
+        achievements.forEach(achievement -> {
+            if (achievement > 5 || achievement < 0)
+                throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
+        });
+
+        return achievements;
+    }
+
     public static Integer calcAbsentDaysCount(List<Integer> absentDays, List<Integer> attendanceDays) {
         if (absentDays == null || attendanceDays == null) {
             return null;
+        }
+
+        if (absentDays.stream().anyMatch(Objects::isNull) || attendanceDays.stream().anyMatch(Objects::isNull)) {
+            throw new ExpectedException("결석 횟수나 지각, 조퇴, 결과 횟수에 null 값이 포함되어 있습니다.", HttpStatus.BAD_REQUEST);
         }
 
         int totalAbsentDays = absentDays.stream().mapToInt(Integer::intValue).sum();
@@ -76,28 +151,28 @@ public class OneseoService {
     }
 
     public boolean validateFirstTestResultAnnouncement() {
-        OperationTestResult testResult = operationTestResultRepository.findTestResult();
-
-        return testResult.getFirstTestResultAnnouncementYn().equals(NO) ||
-                LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
-                entranceTestResultRepository.existsByFirstTestPassYnIsNull();
+        return operationTestResultRepository.findTestResult()
+                .map(testResult -> testResult.getFirstTestResultAnnouncementYn().equals(NO) ||
+                        LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
+                        entranceTestResultRepository.existsByFirstTestPassYnIsNull())
+                .orElse(true);
     }
 
     public boolean validateSecondTestResultAnnouncement() {
-        OperationTestResult testResult = operationTestResultRepository.findTestResult();
-
-        return testResult.getSecondTestResultAnnouncementYn().equals(NO) ||
-                LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
-                entranceTestResultRepository.existsByFirstTestPassYnIsNull();
+        return operationTestResultRepository.findTestResult()
+                .map(testResult -> testResult.getSecondTestResultAnnouncementYn().equals(NO) ||
+                        LocalDateTime.now().isBefore(scheduleEnv.firstResultsAnnouncement()) ||
+                        entranceTestResultRepository.existsByFirstTestPassYnIsNull())
+                .orElse(true);
     }
 
     public static void isValidMiddleSchoolInfo(OneseoReqDto reqDto) {
         if (
                 reqDto.graduationType().equals(CANDIDATE) && (
                         isBlankString(reqDto.schoolTeacherName()) ||
-                        isBlankString(reqDto.schoolTeacherPhoneNumber()) ||
-                        isBlankString(reqDto.schoolName()) ||
-                        isBlankString(reqDto.schoolAddress())
+                                isBlankString(reqDto.schoolTeacherPhoneNumber()) ||
+                                isBlankString(reqDto.schoolName()) ||
+                                isBlankString(reqDto.schoolAddress())
                 )
         ) {
             throw new ExpectedException("중학교 졸업예정인 지원자는 현재 재학 중인 중학교 정보를 필수로 입력해야 합니다.", HttpStatus.BAD_REQUEST);

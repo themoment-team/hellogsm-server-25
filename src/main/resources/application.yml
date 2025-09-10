@@ -7,12 +7,12 @@ server:
       enabled: true
       force: true
     session:
-      timeout: 3600
+      timeout: 10800
       cookie:
         name: SESSION
         http-only: true
         path: /
-        max-age: 3600
+        max-age: 10800
 
 logging:
   config: classpath:logback-spring.xml
@@ -38,6 +38,12 @@ spring:
       host: 127.0.0.1
       port: 6379
 
+  session:
+    redis:
+      flush-mode: on-save
+      save-mode: on-set-attribute
+    timeout: 10800s
+
   security:
     oauth2:
       client:
@@ -46,6 +52,7 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
             scope:
               - email
           kakao:
@@ -80,8 +87,6 @@ spring:
         bucket-name: ${AWS_BUCKET_NAME}
       region:
         static: ${AWS_REGION}
-      stack:
-        auto: false
       sns:
         region: ${AWS_SNS_REGION}
 
@@ -91,20 +96,14 @@ spring:
       max-request-size: 5MB
 
 auth:
-  redirect-url:
-    hg-student: http://localhost:8080
-    hg-admin: http://localhost:8080/admin
-    dry-run: http://localhost:3000
-    loginEndPointBaseUri: /auth/v3/oauth2/authorization
-    loginProcessingUri: /login/oauth2/code/*
-    allowed-origins:
+  allowed-origins:
       - '*'
 
 schedule:
   oneseoSubmissionStart: ${ONESEO_SUBMISSION_START}
   oneseoSubmissionEnd: ${ONESEO_SUBMISSION_END}
   firstResultsAnnouncement: ${FIRST_RESULTS_ANNOUNCEMENT}
-  aptitudeEvaluation: ${APTITUDE_EVALUATION}
+  competencyEvaluation: ${COMPETENCY_EVALUATION}
   interview: ${INTERVIEW}
   finalResultsAnnouncement: ${FINAL_RESULTS_ANNOUNCEMENT}
 

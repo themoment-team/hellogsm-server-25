@@ -8,7 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestFactorsDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
@@ -46,7 +46,7 @@ class CalculateGedServiceTest {
     @DisplayName("execute 메소드는")
     class Describe_execute {
 
-        private MiddleSchoolAchievementReqDto reqDto;
+        private MiddleSchoolAchievementCalcDto calcDto;
         private Oneseo oneseo;
 
         @BeforeEach
@@ -61,11 +61,11 @@ class CalculateGedServiceTest {
             @Test
             @DisplayName("성적을 계산하고 결과를 저장한다")
             void it_calculates_and_saves_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
-                        .gedTotalScore(BigDecimal.valueOf(480))
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
+                        .gedAvgScore(BigDecimal.valueOf(80))
                         .build();
 
-                calculateGedService.execute(reqDto, oneseo, GED);
+                calculateGedService.execute(calcDto, oneseo, GED);
 
                 verify(entranceTestFactorsDetailRepository).save(any(EntranceTestFactorsDetail.class));
                 verify(entranceTestResultRepository).save(any(EntranceTestResult.class));
@@ -74,11 +74,12 @@ class CalculateGedServiceTest {
             @Test
             @DisplayName("graduationType이 GED라면 올바른 내신 성적을 계산하고 결과를 저장한다")
             void it_ged_calculates_and_save_results() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
-                        .gedTotalScore(BigDecimal.valueOf(536.91))
+
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
+                        .gedAvgScore(BigDecimal.valueOf(89.485))
                         .build();
 
-                calculateGedService.execute(reqDto, oneseo, GED);
+                calculateGedService.execute(calcDto, oneseo, GED);
 
                 ArgumentCaptor<EntranceTestFactorsDetail> entranceTestFactorsDetailArgumentCaptor = ArgumentCaptor.forClass(EntranceTestFactorsDetail.class);
                 ArgumentCaptor<EntranceTestResult> entranceTestResultArgumentCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
@@ -106,12 +107,12 @@ class CalculateGedServiceTest {
             @Test
             @DisplayName("예외를 던진다")
             void it_throw_exception() {
-                reqDto = MiddleSchoolAchievementReqDto.builder()
-                        .gedTotalScore(BigDecimal.valueOf(480))
+                calcDto = MiddleSchoolAchievementCalcDto.builder()
+                        .gedAvgScore(BigDecimal.valueOf(90))
                         .build();
 
                 IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () ->
-                        calculateGedService.execute(reqDto, oneseo, CANDIDATE));
+                        calculateGedService.execute(calcDto, oneseo, CANDIDATE));
 
                 assertEquals("올바르지 않은 graduationType입니다.", illegalArgumentException.getMessage());
             }

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.*;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
@@ -39,7 +40,7 @@ public class OneseoController {
     private final CreateOneseoService createOneseoService;
     private final ModifyOneseoService modifyOneseoService;
     private final ModifyRealOneseoArrivedYnService modifyRealOneseoArrivedYnService;
-    private final ModifyAptitudeEvaluationScoreService modifyAptitudeEvaluationScoreService;
+    private final ModifyCompetencyEvaluationScoreService modifyCompetencyEvaluationScoreService;
     private final ModifyInterviewScoreService modifyInterviewScoreService;
     private final QueryAdmissionTicketsService queryAdmissionTicketsService;
     private final DownloadExcelService downloadExcelService;
@@ -49,6 +50,7 @@ public class OneseoController {
     private final OneseoTempStorageService oneseoTempStorageService;
     private final ModifyEntranceIntentionService modifyEntranceIntentionService;
     private final QueryOneseoEditabilityService queryOneseoEditabilityService;
+    private final UploadExcelService uploadExcelService;
 
     @Operation(summary = "내 원서 등록", description = "원서를 등록합니다.")
     @PostMapping("/oneseo/me")
@@ -78,13 +80,13 @@ public class OneseoController {
         return modifyRealOneseoArrivedYnService.execute(memberId);
     }
 
-    @Operation(summary = "적성 검사 점수 기입", description = "맴버 id로 원서의 적성 검사 점수를 기입합니다.")
-    @PatchMapping("/aptitude-score/{memberId}")
-    public CommonApiResponse modifyAptitudeScore(
+    @Operation(summary = "역량검사 점수 기입", description = "맴버 id로 원서의 역량검사 점수를 기입합니다.")
+    @PatchMapping("/competency-score/{memberId}")
+    public CommonApiResponse modifyCompetencyScore(
             @PathVariable Long memberId,
-            @RequestBody @Valid AptitudeEvaluationScoreReqDto aptitudeEvaluationScoreReqDto
+            @RequestBody @Valid CompetencyEvaluationScoreReqDto competencyEvaluationScoreReqDto
     ) {
-        modifyAptitudeEvaluationScoreService.execute(memberId, aptitudeEvaluationScoreReqDto);
+        modifyCompetencyEvaluationScoreService.execute(memberId, competencyEvaluationScoreReqDto);
         return CommonApiResponse.success("수정되었습니다.");
     }
 
@@ -145,7 +147,7 @@ public class OneseoController {
     @Operation(summary = "모의 성적 계산", description = "성적 점수를 입력받아 모의 성적 환산값을 반환합니다.")
     @PostMapping("/calculate-mock-score")
     public CalculatedScoreResDto calcMockScore(
-            @RequestBody MiddleSchoolAchievementReqDto dto,
+            @Valid @RequestBody MiddleSchoolAchievementReqDto dto,
             @RequestParam("graduationType") GraduationType graduationType
     ) {
         return calculateMockScoreService.execute(dto, graduationType);
@@ -167,6 +169,15 @@ public class OneseoController {
     ) {
         oneseoTempStorageService.execute(reqDto, step, memberId);
         return CommonApiResponse.success("임시저장되었습니다.");
+    }
+
+    @Operation(summary = "엑셀 업로드", description = "엑셀 파일을 업로드하여 2차전형 점수를 입력합니다.")
+    @PostMapping("/excel")
+    public CommonApiResponse uploadExcel(
+            @RequestParam("file") MultipartFile file
+    ){
+        uploadExcelService.execute(file);
+        return CommonApiResponse.success("엑셀 파일이 성공적으로 업로드되었습니다.");
     }
 
     @Operation(summary = "엑셀 출력", description = "모든 원서의 정보를 엑셀 파일로 반환합니다.")

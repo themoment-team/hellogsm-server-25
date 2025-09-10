@@ -74,6 +74,10 @@ public class Member {
         return this;
     }
 
+    public void modifyMemberRole(Role role) {
+        this.role = role;
+    }
+
     @PrePersist
     private void prePersist() {
         this.role = this.role == null ? Role.UNAUTHENTICATED : this.role;

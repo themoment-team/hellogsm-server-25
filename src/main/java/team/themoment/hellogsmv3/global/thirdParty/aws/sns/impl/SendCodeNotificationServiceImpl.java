@@ -21,6 +21,6 @@ public class SendCodeNotificationServiceImpl implements SendCodeNotificationServ
     }
 
     private static String createFooterMessage() {
-        return "본인이 요청한게 아니라면 교무실 062-949-6843 으로 문의해주세요.";
+        return "본인이 요청한 경우가 아니라면 교무실 062-949-6843 으로 문의해주세요.";
     }
 }

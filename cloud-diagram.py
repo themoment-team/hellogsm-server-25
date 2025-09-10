@@ -1,65 +1,98 @@
 from diagrams import Diagram, Cluster, Edge
-from diagrams.aws.compute import EC2, ElasticBeanstalk
+from diagrams.aws.compute import EC2
 from diagrams.aws.database import RDS
-from diagrams.aws.network import ALB, InternetGateway, NATGateway, VPC
 from diagrams.aws.devtools import Codedeploy
-from diagrams.aws.storage import S3
 from diagrams.aws.management import Cloudwatch
+from diagrams.aws.network import ALB, InternetGateway
+from diagrams.aws.storage import S3
 from diagrams.onprem.client import User
 from diagrams.onprem.vcs import Github
 
-with Diagram("HelloGSM-2024 Cloud Diagram", show=False):
+graph_attr = {
+    "fontsize": "16",
+    "fontname": "Arial",
+    "splines": "ortho",
+    "nodesep": "0.8",
+    "ranksep": "1.2",
+    "pad": "0.8",
+    "bgcolor": "#f8f9fa"
+}
 
-    # CI/CD
-    with Cluster("CI/CD"):
-        github = Github("GitHub")
-        s3 = S3("s3")
-        codedeploy = Codedeploy("code deploy")
-        github >> s3 >> codedeploy
+node_attr = {
+    "fontsize": "12",
+    "fontname": "Arial",
+    "shape": "box",
+    "style": "rounded,filled",
+    "margin": "0.3,0.1"
+}
 
-    # Alarm
-    with Cluster("Alarm"):
-        cloudwatch = Cloudwatch("Alarm")
+edge_attr = {
+    "fontsize": "9",
+    "fontname": "Arial",
+    "penwidth": "2",
+    "labeldistance": "0.5",
+    "labelangle": "0"
+}
+
+with Diagram("HelloGSM-2025 Cloud Architecture",
+             show=False,
+             direction="TB",
+             graph_attr=graph_attr,
+             node_attr=node_attr,
+             edge_attr=edge_attr):
+    user = User("사용자")
+
+    internet_gateway = InternetGateway("Internet Gateway")
+    alb = ALB("Application\nLoad Balancer")
+
+    with Cluster("CI/CD Pipeline", graph_attr={"bgcolor": "#e3f2fd", "style": "rounded", "margin": "10"}):
+        github = Github("GitHub\nRepository")
+        s3 = S3("S3 Bucket")
+        codedeploy = Codedeploy("CodeDeploy")
+
+        github >> Edge(label="push", color="#2196f3") >> s3
+        s3 >> Edge(label="build", color="#2196f3") >> codedeploy
+
+    with Cluster("Monitoring", graph_attr={"bgcolor": "#fff3e0", "style": "rounded", "margin": "10"}):
+        cloudwatch = Cloudwatch("CloudWatch")
         discord = User("Discord")
-        cloudwatch >> Edge(label="Lambda") >> discord
 
-    # VPC
-    with Cluster("VPC"):
+        cloudwatch >> Edge(label="alert", color="#ff9800") >> discord
 
-        with Cluster("Prod Public subnet"):
-            prod_bastion = EC2("bastion")
-            prod_nat_gateway = NATGateway("nat gateway")
+    with Cluster("VPC", graph_attr={"bgcolor": "#f3e5f5", "style": "rounded", "margin": "15"}):
+        with Cluster("Production", graph_attr={"bgcolor": "#e8f5e8", "style": "rounded", "margin": "10"}):
+            with Cluster("Public", graph_attr={"bgcolor": "#c8e6c9", "style": "rounded", "margin": "8"}):
+                prod_bastion_nat = EC2("Bastion + NAT\nInstance")
 
-        with Cluster("Prod Private subnet"):
-            prod_ec2 = EC2("Spring Application\nRedis")
-            mysql = RDS("MySQL Server")
-            prod_ec2 >> mysql
+            with Cluster("Private", graph_attr={"bgcolor": "#ffcdd2", "style": "rounded", "margin": "8"}):
+                prod_app = EC2("Spring Boot\n+ Redis")
+                prod_db = RDS("MySQL")
 
-        with Cluster("Dev Public subnet"):
-            dev_bastion = EC2("bastion")
-            dev_nat_gateway = NATGateway("nat gateway")
+        with Cluster("Stage", graph_attr={"bgcolor": "#e3f2fd", "style": "rounded", "margin": "10"}):
+            with Cluster("Public", graph_attr={"bgcolor": "#bbdefb", "style": "rounded", "margin": "8"}):
+                dev_bastion_nat = EC2("Bastion + NAT\nInstance")
 
-        with Cluster("Dev Private subnet"):
-            dev_ec2 = EC2("Spring Application\nMySQL\nRedis")
+            with Cluster("Private", graph_attr={"bgcolor": "#ffcdd2", "style": "rounded", "margin": "8"}):
+                dev_app = EC2("All-in-One")
 
-        internet_gateway = InternetGateway("internet gateway")
-        alb = ALB("ALB")
+    user >> Edge(label="https", color="#4caf50") >> internet_gateway
+    internet_gateway >> Edge(color="#4caf50") >> alb
 
-        internet_gateway >> alb
-        alb >> prod_ec2
-        alb >> dev_ec2
+    alb >> Edge(label="prod", color="#2196f3") >> prod_app
+    alb >> Edge(label="stage", color="#03a9f4") >> dev_app
 
-        prod_bastion >> mysql
-        prod_ec2 >> prod_nat_gateway
+    prod_app >> Edge(label="db", color="#4caf50") >> prod_db
 
-        dev_bastion >> dev_ec2
-        dev_ec2 >> dev_nat_gateway
+    codedeploy >> Edge(label="deploy", color="#ff5722") >> prod_app
+    codedeploy >> Edge(label="deploy", color="#ff5722") >> dev_app
 
+    prod_app >> Edge(label="out", color="#795548") >> prod_bastion_nat
+    dev_app >> Edge(label="out", color="#795548") >> dev_bastion_nat
 
-    user = User("User")
-    user >> internet_gateway
+    prod_bastion_nat >> Edge(label="ssh", color="#9c27b0") >> prod_app
+    prod_bastion_nat >> Edge(label="db", color="#9c27b0") >> prod_db
+    dev_bastion_nat >> Edge(label="ssh", color="#9c27b0") >> dev_app
 
-    codedeploy >> prod_ec2
-    codedeploy >> dev_ec2
-
-    cloudwatch >> alb
+    cloudwatch >> Edge(label="check", color="#ff9800") >> alb
+    cloudwatch >> Edge(label="metric", color="#ff9800") >> prod_app
+    cloudwatch >> Edge(label="metric", color="#ff9800") >> dev_app

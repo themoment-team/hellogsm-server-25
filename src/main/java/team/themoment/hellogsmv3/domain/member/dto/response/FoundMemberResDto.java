@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Builder
 public record FoundMemberResDto(
-
         Long memberId,
         String name,
         String phoneNumber,

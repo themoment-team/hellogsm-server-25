@@ -27,7 +27,7 @@ public class OneseoApplyEventHandler {
     @Value("${spring.profiles.active:default}")
     private String activeProfile;
 
-    @Async
+    @Async("discordTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendDiscordAlarm(OneseoApplyEvent oneseoApplyEvent) {
 

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
-import team.themoment.hellogsmv3.domain.common.operation.repo.OperationTestResultRepository;
+import team.themoment.hellogsmv3.domain.common.operation.repository.OperationTestResultRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
@@ -26,7 +26,8 @@ public class AnnounceFirstTestResultService {
     public void execute() {
         validateFirstTestResultAnnouncementPeriod();
 
-        OperationTestResult testResult = operationTestResultRepository.findTestResult();
+        OperationTestResult testResult = operationTestResultRepository.findTestResult()
+                .orElseThrow(() -> new ExpectedException("시험 운영 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
         validateDuplicateAnnouncement(testResult);
 
         testResult.announceFirstTestResult();

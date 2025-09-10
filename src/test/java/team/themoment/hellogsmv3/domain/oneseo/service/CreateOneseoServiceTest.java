@@ -25,7 +25,6 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRep
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -82,14 +81,13 @@ class CreateOneseoServiceTest {
         List<Integer> attendanceDays = Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0);
         List<Integer> volunteerTime = Arrays.asList(10, 0, 2);
         String liberalSystem = "자유학기제";
-        String freeSemester = "3-1";
+        String freeSemester = "1-1";
 
         MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder()
-                .achievement1_2(null)
+                .achievement1_2(achievement)
                 .achievement2_1(achievement)
                 .achievement2_2(achievement)
                 .achievement3_1(achievement)
-                .achievement3_2(null)
                 .generalSubjects(generalSubjects)
                 .newSubjects(newSubjects)
                 .artsPhysicalAchievement(artsPhysicalAchievement)
@@ -146,7 +144,7 @@ class CreateOneseoServiceTest {
             void setUp() {
                 Member existingMember = mock(Member.class);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
+                given(memberService.findByIdForUpdateOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoRepository.existsByMember(existingMember)).willReturn(false);
             }
 
@@ -186,11 +184,10 @@ class CreateOneseoServiceTest {
                 assertEquals(schoolTeacherName, capturedPrivacyDetail.getSchoolTeacherName());
                 assertEquals(schoolTeacherPhoneNumber, capturedPrivacyDetail.getSchoolTeacherPhoneNumber());
 
-                assertEquals(null, capturedAchievement.getAchievement1_2());
+                assertEquals(achievement, capturedAchievement.getAchievement1_2());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
                 assertEquals(achievement, capturedAchievement.getAchievement3_1());
-                assertEquals(null, capturedAchievement.getAchievement3_2());
                 assertEquals(generalSubjects, capturedAchievement.getGeneralSubjects());
                 assertEquals(newSubjects, capturedAchievement.getNewSubjects());
                 assertEquals(artsPhysicalAchievement, capturedAchievement.getArtsPhysicalAchievement());
@@ -200,7 +197,7 @@ class CreateOneseoServiceTest {
                 assertEquals(volunteerTime, capturedAchievement.getVolunteerTime());
                 assertEquals(liberalSystem, capturedAchievement.getLiberalSystem());
                 assertEquals(freeSemester, capturedAchievement.getFreeSemester());
-                assertEquals(null, capturedAchievement.getGedTotalScore());
+                assertEquals(null, capturedAchievement.getGedAvgScore());
             }
         }
 
@@ -213,7 +210,7 @@ class CreateOneseoServiceTest {
                 given(reqDto.graduationType()).willReturn(GRADUATE);
 
                 doThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND))
-                        .when(memberService).findByIdOrThrow(memberId);
+                        .when(memberService).findByIdForUpdateOrThrow(memberId);
             }
 
             @Test
@@ -235,7 +232,7 @@ class CreateOneseoServiceTest {
                 Member existingMember = mock(Member.class);
 
                 given(reqDto.graduationType()).willReturn(GRADUATE);
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
+                given(memberService.findByIdForUpdateOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoRepository.existsByMember(any(Member.class))).willReturn(true);
             }
 

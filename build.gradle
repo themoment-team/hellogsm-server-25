@@ -35,7 +35,6 @@ dependencies {
     /** persistence **/
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.retry:spring-retry'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     /** queryDsl **/
@@ -57,14 +56,14 @@ dependencies {
 
     /** object serialize **/
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
 
     /** aws **/
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1'
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-sns:3.0.1'
 
     /** excel **/
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
 
     /** jackson **/
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
@@ -98,7 +97,7 @@ clean {
     delete file(querydslSrcDir)
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
 

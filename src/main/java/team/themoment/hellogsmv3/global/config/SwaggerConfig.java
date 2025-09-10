@@ -22,7 +22,7 @@ import java.util.List;
 import static java.util.stream.Collectors.*;
 
 @OpenAPIDefinition(
-        info = @Info(title = "Hello, GSM 2024",
+        info = @Info(title = "Hello, GSM 2025",
                 description = "광주소프트웨어마이스터고등학교 입학지원 시스템",
                 version = "v1"))
 @Configuration
@@ -31,8 +31,8 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi api(OperationCustomizer operationCustomizer) {
         return GroupedOpenApi.builder()
-                .group("Hello, GSM 2024 API")
-                .pathsToMatch("/member/**", "/oneseo/**", "/auth/**", "/date", "/operation/**", "/test-result/**")
+                .group("Hello, GSM 2025 API")
+                .pathsToMatch("/utility/**" ,"/member/**", "/oneseo/**", "/auth/**", "/date", "/operation/**", "/test-result/**")
                 .addOperationCustomizer(operationCustomizer)
                 .build();
     }

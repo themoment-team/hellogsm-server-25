@@ -22,6 +22,7 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRep
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -129,7 +130,7 @@ class QueryOneseoByIdServiceTest {
                 assertEquals(middleSchoolAchievement.getVolunteerTime(), middleSchoolAchievementResDto.volunteerTime());
                 assertEquals(middleSchoolAchievement.getLiberalSystem(), middleSchoolAchievementResDto.liberalSystem());
                 assertEquals(middleSchoolAchievement.getFreeSemester(), middleSchoolAchievementResDto.freeSemester());
-                assertEquals(middleSchoolAchievement.getGedTotalScore(), middleSchoolAchievementResDto.gedTotalScore());
+                assertEquals(middleSchoolAchievement.getGedAvgScore(), middleSchoolAchievementResDto.gedAvgScore());
             }
 
             void setUp_it_throws_expected_exception() {
@@ -232,7 +233,7 @@ class QueryOneseoByIdServiceTest {
     private MiddleSchoolAchievement buildMiddleSchoolAchievement() {
         List<Integer> integerList = List.of(1, 2, 3, 4, 5);
         List<String> stringList = List.of("과목1", "과목2", "과목3");
-        BigDecimal bigDecimal = BigDecimal.TEN;
+        BigDecimal bigDecimal = BigDecimal.valueOf(100).setScale(2, RoundingMode.HALF_UP);
 
         return MiddleSchoolAchievement.builder()
                 .achievement1_2(integerList)
@@ -249,7 +250,7 @@ class QueryOneseoByIdServiceTest {
                 .volunteerTime(integerList)
                 .liberalSystem("자유학년제")
                 .freeSemester(null)
-                .gedTotalScore(bigDecimal)
+                .gedAvgScore(bigDecimal)
                 .build();
     }
 }

@@ -3,14 +3,12 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.http.HttpStatus;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
@@ -27,8 +25,8 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.List;
 
-import static org.springframework.transaction.annotation.Isolation.*;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.buildCalcDtoWithFillEmpty;
 import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.isValidMiddleSchoolInfo;
 
 @Service
@@ -44,17 +42,13 @@ public class CreateOneseoService {
     private final OneseoService oneseoService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Retryable(
-            value = {CannotAcquireLockException.class},
-            maxAttempts = 2,
-            backoff = @Backoff(delay = 1000))
-    @Transactional(isolation = SERIALIZABLE)
+    @Transactional
     @CachePut(value = OneseoService.ONESEO_CACHE_VALUE, key = "#memberId")
     public FoundOneseoResDto execute(OneseoReqDto reqDto, Long memberId) {
 
         isValidMiddleSchoolInfo(reqDto);
 
-        Member currentMember = memberService.findByIdOrThrow(memberId);
+        Member currentMember = memberService.findByIdForUpdateOrThrow(memberId);
 
         isExistOneseo(currentMember);
 
@@ -140,7 +134,7 @@ public class CreateOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
     }
 
@@ -168,7 +162,7 @@ public class CreateOneseoService {
     }
 
     private CalculatedScoreResDto calculateMiddleSchoolAchievement(GraduationType graduationType, MiddleSchoolAchievement middleSchoolAchievement, Oneseo oneseo) {
-        MiddleSchoolAchievementReqDto data = MiddleSchoolAchievementReqDto.builder()
+        MiddleSchoolAchievementCalcDto data = MiddleSchoolAchievementCalcDto.builder()
                 .achievement1_2(middleSchoolAchievement.getAchievement1_2())
                 .achievement2_1(middleSchoolAchievement.getAchievement2_1())
                 .achievement2_2(middleSchoolAchievement.getAchievement2_2())
@@ -180,7 +174,7 @@ public class CreateOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
 
         return switch (graduationType) {
@@ -227,52 +221,36 @@ public class CreateOneseoService {
     }
 
     private MiddleSchoolAchievement buildMiddleSchoolAchievement(OneseoReqDto reqDto, Oneseo oneseo) {
+        MiddleSchoolAchievement.MiddleSchoolAchievementBuilder builder = MiddleSchoolAchievement.builder();
         MiddleSchoolAchievementReqDto middleSchoolAchievement = reqDto.middleSchoolAchievement();
+        //calcDto를 통해 성적복사 처리
+        MiddleSchoolAchievementCalcDto calcDto = buildCalcDtoWithFillEmpty(reqDto.middleSchoolAchievement(),reqDto.graduationType());
 
-        return MiddleSchoolAchievement.builder()
+        builder
                 .oneseo(oneseo)
-                .achievement1_2(validationGeneralAchievement(middleSchoolAchievement.achievement1_2()))
-                .achievement2_1(validationGeneralAchievement(middleSchoolAchievement.achievement2_1()))
-                .achievement2_2(validationGeneralAchievement(middleSchoolAchievement.achievement2_2()))
-                .achievement3_1(validationGeneralAchievement(middleSchoolAchievement.achievement3_1()))
-                .achievement3_2(validationGeneralAchievement(middleSchoolAchievement.achievement3_2()))
+                .achievement1_2(calcDto.achievement1_2())
+                .achievement2_1(calcDto.achievement2_1())
+                .achievement2_2(calcDto.achievement2_2())
+                .achievement3_1(calcDto.achievement3_1())
+                .achievement3_2(calcDto.achievement3_2())
                 .generalSubjects(middleSchoolAchievement.generalSubjects())
                 .newSubjects(middleSchoolAchievement.newSubjects())
-                .artsPhysicalAchievement(validationArtsPhysicalAchievement(middleSchoolAchievement.artsPhysicalAchievement()))
+                .artsPhysicalAchievement(calcDto.artsPhysicalAchievement())
                 .artsPhysicalSubjects(middleSchoolAchievement.artsPhysicalSubjects())
-                .absentDays(middleSchoolAchievement.absentDays())
-                .attendanceDays(middleSchoolAchievement.attendanceDays())
-                .volunteerTime(middleSchoolAchievement.volunteerTime())
-                .liberalSystem(middleSchoolAchievement.liberalSystem())
-                .freeSemester(middleSchoolAchievement.freeSemester())
-                .gedTotalScore(middleSchoolAchievement.gedTotalScore())
-                .build();
+                .absentDays(calcDto.absentDays())
+                .attendanceDays(calcDto.attendanceDays())
+                .volunteerTime(calcDto.volunteerTime())
+                .liberalSystem(calcDto.liberalSystem())
+                .freeSemester(calcDto.freeSemester())
+                .gedAvgScore(calcDto.gedAvgScore());
+
+        return builder.build();
     }
 
     private void isExistOneseo(Member currentMember) {
         if (oneseoRepository.existsByMember(currentMember)) {
             throw new ExpectedException("이미 원서가 존재합니다.", HttpStatus.BAD_REQUEST);
         }
-    }
-
-    private List<Integer> validationGeneralAchievement(List<Integer> achievements)  {
-        if (achievements == null) return null;
-
-        achievements.forEach(achievement -> {
-            if (achievement > 5 || achievement < 0) throw new ExpectedException("올바르지 않은 일반교과 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
-        });
-
-        return achievements;
-    }
-
-    private List<Integer> validationArtsPhysicalAchievement(List<Integer> achievements)  {
-        if (achievements == null) return null;
-
-        achievements.forEach(achievement -> {
-            if (achievement != 0 && (achievement > 5 || achievement < 3)) throw new ExpectedException("올바르지 않은 예체능 등급이 입력되었습니다.", HttpStatus.BAD_REQUEST);
-        });
-
-        return achievements;
     }
 
 }

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DesiredMajorsValidator implements ConstraintValidator<ValidDesiredMajors, OneseoReqDto> {
+
     @Override
     public boolean isValid(OneseoReqDto dto, ConstraintValidatorContext context) {
 

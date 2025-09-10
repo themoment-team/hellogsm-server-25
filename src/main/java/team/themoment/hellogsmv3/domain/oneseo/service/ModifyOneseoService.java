@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
@@ -21,7 +22,6 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.ScreeningChangeHistory
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.isValidMiddleSchoolInfo;
 
@@ -122,7 +122,7 @@ public class ModifyOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
     }
 
@@ -150,7 +150,7 @@ public class ModifyOneseoService {
     }
 
     private CalculatedScoreResDto calculateMiddleSchoolAchievement(GraduationType graduationType, MiddleSchoolAchievement middleSchoolAchievement, Oneseo oneseo) {
-        MiddleSchoolAchievementReqDto data = MiddleSchoolAchievementReqDto.builder()
+        MiddleSchoolAchievementCalcDto data = MiddleSchoolAchievementCalcDto.builder()
                 .achievement1_2(middleSchoolAchievement.getAchievement1_2())
                 .achievement2_1(middleSchoolAchievement.getAchievement2_1())
                 .achievement2_2(middleSchoolAchievement.getAchievement2_2())
@@ -162,7 +162,7 @@ public class ModifyOneseoService {
                 .volunteerTime(middleSchoolAchievement.getVolunteerTime())
                 .liberalSystem(middleSchoolAchievement.getLiberalSystem())
                 .freeSemester(middleSchoolAchievement.getFreeSemester())
-                .gedTotalScore(middleSchoolAchievement.getGedTotalScore())
+                .gedAvgScore(middleSchoolAchievement.getGedAvgScore())
                 .build();
 
         return switch (graduationType) {
@@ -235,7 +235,7 @@ public class ModifyOneseoService {
                 .volunteerTime(updatedMiddleSchoolAchievement.volunteerTime())
                 .liberalSystem(updatedMiddleSchoolAchievement.liberalSystem())
                 .freeSemester(updatedMiddleSchoolAchievement.freeSemester())
-                .gedTotalScore(updatedMiddleSchoolAchievement.gedTotalScore())
+                .gedAvgScore(updatedMiddleSchoolAchievement.gedAvgScore())
                 .build();
 
         oneseo.modifyMiddleSchoolAchievement(modifiedMiddleSchoolAchievement);
