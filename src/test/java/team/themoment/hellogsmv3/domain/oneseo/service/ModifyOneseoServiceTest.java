@@ -11,6 +11,7 @@ import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.DesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
@@ -20,6 +21,10 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.MiddleSchoolAchievemen
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.ScreeningChangeHistoryRepository;
+import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestFactorsDetailRepository;
+import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda.LambdaScoreCalculatorClient;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.LambdaScoreCalculatorReqDto;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 import java.util.ArrayList;
@@ -48,13 +53,15 @@ class ModifyOneseoServiceTest {
     @Mock
     private ScreeningChangeHistoryRepository screeningChangeHistoryRepository;
     @Mock
+    private EntranceTestResultRepository entranceTestResultRepository;
+    @Mock
+    private EntranceTestFactorsDetailRepository entranceTestFactorsDetailRepository;
+    @Mock
     private OneseoService oneseoService;
     @Mock
     private MemberService memberService;
     @Mock
-    private CalculateGradeService calculateGradeService;
-    @Mock
-    private CalculateGedService calculateGedService;
+    private LambdaScoreCalculatorClient lambdaScoreCalculatorClient;
 
     @InjectMocks
     private ModifyOneseoService modifyOneseoService;
@@ -169,12 +176,15 @@ class ModifyOneseoServiceTest {
                         .build();
 
                 Member existingMember = mock(Member.class);
+                CalculatedScoreResDto mockCalculatedScore = mock(CalculatedScoreResDto.class);
 
                 given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoService.findByMemberOrThrow(existingMember)).willReturn(oneseo);
                 given(oneseoPrivacyDetailRepository.findByOneseo(oneseo)).willReturn(oneseoPrivacyDetail);
                 given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(middleSchoolAchievement);
-                given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(middleSchoolAchievement);
+                given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class)))
+                        .willReturn(mockCalculatedScore);
+                given(entranceTestResultRepository.findByOneseo(any(Oneseo.class))).willReturn(null);
 
                 modifyOneseoService.execute(oneseoReqDto, memberId);
                 ArgumentCaptor<Oneseo> oneseoCaptor = ArgumentCaptor.forClass(Oneseo.class);
@@ -184,7 +194,7 @@ class ModifyOneseoServiceTest {
                 verify(oneseoRepository).save(oneseoCaptor.capture());
                 verify(oneseoPrivacyDetailRepository).save(oneseoPrivacyDetailCaptor.capture());
                 verify(middleSchoolAchievementRepository).save(middleSchoolAchievementCaptor.capture());
-                verify(calculateGradeService).execute(any(MiddleSchoolAchievementCalcDto.class), eq(oneseo), eq(CANDIDATE));
+                verify(lambdaScoreCalculatorClient).calculateScore(any(LambdaScoreCalculatorReqDto.class));
 
                 Oneseo capturedOneseo = oneseoCaptor.getValue();
                 OneseoPrivacyDetail capturedPrivacyDetail = oneseoPrivacyDetailCaptor.getValue();
@@ -260,7 +270,7 @@ class ModifyOneseoServiceTest {
                 ArgumentCaptor<WantedScreeningChangeHistory> screeningChangeHistoryArgumentCaptor = ArgumentCaptor.forClass(WantedScreeningChangeHistory.class);
 
                 verify(screeningChangeHistoryRepository).save(screeningChangeHistoryArgumentCaptor.capture());
-                verify(calculateGedService).execute(any(MiddleSchoolAchievementCalcDto.class), eq(oneseo), eq(GED));
+                verify(lambdaScoreCalculatorClient).calculateScore(any(LambdaScoreCalculatorReqDto.class));
 
                 WantedScreeningChangeHistory capturedScreeningChangeHistory = screeningChangeHistoryArgumentCaptor.getValue();
 
