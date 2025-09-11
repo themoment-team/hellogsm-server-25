@@ -3,17 +3,16 @@ package team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.LambdaScoreCalculatorReqDto;
+import team.themoment.hellogsmv3.global.thirdParty.feign.config.LambdaScoreCalculatorFeignConfig;
 
-import static team.themoment.hellogsmv3.global.security.data.HeaderConstant.X_HG_API_KEY;
-
-@FeignClient(name = "lambda-score-calculator-client", url = "${lambda-score-calculator.url}")
+@FeignClient(
+        name = "lambda-score-calculator-client", 
+        url = "${lambda-score-calculator.url}",
+        configuration = LambdaScoreCalculatorFeignConfig.class
+)
 public interface LambdaScoreCalculatorClient {
     @PostMapping
-    CalculatedScoreResDto calculateScore(
-            @RequestBody LambdaScoreCalculatorReqDto reqDto,
-            @RequestHeader(X_HG_API_KEY) String apiKey
-    );
+    CalculatedScoreResDto calculateScore(@RequestBody LambdaScoreCalculatorReqDto reqDto);
 }

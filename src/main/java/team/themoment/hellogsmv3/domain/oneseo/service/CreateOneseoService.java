@@ -1,7 +1,6 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -42,8 +41,7 @@ public class CreateOneseoService {
     private final OneseoService oneseoService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Value("${lambda-score-calculator.api-key}")
-    private String lambdaApiKey;
+
 
     @Transactional
     @CachePut(value = OneseoService.ONESEO_CACHE_VALUE, key = "#memberId")
@@ -166,7 +164,7 @@ public class CreateOneseoService {
 
     private CalculatedScoreResDto calculateMiddleSchoolAchievement(GraduationType graduationType, MiddleSchoolAchievementReqDto middleSchoolAchievement, Oneseo oneseo) {
         LambdaScoreCalculatorReqDto lambdaRequest = LambdaScoreCalculatorReqDto.from(middleSchoolAchievement, graduationType);
-        CalculatedScoreResDto calculatedScore = lambdaScoreCalculatorClient.calculateScore(lambdaRequest, lambdaApiKey);
+        CalculatedScoreResDto calculatedScore = lambdaScoreCalculatorClient.calculateScore(lambdaRequest);
 
         saveCalculatedScoreToDb(calculatedScore, oneseo);
 
