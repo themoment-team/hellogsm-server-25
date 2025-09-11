@@ -7,11 +7,7 @@ import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDt
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.LambdaScoreCalculatorReqDto;
 import team.themoment.hellogsmv3.global.thirdParty.feign.config.LambdaScoreCalculatorFeignConfig;
 
-@FeignClient(
-        name = "lambda-score-calculator-client", 
-        url = "${lambda-score-calculator.url}",
-        configuration = LambdaScoreCalculatorFeignConfig.class
-)
+@FeignClient(name = "lambda-score-calculator-client", url = "${lambda-score-calculator.url}", configuration = LambdaScoreCalculatorFeignConfig.class)
 public interface LambdaScoreCalculatorClient {
     @PostMapping
     CalculatedScoreResDto calculateScore(@RequestBody LambdaScoreCalculatorReqDto reqDto);
