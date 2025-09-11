@@ -14,16 +14,17 @@ import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.OneseoPrivacyDetail;
 import team.themoment.hellogsmv3.domain.oneseo.entity.MiddleSchoolAchievement;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
-import team.themoment.hellogsmv3.domain.oneseo.repository.MiddleSchoolAchievementRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRepository;
-import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
+import team.themoment.hellogsmv3.domain.oneseo.repository.*;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda.LambdaScoreCalculatorClient;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.LambdaScoreCalculatorReqDto;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,15 +48,17 @@ class CreateOneseoServiceTest {
     @Mock
     private MiddleSchoolAchievementRepository middleSchoolAchievementRepository;
     @Mock
+    private EntranceTestResultRepository entranceTestResultRepository;
+    @Mock
+    private EntranceTestFactorsDetailRepository entranceTestFactorsDetailRepository;
+    @Mock
     private MemberService memberService;
     @Mock
     private OneseoService oneseoService;
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
     @Mock
-    private CalculateGradeService calculateGradeService;
-    @Mock
-    private CalculateGedService calculateGedService;
+    private LambdaScoreCalculatorClient lambdaScoreCalculatorClient;
 
     @InjectMocks
     private CreateOneseoService createOneseoService;
@@ -143,9 +146,13 @@ class CreateOneseoServiceTest {
             @BeforeEach
             void setUp() {
                 Member existingMember = mock(Member.class);
+                CalculatedScoreResDto mockCalculatedScore = mock(CalculatedScoreResDto.class);
 
                 given(memberService.findByIdForUpdateOrThrow(memberId)).willReturn(existingMember);
                 given(oneseoRepository.existsByMember(existingMember)).willReturn(false);
+                given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class)))
+                        .willReturn(mockCalculatedScore);
+                given(entranceTestResultRepository.findByOneseo(any(Oneseo.class))).willReturn(null);
             }
 
             @Test
@@ -186,7 +193,7 @@ class CreateOneseoServiceTest {
 
                 assertEquals(achievement, capturedAchievement.getAchievement1_2());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
-                assertEquals(achievement, capturedAchievement.getAchievement2_1());
+                assertEquals(achievement, capturedAchievement.getAchievement2_2());
                 assertEquals(achievement, capturedAchievement.getAchievement3_1());
                 assertEquals(generalSubjects, capturedAchievement.getGeneralSubjects());
                 assertEquals(newSubjects, capturedAchievement.getNewSubjects());
