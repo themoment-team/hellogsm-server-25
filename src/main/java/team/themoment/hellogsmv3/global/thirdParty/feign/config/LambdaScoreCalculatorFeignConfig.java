@@ -18,11 +18,6 @@ public class LambdaScoreCalculatorFeignConfig {
 
     @Bean
     public RequestInterceptor lambdaApiKeyInterceptor() {
-        return new RequestInterceptor() {
-            @Override
-            public void apply(RequestTemplate template) {
-                template.header(X_HG_API_KEY, lambdaApiKey);
-            }
-        };
+        return template -> template.header(X_HG_API_KEY, lambdaApiKey);
     }
 }
