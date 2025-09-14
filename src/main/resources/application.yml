@@ -133,3 +133,7 @@ management:
 discord-alarm:
   url: ${DISCORD_RELAY_SERVER_URL}
   api-key: ${DISCORD_RELAY_SERVER_API_KEY}
+
+lambda-score-calculator:
+  url: ${SCORE_CALCULATOR_SERVICE_URL}
+  api-key: ${SCORE_CALCULATOR_API_KEY}
