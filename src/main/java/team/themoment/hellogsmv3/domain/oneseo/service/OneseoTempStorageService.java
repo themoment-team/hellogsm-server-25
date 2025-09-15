@@ -70,6 +70,7 @@ public class OneseoTempStorageService {
                 .schoolTeacherName(reqDto.schoolTeacherName())
                 .schoolTeacherPhoneNumber(reqDto.schoolTeacherPhoneNumber())
                 .profileImg(reqDto.profileImg())
+                .studentNumber(reqDto.studentNumber())
                 .build();
     }
 

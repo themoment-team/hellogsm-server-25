@@ -37,7 +37,7 @@ public class DownloadExcelService {
     private static final int ROW_ACCESS_WINDOW = 100;  // SXSSFWorkbook의 메모리 사용 최적화를 위한 행 접근 윈도우 크기
 
     private static final List<String> HEADER_NAMES = List.of(
-            "순번", "접수번호", "수험번호", "성명", "1지망", "2지망", "3지망", "생년월일", "성별", "상세주소", "출신학교",
+            "순번", "접수번호", "수험번호", "성명", "1지망", "2지망", "3지망", "생년월일", "성별", "상세주소", "출신학교", "학번",
             "학력", "초기전형", "적용되는 전형", "일반교과점수", "예체능점수", "출석점수", "봉사점수", "1차전형총점",
             "역량평가점수", "심층면접점수", "최종점수", "최종학과", "지원자연락처", "보호자연락처", "담임연락처", "1차전형결과", "2차전형결과"
     );
@@ -189,6 +189,7 @@ public class DownloadExcelService {
                 convertSex(oneseo.getMember().getSex()),
                 buildAddress(oneseoPrivacyDetail),
                 safeToString(oneseoPrivacyDetail.getSchoolName()),
+                safeToString(oneseoPrivacyDetail.getStudentNumber()),
                 convertGraduationType(oneseoPrivacyDetail.getGraduationType()),
                 convertScreening(oneseo.getWantedScreening()),
                 convertScreening(oneseo.getAppliedScreening()),

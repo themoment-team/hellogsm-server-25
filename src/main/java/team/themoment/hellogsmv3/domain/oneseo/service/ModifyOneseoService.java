@@ -94,6 +94,7 @@ public class ModifyOneseoService {
                 .schoolTeacherName(oneseoPrivacyDetail.getSchoolTeacherName())
                 .schoolTeacherPhoneNumber(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber())
                 .profileImg(oneseoPrivacyDetail.getProfileImg())
+                .studentNumber(oneseoPrivacyDetail.getStudentNumber())
                 .build();
     }
 

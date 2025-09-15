@@ -97,6 +97,7 @@ public class QueryOneseoByIdService {
                 .schoolTeacherName(oneseoPrivacyDetail.getSchoolTeacherName())
                 .schoolTeacherPhoneNumber(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber())
                 .profileImg(oneseoPrivacyDetail.getProfileImg())
+                .studentNumber(oneseoPrivacyDetail.getStudentNumber())
                 .build();
     }
 
