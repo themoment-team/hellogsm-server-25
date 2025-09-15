@@ -62,4 +62,7 @@ public class OneseoPrivacyDetail {
 
     @Column(name = "school_teacher_phone_number")
     private String schoolTeacherPhoneNumber;
+
+    @Column(name = "student_number")
+    private String studentNumber;
 }
