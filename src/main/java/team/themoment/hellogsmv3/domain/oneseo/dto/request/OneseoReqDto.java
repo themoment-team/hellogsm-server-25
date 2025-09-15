@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import team.themoment.hellogsmv3.domain.oneseo.annotation.ValidDesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
@@ -81,6 +82,11 @@ public record OneseoReqDto(
         @Schema(description = "중학교 졸업년월", defaultValue = "2006-03")
         @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])$")
         @NotNull
-        String graduationDate
+        String graduationDate,
+
+        @Schema(description = "학생 번호", defaultValue = "30508")
+        @Pattern(regexp = "^\\d{5}$")
+        @NotNull
+        String studentNumber
 ) {
 }

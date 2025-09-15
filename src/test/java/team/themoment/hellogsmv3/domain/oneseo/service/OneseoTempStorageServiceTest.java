@@ -131,6 +131,7 @@ public class OneseoTempStorageServiceTest {
                     assertEquals(reqDto.schoolTeacherName(), resDto.privacyDetail().schoolTeacherName());
                     assertEquals(reqDto.schoolTeacherPhoneNumber(), resDto.privacyDetail().schoolTeacherPhoneNumber());
                     assertEquals(reqDto.profileImg(), resDto.privacyDetail().profileImg());
+                    assertEquals(reqDto.studentNumber(), resDto.privacyDetail().studentNumber());
                     assertEquals(reqDto.middleSchoolAchievement().achievement1_2(), resDto.middleSchoolAchievement().achievement1_2());
                     assertEquals(reqDto.middleSchoolAchievement().achievement2_1(), resDto.middleSchoolAchievement().achievement2_1());
                     assertEquals(reqDto.middleSchoolAchievement().achievement2_2(), resDto.middleSchoolAchievement().achievement2_2());

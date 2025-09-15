@@ -118,6 +118,7 @@ class CreateOneseoServiceTest {
         String schoolAddress = "광주 어딘가";
         Screening screening = GENERAL;
         String graduationDate = "2020-02";
+        String studentNumber = "30508";
 
         OneseoReqDto oneseoReqDto = new OneseoReqDto(
                 guardianName,
@@ -136,7 +137,8 @@ class CreateOneseoServiceTest {
                 schoolName,
                 schoolAddress,
                 screening,
-                graduationDate
+                graduationDate,
+                studentNumber
         );
 
         @Nested

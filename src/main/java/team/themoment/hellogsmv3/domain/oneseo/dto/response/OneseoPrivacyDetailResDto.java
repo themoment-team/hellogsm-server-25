@@ -31,6 +31,7 @@ public record OneseoPrivacyDetailResDto(
         String schoolTeacherName,
         String schoolTeacherPhoneNumber,
         String profileImg,
-        String graduationDate
+        String graduationDate,
+        String studentNumber
 ) {
 }

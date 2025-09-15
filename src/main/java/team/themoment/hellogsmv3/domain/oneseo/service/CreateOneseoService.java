@@ -108,6 +108,7 @@ public class CreateOneseoService {
                 .schoolTeacherName(oneseoPrivacyDetail.getSchoolTeacherName())
                 .schoolTeacherPhoneNumber(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber())
                 .profileImg(oneseoPrivacyDetail.getProfileImg())
+                .studentNumber(oneseoPrivacyDetail.getStudentNumber())
                 .build();
     }
 
@@ -265,6 +266,7 @@ public class CreateOneseoService {
                 .schoolName(reqDto.schoolName())
                 .schoolTeacherName(reqDto.schoolTeacherName())
                 .schoolTeacherPhoneNumber(reqDto.schoolTeacherPhoneNumber())
+                .studentNumber(reqDto.studentNumber())
                 .build();
     }
 
