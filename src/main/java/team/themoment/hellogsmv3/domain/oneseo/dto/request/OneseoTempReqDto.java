@@ -1,17 +1,12 @@
 package team.themoment.hellogsmv3.domain.oneseo.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
-import team.themoment.hellogsmv3.domain.oneseo.annotation.ValidDesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 
-import java.time.LocalDate;
 @Builder
 public record OneseoTempReqDto(
         @Schema(description = "보호자 이름", defaultValue = "김보호")
@@ -66,6 +61,9 @@ public record OneseoTempReqDto(
 
         @Schema(description = "중학교 졸업년월", defaultValue = "2006-03")
         @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])$")
-        String graduationDate
+        String graduationDate,
+
+        @Schema(description = "학생 번호", defaultValue = "30508")
+        String studentNumber
 ) {
 }
