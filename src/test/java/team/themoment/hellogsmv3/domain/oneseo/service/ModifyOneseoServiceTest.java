@@ -119,6 +119,7 @@ class ModifyOneseoServiceTest {
         String schoolAddress = "광주 어딘가";
         Screening screening = GENERAL;
         String graduationDate = "2020-02";
+        String studentNumber = "30508";
         DesiredMajors desiredMajors = DesiredMajors.builder()
                 .firstDesiredMajor(firstDesiredMajor)
                 .secondDesiredMajor(secondDesiredMajor)
@@ -142,7 +143,8 @@ class ModifyOneseoServiceTest {
                 schoolName,
                 schoolAddress,
                 screening,
-                graduationDate
+                graduationDate,
+                studentNumber
         );
 
         @Nested

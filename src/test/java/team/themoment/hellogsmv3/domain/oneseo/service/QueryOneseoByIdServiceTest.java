@@ -114,6 +114,7 @@ class QueryOneseoByIdServiceTest {
                 assertEquals(oneseoPrivacyDetail.getSchoolTeacherName(), oneseoPrivacyDetailResDto.schoolTeacherName());
                 assertEquals(oneseoPrivacyDetail.getSchoolTeacherPhoneNumber(), oneseoPrivacyDetailResDto.schoolTeacherPhoneNumber());
                 assertEquals(oneseoPrivacyDetail.getProfileImg(), oneseoPrivacyDetailResDto.profileImg());
+                assertEquals(oneseoPrivacyDetail.getStudentNumber(), oneseoPrivacyDetailResDto.studentNumber());
 
                 MiddleSchoolAchievementResDto middleSchoolAchievementResDto = result.middleSchoolAchievement();
                 assertEquals(middleSchoolAchievement.getAchievement1_2(), middleSchoolAchievementResDto.achievement1_2());
