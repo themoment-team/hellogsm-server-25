@@ -86,7 +86,6 @@ public record OneseoReqDto(
 
         @Schema(description = "학생 번호", defaultValue = "30508")
         @Pattern(regexp = "^\\d{5}$")
-        @NotNull
         String studentNumber
 ) {
 }
