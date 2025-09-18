@@ -14,12 +14,10 @@ import team.themoment.hellogsmv3.domain.oneseo.dto.request.*;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.ScreeningCategory;
 import team.themoment.hellogsmv3.domain.oneseo.service.*;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.service.CreateOneseoService;
 import team.themoment.hellogsmv3.domain.oneseo.service.ModifyOneseoService;
 import team.themoment.hellogsmv3.domain.oneseo.service.SearchOneseoService;
-import team.themoment.hellogsmv3.domain.oneseo.service.CalculateMockScoreService;
 import team.themoment.hellogsmv3.domain.oneseo.service.QueryOneseoByIdService;
 import team.themoment.hellogsmv3.domain.oneseo.service.ModifyRealOneseoArrivedYnService;
 import team.themoment.hellogsmv3.global.common.handler.annotation.AuthRequest;
@@ -46,7 +44,6 @@ public class OneseoController {
     private final DownloadExcelService downloadExcelService;
     private final SearchOneseoService searchOneseoService;
     private final QueryOneseoByIdService queryOneseoByIdService;
-    private final CalculateMockScoreService calculateMockScoreService;
     private final OneseoTempStorageService oneseoTempStorageService;
     private final ModifyEntranceIntentionService modifyEntranceIntentionService;
     private final QueryOneseoEditabilityService queryOneseoEditabilityService;
@@ -142,15 +139,6 @@ public class OneseoController {
             @PathVariable Long memberId
     ) {
         return queryOneseoByIdService.execute(memberId);
-    }
-
-    @Operation(summary = "모의 성적 계산", description = "성적 점수를 입력받아 모의 성적 환산값을 반환합니다.")
-    @PostMapping("/calculate-mock-score")
-    public CalculatedScoreResDto calcMockScore(
-            @Valid @RequestBody MiddleSchoolAchievementReqDto dto,
-            @RequestParam("graduationType") GraduationType graduationType
-    ) {
-        return calculateMockScoreService.execute(dto, graduationType);
     }
 
     @Operation(summary = "수험표 출력", description = "모든 원서의 수험표 정보를 반환합니다.")
