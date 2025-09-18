@@ -233,9 +233,6 @@ public class SecurityConfig {
                         Role.APPLICANT.name()
                 )
 
-                // mock score calculate api
-                .requestMatchers(HttpMethod.POST, "/oneseo/v3/calculate-mock-score").permitAll()
-
                 // common / get date api
                 .requestMatchers(HttpMethod.GET, "/date").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/utility/v3/**").permitAll()
