@@ -128,8 +128,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,prometheus
       base-path: ${ACTUATOR_BASE_PATH}
+  endpoint:
+    prometheus:
+      enabled: true
 
 discord-alarm:
   url: ${DISCORD_RELAY_SERVER_URL}
