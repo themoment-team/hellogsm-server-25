@@ -25,7 +25,6 @@ public class S3Controller {
     public UploadImageResDto uploadImage(
             @RequestParam(value = "file") MultipartFile multipartFile
     ) {
-        String fileUrl = uploadImageService.execute(multipartFile);
-        return new UploadImageResDto(fileUrl);
+        return uploadImageService.execute(multipartFile);
     }
 }
