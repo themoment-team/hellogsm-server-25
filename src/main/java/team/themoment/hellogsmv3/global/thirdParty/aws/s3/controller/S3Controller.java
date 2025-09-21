@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.dto.response.UploadImageResDto;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.service.UploadImageService;
 
