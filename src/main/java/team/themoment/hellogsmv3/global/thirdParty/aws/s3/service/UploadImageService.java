@@ -13,6 +13,7 @@ import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.data.S3Environment;
+import team.themoment.hellogsmv3.global.thirdParty.aws.s3.dto.response.UploadImageResDto;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ public class UploadImageService {
     private final S3Template s3Template;
     private final S3Environment s3Environment;
 
-    public String execute(MultipartFile multipartFile) {
+    public UploadImageResDto execute(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
             throw new ExpectedException("파일이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -41,10 +42,10 @@ public class UploadImageService {
                     s3Environment.bucketName(),
                     fileName,
                     multipartFile.getInputStream(),
-                    ObjectMetadata.builder().contentType(fileExtension).build()
+                    ObjectMetadata.builder().contentType(multipartFile.getContentType()).build()
             );
 
-            return s3Resource.getURL().toString();
+            return new UploadImageResDto(s3Resource.getURL().toString());
         } catch (IOException e) {
             throw new RuntimeException("입출력 작업중에 예외 발생", e);
         } catch (S3Exception e) {

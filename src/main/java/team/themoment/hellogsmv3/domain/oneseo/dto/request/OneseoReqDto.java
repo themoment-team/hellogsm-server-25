@@ -5,14 +5,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import team.themoment.hellogsmv3.domain.oneseo.annotation.ValidDesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
-
-import java.time.LocalDate;
 
 @Builder
 @ValidDesiredMajors
@@ -32,7 +29,7 @@ public record OneseoReqDto(
 
         @Schema(description = "증명사진 URL", defaultValue = "https://abc.com")
         @NotBlank
-        @Pattern(regexp = "^https:\\/\\/[^\\s/$.?#].[^\\s]*$", message = "유효한 이미지 URL이 아닙니다.")
+        @Pattern(regexp = "^https://[^\\s/$.?#].[^\\s]*$", message = "유효한 이미지 URL이 아닙니다.")
         String profileImg,
 
         @Schema(description = "주소", defaultValue = "광주광역시 광산구 송정동 상무대로 312")

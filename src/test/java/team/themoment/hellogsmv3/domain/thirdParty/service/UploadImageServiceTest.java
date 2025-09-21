@@ -3,6 +3,7 @@ package team.themoment.hellogsmv3.domain.thirdParty.service;
 import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,9 +16,9 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.data.S3Environment;
+import team.themoment.hellogsmv3.global.thirdParty.aws.s3.dto.response.UploadImageResDto;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.service.UploadImageService;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -37,15 +38,24 @@ public class UploadImageServiceTest {
     @InjectMocks
     private UploadImageService uploadImageService;
 
+    private AutoCloseable closeable;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        closeable = MockitoAnnotations.openMocks(this);
 
         s3Template = mock(S3Template.class);
         s3Environment = mock(S3Environment.class);
         uploadImageService = new UploadImageService(s3Template, s3Environment);
 
         when(s3Environment.bucketName()).thenReturn("bucket-name");
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        if (closeable != null) {
+            closeable.close();
+        }
     }
 
     @Nested
@@ -105,10 +115,10 @@ public class UploadImageServiceTest {
             @Test
             @DisplayName("S3에 업로드된 파일의 URL을 반환한다.")
             void it_returns_uploaded_file_url() {
-                String result = uploadImageService.execute(file);
+                UploadImageResDto result = uploadImageService.execute(file);
 
                 assertNotNull(result);
-                assertTrue(result.contains(s3Key));
+                assertTrue(result.url().contains(s3Key));
             }
         }
 
@@ -116,16 +126,15 @@ public class UploadImageServiceTest {
         @DisplayName("유효하지 않은 파일을 업로드할 경우")
         class Context_with_non_valid_file {
             MultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "data".getBytes());
-            InputStream inputStream = new ByteArrayInputStream("data".getBytes());
 
             @BeforeEach
             void setUp() {
-                when(s3Template.upload(
-                        s3Environment.bucketName(),
-                        s3Key,
-                        inputStream,
-                        ObjectMetadata.builder().contentType("jpg").build()
-                )).thenThrow(new RuntimeException("AWS S3 upload error"));
+                given(s3Template.upload(
+                        anyString(),
+                        anyString(),
+                        any(InputStream.class),
+                        any(ObjectMetadata.class)
+                )).willThrow(new RuntimeException("AWS S3 upload error"));
             }
 
             @Test
