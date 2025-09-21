@@ -41,7 +41,7 @@ public class UploadImageService {
                     s3Environment.bucketName(),
                     fileName,
                     multipartFile.getInputStream(),
-                    ObjectMetadata.builder().contentType(fileExtension).build()
+                    ObjectMetadata.builder().contentType(multipartFile.getContentType()).build()
             );
 
             return s3Resource.getURL().toString();
