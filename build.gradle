@@ -125,3 +125,6 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+compileJava.dependsOn spotlessApply
+compileTestJava.dependsOn spotlessApply
