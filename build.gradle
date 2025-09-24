@@ -1,7 +1,24 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.1.9'
-    id 'io.spring.dependency-management' version '1.1.4'
+	id 'java'
+	id 'org.springframework.boot' version '3.1.9'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.diffplug.spotless' version '6.25.0'
+}
+
+
+spotless {
+	java {
+		target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
+		googleJavaFormat('1.28.0')
+		importOrder()
+		removeUnusedImports()
+		endWithNewline()
+		trimTrailingWhitespace()
+	}
+	groovyGradle {
+		target '*.gradle'
+		greclipse()
+	}
 }
 
 group = 'team.themoment'
@@ -111,3 +128,6 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+compileJava.dependsOn spotlessApply
+compileTestJava.dependsOn spotlessApply
