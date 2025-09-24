@@ -19,6 +19,7 @@ public class ApiResponseWrapper implements ResponseBodyAdvice<Object> {
 
     private static final String[] NOT_WRAPPING_URL = {
             "/api-docs/**",
+            "/hello-management/prometheus/**"
     };
 
     private final AntPathMatcher matcher = new AntPathMatcher();
