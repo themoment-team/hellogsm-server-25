@@ -13,19 +13,24 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 @RequiredArgsConstructor
 public class QueryMemberByIdService {
 
-    private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
 
-    @Transactional(readOnly = true)
-    public FoundMemberResDto execute(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ExpectedException("존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
+  @Transactional(readOnly = true)
+  public FoundMemberResDto execute(Long memberId) {
+    Member member =
+        memberRepository
+            .findById(memberId)
+            .orElseThrow(
+                () ->
+                    new ExpectedException(
+                        "존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
 
-        return FoundMemberResDto.builder()
-                .memberId(member.getId())
-                .name(member.getName())
-                .phoneNumber(member.getPhoneNumber())
-                .birth(member.getBirth())
-                .sex(member.getSex())
-                .build();
-    }
+    return FoundMemberResDto.builder()
+        .memberId(member.getId())
+        .name(member.getName())
+        .phoneNumber(member.getPhoneNumber())
+        .birth(member.getBirth())
+        .sex(member.getSex())
+        .build();
+  }
 }

@@ -14,21 +14,21 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 @RequiredArgsConstructor
 public class ModifyRealOneseoArrivedYnService {
 
-    private final MemberService memberService;
-    private final OneseoService oneseoService;
-    private final OneseoRepository oneseoRepository;
+  private final MemberService memberService;
+  private final OneseoService oneseoService;
+  private final OneseoRepository oneseoRepository;
 
-    @Transactional
-    public ArrivedStatusResDto execute(Long memberId) {
-        Member member = memberService.findByIdOrThrow(memberId);
-        Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
+  @Transactional
+  public ArrivedStatusResDto execute(Long memberId) {
+    Member member = memberService.findByIdOrThrow(memberId);
+    Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
 
-        EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
-        OneseoService.isBeforeFirstTest(entranceTestResult.getFirstTestPassYn());
+    EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
+    OneseoService.isBeforeFirstTest(entranceTestResult.getFirstTestPassYn());
 
-        oneseo.switchRealOneseoArrivedYn();
-        Oneseo modifiedOneseo = oneseoRepository.save(oneseo);
+    oneseo.switchRealOneseoArrivedYn();
+    Oneseo modifiedOneseo = oneseoRepository.save(oneseo);
 
-        return new ArrivedStatusResDto(modifiedOneseo.getRealOneseoArrivedYn());
-    }
+    return new ArrivedStatusResDto(modifiedOneseo.getRealOneseoArrivedYn());
+  }
 }

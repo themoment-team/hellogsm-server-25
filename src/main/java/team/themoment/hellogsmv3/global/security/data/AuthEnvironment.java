@@ -1,11 +1,7 @@
 package team.themoment.hellogsmv3.global.security.data;
 
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.List;
-
 @ConfigurationProperties(prefix = "auth")
-public record AuthEnvironment(
-        List<String> allowedOrigins
-) {
-}
+public record AuthEnvironment(List<String> allowedOrigins) {}

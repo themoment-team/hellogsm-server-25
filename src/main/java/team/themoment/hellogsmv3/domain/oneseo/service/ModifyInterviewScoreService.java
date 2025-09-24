@@ -1,5 +1,6 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,28 +11,25 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 
-import java.math.BigDecimal;
-
 @Service
 @RequiredArgsConstructor
 public class ModifyInterviewScoreService {
 
-    private final MemberService memberService;
-    private final OneseoService oneseoService;
-    private final EntranceTestResultRepository entranceTestResultRepository;
+  private final MemberService memberService;
+  private final OneseoService oneseoService;
+  private final EntranceTestResultRepository entranceTestResultRepository;
 
-    @Transactional
-    public void execute(Long memberId, InterviewScoreReqDto reqDto) {
-        Member member = memberService.findByIdOrThrow(memberId);
-        Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
+  @Transactional
+  public void execute(Long memberId, InterviewScoreReqDto reqDto) {
+    Member member = memberService.findByIdOrThrow(memberId);
+    Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
 
-        EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
-        OneseoService.isBeforeSecondTest(entranceTestResult.getSecondTestPassYn());
+    EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
+    OneseoService.isBeforeSecondTest(entranceTestResult.getSecondTestPassYn());
 
-        BigDecimal interviewScore = reqDto.interviewScore();
-        entranceTestResult.modifyInterviewScore(interviewScore);
+    BigDecimal interviewScore = reqDto.interviewScore();
+    entranceTestResult.modifyInterviewScore(interviewScore);
 
-        entranceTestResultRepository.save(entranceTestResult);
-    }
-
+    entranceTestResultRepository.save(entranceTestResult);
+  }
 }

@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.EntranceIntentionReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
@@ -16,25 +15,26 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 @RequiredArgsConstructor
 public class ModifyEntranceIntentionService {
 
-    private final OneseoRepository oneseoRepository;
-    private final MemberService memberService;
-    private final OneseoService oneseoService;
+  private final OneseoRepository oneseoRepository;
+  private final MemberService memberService;
+  private final OneseoService oneseoService;
 
-    @Transactional
-    public void execute(Long memberId, EntranceIntentionReqDto reqDto) {
-        Member member = memberService.findByIdOrThrow(memberId);
-        Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
+  @Transactional
+  public void execute(Long memberId, EntranceIntentionReqDto reqDto) {
+    Member member = memberService.findByIdOrThrow(memberId);
+    Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
 
-        isAfterFinalTest(oneseo);
+    isAfterFinalTest(oneseo);
 
-        oneseo.modifyEntranceIntentionYn(reqDto.entranceIntentionYn());
+    oneseo.modifyEntranceIntentionYn(reqDto.entranceIntentionYn());
 
-        oneseoRepository.save(oneseo);
+    oneseoRepository.save(oneseo);
+  }
+
+  private void isAfterFinalTest(Oneseo oneseo) {
+    if (oneseo.getDecidedMajor() == null) {
+      throw new ExpectedException(
+          "최종 합격한 지원자의 원서만 입학등록 동의서 제출여부를 수정할 수 있습니다.", HttpStatus.BAD_REQUEST);
     }
-
-    private void isAfterFinalTest(Oneseo oneseo) {
-        if (oneseo.getDecidedMajor() == null) {
-            throw new ExpectedException("최종 합격한 지원자의 원서만 입학등록 동의서 제출여부를 수정할 수 있습니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
+  }
 }

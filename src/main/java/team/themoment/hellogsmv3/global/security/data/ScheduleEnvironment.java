@@ -1,8 +1,7 @@
 package team.themoment.hellogsmv3.global.security.data;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.time.LocalDateTime;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "schedule")
 public record ScheduleEnvironment(
@@ -11,6 +10,4 @@ public record ScheduleEnvironment(
     LocalDateTime firstResultsAnnouncement,
     LocalDateTime competencyEvaluation,
     LocalDateTime interview,
-    LocalDateTime finalResultsAnnouncement
-) {
-}
+    LocalDateTime finalResultsAnnouncement) {}

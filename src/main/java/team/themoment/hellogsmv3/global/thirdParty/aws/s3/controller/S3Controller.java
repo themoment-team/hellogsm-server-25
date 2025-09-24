@@ -17,13 +17,11 @@ import team.themoment.hellogsmv3.global.thirdParty.aws.s3.service.UploadImageSer
 @RequiredArgsConstructor
 public class S3Controller {
 
-    private final UploadImageService uploadImageService;
+  private final UploadImageService uploadImageService;
 
-    @Operation(summary = "증명사진 등록", description = "증명사진 이미지를 요청받아 등록합니다.")
-    @PostMapping("/image")
-    public UploadImageResDto uploadImage(
-            @RequestParam(value = "file") MultipartFile multipartFile
-    ) {
-        return uploadImageService.execute(multipartFile);
-    }
+  @Operation(summary = "증명사진 등록", description = "증명사진 이미지를 요청받아 등록합니다.")
+  @PostMapping("/image")
+  public UploadImageResDto uploadImage(@RequestParam(value = "file") MultipartFile multipartFile) {
+    return uploadImageService.execute(multipartFile);
+  }
 }

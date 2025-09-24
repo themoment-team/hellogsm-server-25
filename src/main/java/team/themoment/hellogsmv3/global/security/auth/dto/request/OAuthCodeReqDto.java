@@ -5,7 +5,5 @@ import jakarta.validation.constraints.NotBlank;
 
 public record OAuthCodeReqDto(
     @Schema(description = "OAuth Provider로부터 받은 Authorization Code")
-    @NotBlank(message = "Authorization Code는 필수입니다.")
-    String code
-) {
-}
+        @NotBlank(message = "Authorization Code는 필수입니다.")
+        String code) {}

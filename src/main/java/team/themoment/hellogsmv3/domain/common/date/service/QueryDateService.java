@@ -9,16 +9,16 @@ import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 @RequiredArgsConstructor
 public class QueryDateService {
 
-    private final ScheduleEnvironment scheduleEnv;
+  private final ScheduleEnvironment scheduleEnv;
 
-    public DateResDto execute() {
-        return DateResDto.builder()
-                .oneseoSubmissionStart(scheduleEnv.oneseoSubmissionStart())
-                .oneseoSubmissionEnd(scheduleEnv.oneseoSubmissionEnd())
-                .firstResultsAnnouncement(scheduleEnv.firstResultsAnnouncement())
-                .competencyEvaluation(scheduleEnv.competencyEvaluation())
-                .inDepthInterview(scheduleEnv.interview())
-                .finalResultsAnnouncement(scheduleEnv.finalResultsAnnouncement())
-                .build();
-    }
+  public DateResDto execute() {
+    return DateResDto.builder()
+        .oneseoSubmissionStart(scheduleEnv.oneseoSubmissionStart())
+        .oneseoSubmissionEnd(scheduleEnv.oneseoSubmissionEnd())
+        .firstResultsAnnouncement(scheduleEnv.firstResultsAnnouncement())
+        .competencyEvaluation(scheduleEnv.competencyEvaluation())
+        .inDepthInterview(scheduleEnv.interview())
+        .finalResultsAnnouncement(scheduleEnv.finalResultsAnnouncement())
+        .build();
+  }
 }

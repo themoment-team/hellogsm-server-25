@@ -13,16 +13,18 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 @RequiredArgsConstructor
 public class QueryAnnounceTestResultService {
 
-    private final OperationTestResultRepository operationTestResultRepository;
+  private final OperationTestResultRepository operationTestResultRepository;
 
-    @Transactional(readOnly = true)
-    public AnnounceTestResultResDto execute() {
-        OperationTestResult testResult = operationTestResultRepository.findTestResult()
-                .orElseThrow(() -> new ExpectedException("시험 운영 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+  @Transactional(readOnly = true)
+  public AnnounceTestResultResDto execute() {
+    OperationTestResult testResult =
+        operationTestResultRepository
+            .findTestResult()
+            .orElseThrow(() -> new ExpectedException("시험 운영 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
-        return AnnounceTestResultResDto.builder()
-                .firstTestResultAnnouncementYn(testResult.getFirstTestResultAnnouncementYn())
-                .secondTestResultAnnouncementYn(testResult.getSecondTestResultAnnouncementYn())
-                .build();
-    }
+    return AnnounceTestResultResDto.builder()
+        .firstTestResultAnnouncementYn(testResult.getFirstTestResultAnnouncementYn())
+        .secondTestResultAnnouncementYn(testResult.getSecondTestResultAnnouncementYn())
+        .build();
+  }
 }

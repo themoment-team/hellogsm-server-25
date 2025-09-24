@@ -9,10 +9,10 @@ import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepo
 @RequiredArgsConstructor
 public class QueryOneseoEditabilityService {
 
-    private final EntranceTestResultRepository entranceTestResultRepository;
+  private final EntranceTestResultRepository entranceTestResultRepository;
 
-    public OneseoEditabilityResDto execute() {
-        boolean isFirstTestFinished = entranceTestResultRepository.existsByFirstTestPassYnIsNotNull();
-        return new OneseoEditabilityResDto(!isFirstTestFinished);
-    }
+  public OneseoEditabilityResDto execute() {
+    boolean isFirstTestFinished = entranceTestResultRepository.existsByFirstTestPassYnIsNotNull();
+    return new OneseoEditabilityResDto(!isFirstTestFinished);
+  }
 }

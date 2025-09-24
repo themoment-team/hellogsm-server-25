@@ -25,108 +25,108 @@ group = 'team.themoment'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+	sourceCompatibility = '17'
 }
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    /** spring app **/
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+	/** spring app **/
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    /** security **/
-    implementation 'org.springframework.session:spring-session-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+	/** security **/
+	implementation 'org.springframework.session:spring-session-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    /** oauth 2.0 **/
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	/** oauth 2.0 **/
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-    /** persistence **/
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    runtimeOnly 'com.mysql:mysql-connector-j'
+	/** persistence **/
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
-    /** queryDsl **/
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	/** queryDsl **/
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    /** test **/
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.mockito:mockito-inline:4.9.0'
+	/** test **/
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-inline:4.9.0'
 
-    /** validation **/
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+	/** validation **/
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    /** lombok **/
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+	/** lombok **/
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 
-    /** object serialize **/
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
+	/** object serialize **/
+	implementation 'com.google.code.gson:gson:2.10.1'
+	implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
 
-    /** aws **/
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1'
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sns:3.0.1'
+	/** aws **/
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-sns:3.0.1'
 
-    /** excel **/
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
+	/** excel **/
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
 
-    /** jackson **/
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	/** jackson **/
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-    /** swagger **/
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
+	/** swagger **/
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
 
-    /** actuator **/
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	/** actuator **/
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    /** micrometer **/
-    implementation 'io.micrometer:micrometer-registry-prometheus'
+	/** micrometer **/
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    /** logging **/
-    implementation group: 'ca.pjer', name: 'logback-awslogs-appender', version: '1.6.0'
+	/** logging **/
+	implementation group: 'ca.pjer', name: 'logback-awslogs-appender', version: '1.6.0'
 
-    /** open feign **/
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	/** open feign **/
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
 ext {
-    set('springCloudVersion', "2022.0.3")
+	set('springCloudVersion', "2022.0.3")
 }
 
 dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 def querydslSrcDir = "$projectDir/build/generated"
 
 clean {
-    delete file(querydslSrcDir)
+	delete file(querydslSrcDir)
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.generatedSourceOutputDirectory = file(querydslSrcDir)
+	options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
 
 tasks.named('bootBuildImage') {
-    builder = 'paketobuildpacks/builder-jammy-base:latest'
+	builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }
 
 compileJava.dependsOn spotlessApply

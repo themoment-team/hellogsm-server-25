@@ -12,8 +12,8 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OneseoApplyEvent {
-    private String name;
-    private String summitCode;
-    private GraduationType graduationType;
-    private Screening screening;
+  private String name;
+  private String summitCode;
+  private GraduationType graduationType;
+  private Screening screening;
 }

@@ -1,6 +1,8 @@
 package team.themoment.hellogsmv3.global.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -14,68 +16,75 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Slf4j
 @EnableWebMvc
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ExpectedException.class)
-    private CommonApiResponse expectedException(ExpectedException ex) {
-        log.warn("ExpectedException : {} ", ex.getMessage());
-        log.trace("ExpectedException Details : ", ex);
-        return CommonApiResponse.error(ex.getMessage(), ex.getStatusCode());
-    }
+  @ExceptionHandler(ExpectedException.class)
+  private CommonApiResponse expectedException(ExpectedException ex) {
+    log.warn("ExpectedException : {} ", ex.getMessage());
+    log.trace("ExpectedException Details : ", ex);
+    return CommonApiResponse.error(ex.getMessage(), ex.getStatusCode());
+  }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
-    public CommonApiResponse validationException(MethodArgumentNotValidException ex) {
-        log.warn("Validation Failed : {}", ex.getMessage());
-        log.trace("Validation Failed Details : ", ex);
-        return CommonApiResponse.error(methodArgumentNotValidExceptionToJson(ex), HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+  public CommonApiResponse validationException(MethodArgumentNotValidException ex) {
+    log.warn("Validation Failed : {}", ex.getMessage());
+    log.trace("Validation Failed Details : ", ex);
+    return CommonApiResponse.error(
+        methodArgumentNotValidExceptionToJson(ex), HttpStatus.BAD_REQUEST);
+  }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public CommonApiResponse validationException(ConstraintViolationException ex) {
-        log.warn("field validation failed : {}", ex.getMessage());
-        log.trace("field validation failed : ", ex);
-        return CommonApiResponse.error("field validation failed : " + ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(ConstraintViolationException.class)
+  public CommonApiResponse validationException(ConstraintViolationException ex) {
+    log.warn("field validation failed : {}", ex.getMessage());
+    log.trace("field validation failed : ", ex);
+    return CommonApiResponse.error(
+        "field validation failed : " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
 
-    @ExceptionHandler(RuntimeException.class)
-    public CommonApiResponse unExpectedException(RuntimeException ex) {
-        log.error("UnExpectedException Occur : ", ex);
-        return CommonApiResponse.error("internal server error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  @ExceptionHandler(RuntimeException.class)
+  public CommonApiResponse unExpectedException(RuntimeException ex) {
+    log.error("UnExpectedException Occur : ", ex);
+    return CommonApiResponse.error(
+        "internal server error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public CommonApiResponse noHandlerFoundException(NoHandlerFoundException ex) {
-        log.warn("Not Found Endpoint : {}", ex.getMessage());
-        log.trace("Not Found Endpoint Details : ", ex);
-        return CommonApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
+  @ExceptionHandler(NoHandlerFoundException.class)
+  public CommonApiResponse noHandlerFoundException(NoHandlerFoundException ex) {
+    log.warn("Not Found Endpoint : {}", ex.getMessage());
+    log.trace("Not Found Endpoint Details : ", ex);
+    return CommonApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND);
+  }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public CommonApiResponse maxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
-        log.warn("The file is too big : {}", ex.getMessage());
-        log.trace("The file is too big Details : ", ex);
-        return CommonApiResponse.error("The file is too big, limited file size : " + ex.getMaxUploadSize(), HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public CommonApiResponse maxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+    log.warn("The file is too big : {}", ex.getMessage());
+    log.trace("The file is too big Details : ", ex);
+    return CommonApiResponse.error(
+        "The file is too big, limited file size : " + ex.getMaxUploadSize(),
+        HttpStatus.BAD_REQUEST);
+  }
 
-    private static String methodArgumentNotValidExceptionToJson(MethodArgumentNotValidException ex) {
-        Map<String, Object> globalResults = new HashMap<>();
-        Map<String, String> fieldResults = new HashMap<>();
+  private static String methodArgumentNotValidExceptionToJson(MethodArgumentNotValidException ex) {
+    Map<String, Object> globalResults = new HashMap<>();
+    Map<String, String> fieldResults = new HashMap<>();
 
-        ex.getBindingResult().getGlobalErrors().forEach(error -> {
-            globalResults.put(ex.getBindingResult().getObjectName(), error.getDefaultMessage());
-        });
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            fieldResults.put(error.getField(), error.getDefaultMessage());
-        });
-        globalResults.put(ex.getBindingResult().getObjectName(), fieldResults);
+    ex.getBindingResult()
+        .getGlobalErrors()
+        .forEach(
+            error -> {
+              globalResults.put(ex.getBindingResult().getObjectName(), error.getDefaultMessage());
+            });
+    ex.getBindingResult()
+        .getFieldErrors()
+        .forEach(
+            error -> {
+              fieldResults.put(error.getField(), error.getDefaultMessage());
+            });
+    globalResults.put(ex.getBindingResult().getObjectName(), fieldResults);
 
-        return new JSONObject(globalResults).toString().replace("\"", "'");
-    }
-
+    return new JSONObject(globalResults).toString().replace("\"", "'");
+  }
 }

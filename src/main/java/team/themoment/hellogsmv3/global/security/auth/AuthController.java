@@ -23,31 +23,32 @@ import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticatio
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final OAuthAuthenticationService oAuthAuthenticationService;
+  private final OAuthAuthenticationService oAuthAuthenticationService;
 
-    @Operation(summary = "OAuth 인증", description = "프론트엔드에서 받은 Authorization Code로 인증을 처리합니다.")
-    @PostMapping("/auth/{provider}")
-    public CommonApiResponse authenticateWithOAuth(
-            @PathVariable String provider,
-            @RequestBody @Valid OAuthCodeReqDto reqDto,
-            HttpServletRequest request
-    ) {
-        oAuthAuthenticationService.execute(provider, reqDto.code(), request);
-        return CommonApiResponse.success("인증이 완료되었습니다.");
-    }
+  @Operation(summary = "OAuth 인증", description = "프론트엔드에서 받은 Authorization Code로 인증을 처리합니다.")
+  @PostMapping("/auth/{provider}")
+  public CommonApiResponse authenticateWithOAuth(
+      @PathVariable String provider,
+      @RequestBody @Valid OAuthCodeReqDto reqDto,
+      HttpServletRequest request) {
+    oAuthAuthenticationService.execute(provider, reqDto.code(), request);
+    return CommonApiResponse.success("인증이 완료되었습니다.");
+  }
 
-    @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
-    @GetMapping("/logout")
-    public CommonApiResponse logout(HttpServletRequest req, HttpServletResponse res) {
-        logoutProcess(req, res, SecurityContextHolder.getContext().getAuthentication());
-        return CommonApiResponse.success("로그아웃 되었습니다.");
-    }
+  @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
+  @GetMapping("/logout")
+  public CommonApiResponse logout(HttpServletRequest req, HttpServletResponse res) {
+    logoutProcess(req, res, SecurityContextHolder.getContext().getAuthentication());
+    return CommonApiResponse.success("로그아웃 되었습니다.");
+  }
 
-    private static void logoutProcess(HttpServletRequest req, HttpServletResponse res, Authentication auth) {
-        if (auth instanceof OAuth2AuthenticationToken) {
-            new SecurityContextLogoutHandler().logout(req, res, SecurityContextHolder.getContext().getAuthentication());
-        } else {
-            throw new ExpectedException("인증 정보가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED);
-        }
+  private static void logoutProcess(
+      HttpServletRequest req, HttpServletResponse res, Authentication auth) {
+    if (auth instanceof OAuth2AuthenticationToken) {
+      new SecurityContextLogoutHandler()
+          .logout(req, res, SecurityContextHolder.getContext().getAuthentication());
+    } else {
+      throw new ExpectedException("인증 정보가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED);
     }
+  }
 }

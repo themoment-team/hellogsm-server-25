@@ -11,9 +11,9 @@ import team.themoment.hellogsmv3.global.thirdParty.feign.client.type.NoticeLevel
 @Builder
 @AllArgsConstructor
 public class DiscordAlarmReqDto {
-    private String title;
-    private String content;
-    private NoticeLevel noticeLevel;
-    private Channel channel;
-    private Env env;
+  private String title;
+  private String content;
+  private NoticeLevel noticeLevel;
+  private Channel channel;
+  private Env env;
 }

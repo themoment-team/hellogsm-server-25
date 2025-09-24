@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Channel {
-    info,
-    mon
+  info,
+  mon
 }

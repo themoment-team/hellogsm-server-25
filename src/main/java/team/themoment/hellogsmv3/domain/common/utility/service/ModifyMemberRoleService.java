@@ -15,12 +15,15 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 @Profile("!prod")
 public class ModifyMemberRoleService {
 
-    private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
 
-    @Transactional
-    public void execute(String phoneNumber, Role role) {
-        Member member = memberRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new ExpectedException("해당 전화 번호에 해당하는 계정이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
-        member.modifyMemberRole(role);
-    }
+  @Transactional
+  public void execute(String phoneNumber, Role role) {
+    Member member =
+        memberRepository
+            .findByPhoneNumber(phoneNumber)
+            .orElseThrow(
+                () -> new ExpectedException("해당 전화 번호에 해당하는 계정이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+    member.modifyMemberRole(role);
+  }
 }

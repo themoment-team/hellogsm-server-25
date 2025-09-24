@@ -1,16 +1,15 @@
 package team.themoment.hellogsmv3.domain.member.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
+import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.entity.type.Sex;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -21,65 +20,62 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "member_id")
+  private Long id;
 
-    @Column(name = "email", nullable = false)
-    private String email;
+  @Column(name = "email", nullable = false)
+  private String email;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "auth_referrer_type", nullable = false)
-    private AuthReferrerType authReferrerType;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "auth_referrer_type", nullable = false)
+  private AuthReferrerType authReferrerType;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @Column(name = "birth")
-    private LocalDate birth;
+  @Column(name = "birth")
+  private LocalDate birth;
 
-    @Column(name = "phone_number", unique = true)
-    private String phoneNumber;
+  @Column(name = "phone_number", unique = true)
+  private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "sex")
-    private Sex sex;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "sex")
+  private Sex sex;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private Role role;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role")
+  private Role role;
 
-    @CreatedDate
-    @Column(name = "created_time", updatable = false, nullable = false)
-    private LocalDateTime createdTime;
+  @CreatedDate
+  @Column(name = "created_time", updatable = false, nullable = false)
+  private LocalDateTime createdTime;
 
-    @LastModifiedDate
-    @Column(name = "updated_time", nullable = false)
-    private LocalDateTime updatedTime;
+  @LastModifiedDate
+  @Column(name = "updated_time", nullable = false)
+  private LocalDateTime updatedTime;
 
-    public static Member buildMemberWithOauthInfo(String email, AuthReferrerType authRefType) {
-        return Member.builder()
-                .email(email)
-                .authReferrerType(authRefType)
-                .build();
-    }
+  public static Member buildMemberWithOauthInfo(String email, AuthReferrerType authRefType) {
+    return Member.builder().email(email).authReferrerType(authRefType).build();
+  }
 
-    public Member modifyMember(String name, LocalDate birth, String phoneNumber, Sex sex) {
-        this.name = name;
-        this.birth = birth;
-        this.phoneNumber = phoneNumber;
-        this.sex = sex;
+  public Member modifyMember(String name, LocalDate birth, String phoneNumber, Sex sex) {
+    this.name = name;
+    this.birth = birth;
+    this.phoneNumber = phoneNumber;
+    this.sex = sex;
 
-        return this;
-    }
+    return this;
+  }
 
-    public void modifyMemberRole(Role role) {
-        this.role = role;
-    }
+  public void modifyMemberRole(Role role) {
+    this.role = role;
+  }
 
-    @PrePersist
-    private void prePersist() {
-        this.role = this.role == null ? Role.UNAUTHENTICATED : this.role;
-    }
+  @PrePersist
+  private void prePersist() {
+    this.role = this.role == null ? Role.UNAUTHENTICATED : this.role;
+  }
 }

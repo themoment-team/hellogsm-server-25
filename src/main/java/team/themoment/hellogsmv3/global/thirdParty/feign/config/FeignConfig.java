@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableFeignClients(basePackages = "team.themoment.hellogsmv3")
 @Configuration
 public class FeignConfig {
-    @Bean
-    public FeignErrorDecoder feignErrorDecoder() {
-        return new FeignErrorDecoder();
-    }
+  @Bean
+  public FeignErrorDecoder feignErrorDecoder() {
+    return new FeignErrorDecoder();
+  }
 }

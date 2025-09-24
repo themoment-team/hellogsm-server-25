@@ -19,18 +19,18 @@ import team.themoment.hellogsmv3.domain.oneseo.annotation.ValidDesiredMajors;
 @ValidDesiredMajors
 public class DesiredMajors {
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "first_desired_major", nullable = false)
-    @NotNull
-    private Major firstDesiredMajor;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "first_desired_major", nullable = false)
+  @NotNull
+  private Major firstDesiredMajor;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "second_desired_major", nullable = false)
-    @NotNull
-    private Major secondDesiredMajor;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "second_desired_major", nullable = false)
+  @NotNull
+  private Major secondDesiredMajor;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "third_desired_major", nullable = false)
-    @NotNull
-    private Major thirdDesiredMajor;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "third_desired_major", nullable = false)
+  @NotNull
+  private Major thirdDesiredMajor;
 }
