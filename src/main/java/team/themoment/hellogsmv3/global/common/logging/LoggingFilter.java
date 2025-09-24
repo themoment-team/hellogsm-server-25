@@ -23,7 +23,7 @@ public class LoggingFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(LoggingFilter.class);
 
     private static final String[] NOT_LOGGING_URL = {
-            "/api-docs/**", "/swagger-ui/**"
+            "/api-docs/**", "/swagger-ui/**", "/hello-management/prometheus/**"
     };
 
     private final AntPathMatcher matcher = new AntPathMatcher();
