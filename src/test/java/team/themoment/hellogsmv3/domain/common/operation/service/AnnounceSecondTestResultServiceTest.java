@@ -1,5 +1,16 @@
 package team.themoment.hellogsmv3.domain.common.operation.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.YES;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,22 +19,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
 import team.themoment.hellogsmv3.domain.common.operation.repository.OperationTestResultRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.YES;
 
 @DisplayName("AnnounceSecondTestResultService 클래스의")
 class AnnounceSecondTestResultServiceTest {
@@ -61,9 +62,8 @@ class AnnounceSecondTestResultServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () ->
-                        announceSecondTestResultService.execute()
-                );
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> announceSecondTestResultService.execute());
 
                 assertEquals("시험 운영 정보를 찾을 수 없습니다.", exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
@@ -83,9 +83,8 @@ class AnnounceSecondTestResultServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () ->
-                        announceSecondTestResultService.execute()
-                );
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> announceSecondTestResultService.execute());
 
                 assertEquals("2차 결과 발표 기간 이전에 발표 여부를 수정할 수 없습니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -110,9 +109,8 @@ class AnnounceSecondTestResultServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () ->
-                        announceSecondTestResultService.execute()
-                );
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> announceSecondTestResultService.execute());
 
                 assertEquals("이미 2차 결과를 발표했습니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());

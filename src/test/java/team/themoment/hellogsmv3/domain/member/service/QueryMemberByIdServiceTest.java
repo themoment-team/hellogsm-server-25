@@ -1,5 +1,11 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,17 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberResDto;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.Sex;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 
 @DisplayName("QueryMemberByIdService 클래스의")
 class QueryMemberByIdServiceTest {
@@ -48,13 +49,8 @@ class QueryMemberByIdServiceTest {
 
             @BeforeEach
             void setUp() {
-                member = Member.builder()
-                        .id(memberId)
-                        .name("최장우")
-                        .birth(LocalDate.of(2006, 3, 6))
-                        .phoneNumber("01012345678")
-                        .sex(Sex.MALE)
-                        .build();
+                member = Member.builder().id(memberId).name("최장우").birth(LocalDate.of(2006, 3, 6))
+                        .phoneNumber("01012345678").sex(Sex.MALE).build();
 
                 given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             }

@@ -1,5 +1,10 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.ArrivedStatusResDto;
@@ -17,11 +23,6 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @DisplayName("ModifyRealOneseoArrivedYnService 클래스의")
 public class ModifyRealOneseoArrivedYnServiceTest {
@@ -55,20 +56,12 @@ public class ModifyRealOneseoArrivedYnServiceTest {
 
             @BeforeEach
             void setUp() {
-                Member member = Member.builder()
-                        .id(memberId)
-                        .build();
+                Member member = Member.builder().id(memberId).build();
 
-                EntranceTestResult entranceTestResult = EntranceTestResult.builder()
-                        .firstTestPassYn(null)
-                        .build();
+                EntranceTestResult entranceTestResult = EntranceTestResult.builder().firstTestPassYn(null).build();
 
-                oneseo = Oneseo.builder()
-                        .member(member)
-                        .realOneseoArrivedYn(YesNo.NO)
-                        .wantedScreening(Screening.GENERAL)
-                        .entranceTestResult(entranceTestResult)
-                        .build();
+                oneseo = Oneseo.builder().member(member).realOneseoArrivedYn(YesNo.NO)
+                        .wantedScreening(Screening.GENERAL).entranceTestResult(entranceTestResult).build();
 
                 given(memberService.findByIdOrThrow(memberId)).willReturn(member);
                 given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
@@ -93,14 +86,16 @@ public class ModifyRealOneseoArrivedYnServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(memberService.findByIdOrThrow(memberId)).willThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: ", HttpStatus.NOT_FOUND));
+                given(memberService.findByIdOrThrow(memberId))
+                        .willThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: ", HttpStatus.NOT_FOUND));
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
 
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> modifyRealOneseoArrivedYnService.execute(memberId));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> modifyRealOneseoArrivedYnService.execute(memberId));
 
                 assertEquals("존재하지 않는 지원자입니다. member ID: ", exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());

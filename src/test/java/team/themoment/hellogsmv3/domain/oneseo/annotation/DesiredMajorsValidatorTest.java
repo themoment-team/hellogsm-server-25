@@ -1,23 +1,22 @@
 package team.themoment.hellogsmv3.domain.oneseo.annotation;
 
-import jakarta.validation.ConstraintValidatorContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.*;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Major.*;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import jakarta.validation.ConstraintValidatorContext;
+import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 
 @DisplayName("DesiredMajorsValidator 클래스의")
 public class DesiredMajorsValidatorTest {
@@ -31,12 +30,14 @@ public class DesiredMajorsValidatorTest {
         validator = new DesiredMajorsValidator();
 
         @ValidDesiredMajors
-        class Dummy {}
+        class Dummy {
+        }
         annotation = Dummy.class.getAnnotation(ValidDesiredMajors.class);
         validator.initialize(annotation);
 
         context = Mockito.mock(ConstraintValidatorContext.class);
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = Mockito.mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
+        ConstraintValidatorContext.ConstraintViolationBuilder builder = Mockito
+                .mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
         when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
         when(builder.addConstraintViolation()).thenReturn(context);
     }
@@ -46,25 +47,13 @@ public class DesiredMajorsValidatorTest {
     class Describe_isValid {
 
         private OneseoReqDto createValidOneseoReqDto(Major first, Major second, Major third) {
-            return OneseoReqDto.builder()
-                    .guardianName("김보호")
-                    .guardianPhoneNumber("01000000000")
-                    .relationshipWithGuardian("모")
-                    .profileImg("https://example.com/image.jpg")
-                    .address("광주광역시 광산구 송정동 상무대로 312")
-                    .detailAddress("101동 1001호")
-                    .graduationType(CANDIDATE)
-                    .schoolTeacherName("김선생")
-                    .schoolTeacherPhoneNumber("01000000000")
-                    .firstDesiredMajor(first)
-                    .secondDesiredMajor(second)
-                    .thirdDesiredMajor(third)
-                    .middleSchoolAchievement(mock(MiddleSchoolAchievementReqDto.class))
-                    .schoolName("금호중앙중학교")
-                    .schoolAddress("광주광역시 북구 운암2동 금호로 100")
-                    .screening(GENERAL)
-                    .graduationDate("2006-03")
-                    .build();
+            return OneseoReqDto.builder().guardianName("김보호").guardianPhoneNumber("01000000000")
+                    .relationshipWithGuardian("모").profileImg("https://example.com/image.jpg")
+                    .address("광주광역시 광산구 송정동 상무대로 312").detailAddress("101동 1001호").graduationType(CANDIDATE)
+                    .schoolTeacherName("김선생").schoolTeacherPhoneNumber("01000000000").firstDesiredMajor(first)
+                    .secondDesiredMajor(second).thirdDesiredMajor(third)
+                    .middleSchoolAchievement(mock(MiddleSchoolAchievementReqDto.class)).schoolName("금호중앙중학교")
+                    .schoolAddress("광주광역시 북구 운암2동 금호로 100").screening(GENERAL).graduationDate("2006-03").build();
         }
 
         @Nested

@@ -1,20 +1,21 @@
 package team.themoment.hellogsmv3.domain.member.service.impl;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
 import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
 
 @DisplayName("GenerateTestCodeServiceImpl 클래스의")
 class GenerateTestCodeServiceImplTest {

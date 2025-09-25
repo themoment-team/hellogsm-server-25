@@ -1,10 +1,10 @@
 package team.themoment.hellogsmv3.domain.oneseo.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 import lombok.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
-
-import java.math.BigDecimal;
 
 @Getter
 @Entity
@@ -12,8 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Table(name = "tb_entrance_test_result", indexes = {
         @Index(name = "idx_first_test_pass_yn", columnList = "first_test_pass_yn"),
-        @Index(name = "idx_second_test_pass_yn", columnList = "second_test_pass_yn")
-})
+        @Index(name = "idx_second_test_pass_yn", columnList = "second_test_pass_yn")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EntranceTestResult {
 
@@ -59,7 +58,8 @@ public class EntranceTestResult {
         this.documentEvaluationScore = documentEvaluationScore;
     }
 
-    public EntranceTestResult(Oneseo oneseo, EntranceTestFactorsDetail entranceTestFactorsDetail, BigDecimal documentEvaluationScore) {
+    public EntranceTestResult(Oneseo oneseo, EntranceTestFactorsDetail entranceTestFactorsDetail,
+            BigDecimal documentEvaluationScore) {
         this.oneseo = oneseo;
         this.entranceTestFactorsDetail = entranceTestFactorsDetail;
         this.documentEvaluationScore = documentEvaluationScore;

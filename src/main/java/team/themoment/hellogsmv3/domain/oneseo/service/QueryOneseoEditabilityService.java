@@ -1,7 +1,8 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.OneseoEditabilityResDto;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 

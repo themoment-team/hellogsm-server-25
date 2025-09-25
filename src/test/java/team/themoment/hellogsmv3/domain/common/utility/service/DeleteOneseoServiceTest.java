@@ -1,5 +1,12 @@
 package team.themoment.hellogsmv3.domain.common.utility.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,15 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @DisplayName("DeleteOneseoService 클래스의")
 class DeleteOneseoServiceTest {
@@ -45,8 +46,7 @@ class DeleteOneseoServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(oneseoRepository.findMemberIdByOneseoSubmitCode(submitCode))
-                        .willReturn(Optional.of(memberId));
+                given(oneseoRepository.findMemberIdByOneseoSubmitCode(submitCode)).willReturn(Optional.of(memberId));
             }
 
             @Test
@@ -65,8 +65,7 @@ class DeleteOneseoServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(oneseoRepository.findMemberIdByOneseoSubmitCode(submitCode))
-                        .willReturn(Optional.empty());
+                given(oneseoRepository.findMemberIdByOneseoSubmitCode(submitCode)).willReturn(Optional.empty());
             }
 
             @Test

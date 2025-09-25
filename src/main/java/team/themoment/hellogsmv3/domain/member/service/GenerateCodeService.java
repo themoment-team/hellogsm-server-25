@@ -1,12 +1,12 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
+import java.time.LocalDateTime;
+import java.util.Random;
+
 import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
 import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
-
-import java.time.LocalDateTime;
-import java.util.Random;
 
 public abstract class GenerateCodeService {
     protected static final int DIGIT_NUMBER = 6;
@@ -15,17 +15,12 @@ public abstract class GenerateCodeService {
 
     protected abstract String execute(Long memberId, GenerateCodeReqDto reqDto);
 
-    protected AuthenticationCode createAuthenticationCode(
-            AuthenticationCode authCode,
-            Long memberId,
-            String code,
-            String phoneNumber,
-            AuthCodeType authCodeType,
-            boolean isTest) {
+    protected AuthenticationCode createAuthenticationCode(AuthenticationCode authCode, Long memberId, String code,
+            String phoneNumber, AuthCodeType authCodeType, boolean isTest) {
 
-        return authCode == null ?
-                new AuthenticationCode(memberId, code, phoneNumber, LocalDateTime.now(), authCodeType, isTest) :
-                authCode.updatedCode(code, LocalDateTime.now(), isTest);
+        return authCode == null
+                ? new AuthenticationCode(memberId, code, phoneNumber, LocalDateTime.now(), authCodeType, isTest)
+                : authCode.updatedCode(code, LocalDateTime.now(), isTest);
     }
 
     protected String generateUniqueCode(Random RANDOM, CodeRepository codeRepository) {

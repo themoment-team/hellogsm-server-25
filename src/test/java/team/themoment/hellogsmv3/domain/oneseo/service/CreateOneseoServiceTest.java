@@ -1,5 +1,17 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Major.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,33 +22,22 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
+import team.themoment.hellogsmv3.domain.oneseo.entity.MiddleSchoolAchievement;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.OneseoPrivacyDetail;
-import team.themoment.hellogsmv3.domain.oneseo.entity.MiddleSchoolAchievement;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.repository.*;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-import team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda.LambdaScoreCalculatorClient;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.LambdaScoreCalculatorReqDto;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.*;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Major.*;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.*;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda.LambdaScoreCalculatorClient;
 
 @DisplayName("CreateOneseoService 클래스의")
 class CreateOneseoServiceTest {
@@ -87,20 +88,11 @@ class CreateOneseoServiceTest {
         String freeSemester = "1-1";
 
         MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder()
-                .achievement1_2(achievement)
-                .achievement2_1(achievement)
-                .achievement2_2(achievement)
-                .achievement3_1(achievement)
-                .generalSubjects(generalSubjects)
-                .newSubjects(newSubjects)
-                .artsPhysicalAchievement(artsPhysicalAchievement)
-                .artsPhysicalSubjects(artsPhysicalSubjects)
-                .absentDays(absentDays)
-                .attendanceDays(attendanceDays)
-                .volunteerTime(volunteerTime)
-                .liberalSystem(liberalSystem)
-                .freeSemester(freeSemester)
-                .build();
+                .achievement1_2(achievement).achievement2_1(achievement).achievement2_2(achievement)
+                .achievement3_1(achievement).generalSubjects(generalSubjects).newSubjects(newSubjects)
+                .artsPhysicalAchievement(artsPhysicalAchievement).artsPhysicalSubjects(artsPhysicalSubjects)
+                .absentDays(absentDays).attendanceDays(attendanceDays).volunteerTime(volunteerTime)
+                .liberalSystem(liberalSystem).freeSemester(freeSemester).build();
 
         String guardianName = "김보호";
         String guardianPhoneNumber = "01000000001";
@@ -120,26 +112,10 @@ class CreateOneseoServiceTest {
         String graduationDate = "2020-02";
         String studentNumber = "30508";
 
-        OneseoReqDto oneseoReqDto = new OneseoReqDto(
-                guardianName,
-                guardianPhoneNumber,
-                relationshipWithGuardian,
-                profileImg,
-                address,
-                detailAddress,
-                graduationType,
-                schoolTeacherName,
-                schoolTeacherPhoneNumber,
-                firstDesiredMajor,
-                secondDesiredMajor,
-                thirdDesiredMajor,
-                middleSchoolAchievementReqDto,
-                schoolName,
-                schoolAddress,
-                screening,
-                graduationDate,
-                studentNumber
-        );
+        OneseoReqDto oneseoReqDto = new OneseoReqDto(guardianName, guardianPhoneNumber, relationshipWithGuardian,
+                profileImg, address, detailAddress, graduationType, schoolTeacherName, schoolTeacherPhoneNumber,
+                firstDesiredMajor, secondDesiredMajor, thirdDesiredMajor, middleSchoolAchievementReqDto, schoolName,
+                schoolAddress, screening, graduationDate, studentNumber);
 
         @Nested
         @DisplayName("유효한 회원 ID와 요청 데이터가 주어지면")
@@ -163,8 +139,10 @@ class CreateOneseoServiceTest {
                 createOneseoService.execute(oneseoReqDto, memberId);
 
                 ArgumentCaptor<Oneseo> oneseoCaptor = ArgumentCaptor.forClass(Oneseo.class);
-                ArgumentCaptor<OneseoPrivacyDetail> oneseoPrivacyDetailCaptor = ArgumentCaptor.forClass(OneseoPrivacyDetail.class);
-                ArgumentCaptor<MiddleSchoolAchievement> middleSchoolAchievementCaptor = ArgumentCaptor.forClass(MiddleSchoolAchievement.class);
+                ArgumentCaptor<OneseoPrivacyDetail> oneseoPrivacyDetailCaptor = ArgumentCaptor
+                        .forClass(OneseoPrivacyDetail.class);
+                ArgumentCaptor<MiddleSchoolAchievement> middleSchoolAchievementCaptor = ArgumentCaptor
+                        .forClass(MiddleSchoolAchievement.class);
 
                 verify(oneseoRepository).save(oneseoCaptor.capture());
                 verify(oneseoPrivacyDetailRepository).save(oneseoPrivacyDetailCaptor.capture());
@@ -225,7 +203,8 @@ class CreateOneseoServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> createOneseoService.execute(reqDto, memberId));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> createOneseoService.execute(reqDto, memberId));
 
                 assertEquals("존재하지 않는 지원자입니다. member ID: " + memberId, exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
@@ -248,19 +227,20 @@ class CreateOneseoServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_expected_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> createOneseoService.execute(reqDto, memberId));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> createOneseoService.execute(reqDto, memberId));
 
                 assertEquals("이미 원서가 존재합니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
             }
         }
 
-
         @Nested
         @DisplayName("유효하지 않은 교과 등급이 입력되었을 때")
         class Context_with_invalid_achievement {
 
-            MiddleSchoolAchievementReqDto invalidMiddleSchoolAchievementReqDto = mock(MiddleSchoolAchievementReqDto.class);
+            MiddleSchoolAchievementReqDto invalidMiddleSchoolAchievementReqDto = mock(
+                    MiddleSchoolAchievementReqDto.class);
 
             @BeforeEach
             void setUp() {
@@ -282,7 +262,8 @@ class CreateOneseoServiceTest {
                 given(invalidMiddleSchoolAchievementReqDto.achievement3_1()).willReturn(invalidGeneralAchievements);
                 given(invalidMiddleSchoolAchievementReqDto.achievement3_2()).willReturn(invalidGeneralAchievements);
 
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> createOneseoService.execute(reqDto, memberId));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> createOneseoService.execute(reqDto, memberId));
 
                 assertEquals("올바르지 않은 일반교과 등급이 입력되었습니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -292,9 +273,11 @@ class CreateOneseoServiceTest {
             @DisplayName("예체능 등급이 유효하지 않다면 ExpectedException을 던진다")
             void it_art_throws_expected_exception() {
                 List<Integer> invalidArtAchievements = Arrays.asList(0, 1, 2, 6);
-                given(invalidMiddleSchoolAchievementReqDto.artsPhysicalAchievement()).willReturn(invalidArtAchievements);
+                given(invalidMiddleSchoolAchievementReqDto.artsPhysicalAchievement())
+                        .willReturn(invalidArtAchievements);
 
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> createOneseoService.execute(reqDto, memberId));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> createOneseoService.execute(reqDto, memberId));
 
                 assertEquals("올바르지 않은 예체능 등급이 입력되었습니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());

@@ -1,5 +1,16 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,20 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
 
 @DisplayName("CommonCodeService 클래스의")
 class CommonCodeServiceTest {
@@ -50,14 +51,8 @@ class CommonCodeServiceTest {
 
         @BeforeEach
         void setUp() {
-            authenticationCode = new AuthenticationCode(
-                    memberId,
-                    validCode,
-                    validPhoneNumber,
-                    LocalDateTime.now(),
-                    SIGNUP,
-                    false
-            );
+            authenticationCode = new AuthenticationCode(memberId, validCode, validPhoneNumber, LocalDateTime.now(),
+                    SIGNUP, false);
         }
 
         @Nested
@@ -67,7 +62,8 @@ class CommonCodeServiceTest {
             @BeforeEach
             void setUp() {
                 authenticationCode.authenticatedAuthenticationCode();
-                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP))
+                        .willReturn(Optional.of(authenticationCode));
             }
 
             @Test
@@ -106,7 +102,8 @@ class CommonCodeServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP))
+                        .willReturn(Optional.of(authenticationCode));
             }
 
             @Test
@@ -128,7 +125,8 @@ class CommonCodeServiceTest {
             @BeforeEach
             void setUp() {
                 authenticationCode.authenticatedAuthenticationCode();
-                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP))
+                        .willReturn(Optional.of(authenticationCode));
             }
 
             @Test
@@ -150,7 +148,8 @@ class CommonCodeServiceTest {
             @BeforeEach
             void setUp() {
                 authenticationCode.authenticatedAuthenticationCode();
-                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(authenticationCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP))
+                        .willReturn(Optional.of(authenticationCode));
             }
 
             @Test

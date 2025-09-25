@@ -1,5 +1,8 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -7,15 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberFirstTestResDto;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.service.OneseoService;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 
 @DisplayName("QueryMyFirstTestResultService 클래스의")
 public class QueryMyFirstTestResultServiceTest {
@@ -43,16 +44,10 @@ public class QueryMyFirstTestResultServiceTest {
 
         @BeforeEach
         void setUp() {
-            member = Member.builder()
-                    .id(memberId)
-                    .build();
+            member = Member.builder().id(memberId).build();
 
-            oneseo = Oneseo.builder()
-                    .member(member)
-                    .entranceTestResult(EntranceTestResult.builder()
-                            .firstTestPassYn(YesNo.YES)
-                            .build())
-                    .build();
+            oneseo = Oneseo.builder().member(member)
+                    .entranceTestResult(EntranceTestResult.builder().firstTestPassYn(YesNo.YES).build()).build();
 
             given(memberService.findByIdOrThrow(memberId)).willReturn(member);
             given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);

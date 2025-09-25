@@ -1,15 +1,16 @@
 package team.themoment.hellogsmv3.domain.common.utility.service;
 
-import lombok.RequiredArgsConstructor;
+import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.ONESEO_CACHE_VALUE;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.ONESEO_CACHE_VALUE;
 
 @Service
 @RequiredArgsConstructor

@@ -1,9 +1,10 @@
 package team.themoment.hellogsmv3.global.common.logging;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -12,19 +13,18 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.UUID;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingFilter.class);
 
-    private static final String[] NOT_LOGGING_URL = {
-            "/api-docs/**", "/swagger-ui/**", "/hello-management/prometheus/**"
-    };
+    private static final String[] NOT_LOGGING_URL = {"/api-docs/**", "/swagger-ui/**",
+            "/hello-management/prometheus/**"};
 
     private final AntPathMatcher matcher = new AntPathMatcher();
 
@@ -96,8 +96,7 @@ public class LoggingFilter extends OncePerRequestFilter {
     }
 
     private boolean isNotLoggingURL(String requestURI) {
-        return Arrays.stream(NOT_LOGGING_URL)
-                .anyMatch(pattern -> matcher.match(pattern, requestURI));
+        return Arrays.stream(NOT_LOGGING_URL).anyMatch(pattern -> matcher.match(pattern, requestURI));
     }
 
     private boolean isMultipart(HttpServletRequest request) {
@@ -106,21 +105,30 @@ public class LoggingFilter extends OncePerRequestFilter {
     }
 
     private void requestLogging(HttpServletRequest request, UUID logId, byte[] cachedBody) {
-        log.info("Log-ID: {}, IP: {}, URI: {}, Http-Method: {}, Params: {}, Content-Type: {}, User-Cookies: {}, User-Agent: {}, Request-Body: {}",
-                logId, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), request.getQueryString(), request.getContentType(), request.getCookies() != null ? String.join(", ", getCookiesAsString(request.getCookies())) : "[none]", request.getHeader("User-Agent"), getRequestBody(cachedBody));
+        log.info(
+                "Log-ID: {}, IP: {}, URI: {}, Http-Method: {}, Params: {}, Content-Type: {}, User-Cookies: {}, User-Agent: {}, Request-Body: {}",
+                logId, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), request.getQueryString(),
+                request.getContentType(),
+                request.getCookies() != null ? String.join(", ", getCookiesAsString(request.getCookies())) : "[none]",
+                request.getHeader("User-Agent"), getRequestBody(cachedBody));
     }
 
     private void requestLoggingMultipart(HttpServletRequest request, UUID logId) {
         String contentLength = request.getHeader("Content-Length");
-        log.info("Log-ID: {}, IP: {}, URI: {}, Http-Method: {}, Params: {}, Content-Type: {}, Content-Length: {}, User-Cookies: {}, User-Agent: {}, Request-Body: {}",
-                logId, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), request.getQueryString(), request.getContentType(), contentLength != null ? contentLength : "[unknown]", request.getCookies() != null ? String.join(", ", getCookiesAsString(request.getCookies())) : "[none]", request.getHeader("User-Agent"), "[multipart omitted]");
+        log.info(
+                "Log-ID: {}, IP: {}, URI: {}, Http-Method: {}, Params: {}, Content-Type: {}, Content-Length: {}, User-Cookies: {}, User-Agent: {}, Request-Body: {}",
+                logId, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), request.getQueryString(),
+                request.getContentType(), contentLength != null ? contentLength : "[unknown]",
+                request.getCookies() != null ? String.join(", ", getCookiesAsString(request.getCookies())) : "[none]",
+                request.getHeader("User-Agent"), "[multipart omitted]");
     }
 
     private void responseLogging(ContentCachingResponseWrapper response, long startTime, UUID logId) {
         long endTime = System.currentTimeMillis();
         long responseTime = endTime - startTime;
-        log.info("Log-ID: {}, Status-Code: {}, Content-Type: {}, Response Time: {}ms, Response-Body: {}",
-                logId, response.getStatus(), response.getContentType(), responseTime, new String(response.getContentAsByteArray(), StandardCharsets.UTF_8));
+        log.info("Log-ID: {}, Status-Code: {}, Content-Type: {}, Response Time: {}ms, Response-Body: {}", logId,
+                response.getStatus(), response.getContentType(), responseTime,
+                new String(response.getContentAsByteArray(), StandardCharsets.UTF_8));
     }
 
     private String getRequestBody(byte[] byteArrayContent) {
@@ -129,8 +137,7 @@ public class LoggingFilter extends OncePerRequestFilter {
     }
 
     private String[] getCookiesAsString(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .map(cookie -> String.format("%s=%s", cookie.getName(), cookie.getValue()))
+        return Arrays.stream(cookies).map(cookie -> String.format("%s=%s", cookie.getName(), cookie.getValue()))
                 .toArray(String[]::new);
     }
 }

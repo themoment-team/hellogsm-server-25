@@ -1,8 +1,9 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import org.springframework.stereotype.Service;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.ArrivedStatusResDto;

@@ -1,7 +1,8 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberFirstTestResDto;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
@@ -20,10 +21,10 @@ public class QueryMyFirstTestResultService {
         Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
 
         // no content response status
-        if (oneseoService.validateFirstTestResultAnnouncement()) return null;
+        if (oneseoService.validateFirstTestResultAnnouncement())
+            return null;
 
         EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
         return new FoundMemberFirstTestResDto(entranceTestResult.getFirstTestPassYn());
     }
-
 }

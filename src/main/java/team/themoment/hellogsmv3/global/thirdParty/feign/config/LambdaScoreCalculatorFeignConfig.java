@@ -1,13 +1,13 @@
 package team.themoment.hellogsmv3.global.thirdParty.feign.config;
 
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
-import lombok.RequiredArgsConstructor;
+import static team.themoment.hellogsmv3.global.security.data.HeaderConstant.X_HG_API_KEY;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static team.themoment.hellogsmv3.global.security.data.HeaderConstant.X_HG_API_KEY;
+import feign.RequestInterceptor;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor

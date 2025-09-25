@@ -1,8 +1,12 @@
 package team.themoment.hellogsmv3.domain.thirdParty.service;
 
-import io.awspring.cloud.s3.ObjectMetadata;
-import io.awspring.cloud.s3.S3Resource;
-import io.awspring.cloud.s3.S3Template;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+
+import java.io.InputStream;
+import java.net.URL;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,17 +18,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+
+import io.awspring.cloud.s3.ObjectMetadata;
+import io.awspring.cloud.s3.S3Resource;
+import io.awspring.cloud.s3.S3Template;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.data.S3Environment;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.dto.response.UploadImageResDto;
 import team.themoment.hellogsmv3.global.thirdParty.aws.s3.service.UploadImageService;
-
-import java.io.InputStream;
-import java.net.URL;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @DisplayName("UploadImageService 클래스의")
 public class UploadImageServiceTest {
@@ -71,7 +72,8 @@ public class UploadImageServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다.")
             void it_throws_expected_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> uploadImageService.execute(emptyFile));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> uploadImageService.execute(emptyFile));
 
                 assertEquals("파일이 존재하지 않습니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -85,8 +87,9 @@ public class UploadImageServiceTest {
 
             @Test
             @DisplayName("ExpectedException을 던진다.")
-            void it_throws_expected_exception () {
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> uploadImageService.execute(file));
+            void it_throws_expected_exception() {
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> uploadImageService.execute(file));
 
                 assertEquals("지원하지 않는 파일 확장자 입니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -104,12 +107,8 @@ public class UploadImageServiceTest {
                 URL mockUrl = new URL("https://bucket-name.s3.amazonaws.com/" + s3Key);
                 when(mockS3Resource.getURL()).thenReturn(mockUrl);
 
-                given(s3Template.upload(
-                        anyString(),
-                        anyString(),
-                        any(InputStream.class),
-                        any(ObjectMetadata.class)
-                )).willReturn(mockS3Resource);
+                given(s3Template.upload(anyString(), anyString(), any(InputStream.class), any(ObjectMetadata.class)))
+                        .willReturn(mockS3Resource);
             }
 
             @Test
@@ -129,17 +128,13 @@ public class UploadImageServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(s3Template.upload(
-                        anyString(),
-                        anyString(),
-                        any(InputStream.class),
-                        any(ObjectMetadata.class)
-                )).willThrow(new RuntimeException("AWS S3 upload error"));
+                given(s3Template.upload(anyString(), anyString(), any(InputStream.class), any(ObjectMetadata.class)))
+                        .willThrow(new RuntimeException("AWS S3 upload error"));
             }
 
             @Test
             @DisplayName("RuntimeException을 던진다.")
-            void it_throws_runtime_exception () {
+            void it_throws_runtime_exception() {
                 assertThrows(RuntimeException.class, () -> uploadImageService.execute(file));
             }
         }

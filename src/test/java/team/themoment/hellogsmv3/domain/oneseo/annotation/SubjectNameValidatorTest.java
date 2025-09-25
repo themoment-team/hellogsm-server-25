@@ -1,15 +1,16 @@
 package team.themoment.hellogsmv3.domain.oneseo.annotation;
 
-import jakarta.validation.ConstraintValidatorContext;
-import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
-import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
+
+import jakarta.validation.ConstraintValidatorContext;
+import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 
 @DisplayName("SubjectNameValidator 클래스의")
 public class SubjectNameValidatorTest {
@@ -27,11 +28,13 @@ public class SubjectNameValidatorTest {
         void setUp() {
             validator = new SubjectNameValidator();
             @ValidSubjectName
-            class Dummy {}
+            class Dummy {
+            }
             annotation = Dummy.class.getAnnotation(ValidSubjectName.class);
             validator.initialize(annotation);
             context = Mockito.mock(ConstraintValidatorContext.class);
-            ConstraintValidatorContext.ConstraintViolationBuilder builder = Mockito.mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
+            ConstraintValidatorContext.ConstraintViolationBuilder builder = Mockito
+                    .mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
             when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
             when(builder.addConstraintViolation()).thenReturn(context);
         }
@@ -46,11 +49,8 @@ public class SubjectNameValidatorTest {
                 List<String> newSubjects = Arrays.asList("프로그래밍");
                 List<String> artsPhysicalSubjects = Arrays.asList("체육", "미술", "음악");
 
-                middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder()
-                        .generalSubjects(generalSubjects)
-                        .newSubjects(newSubjects)
-                        .artsPhysicalSubjects(artsPhysicalSubjects)
-                        .build();
+                middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder().generalSubjects(generalSubjects)
+                        .newSubjects(newSubjects).artsPhysicalSubjects(artsPhysicalSubjects).build();
             }
 
             @DisplayName("ConstraintViolation을 발생시키지 않는다.")
@@ -71,11 +71,8 @@ public class SubjectNameValidatorTest {
                 List<String> newSubjects = Arrays.asList("수학", "체육");
                 List<String> artsPhysicalSubjects = Arrays.asList("체육", "미술", "음악");
 
-                middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder()
-                        .generalSubjects(generalSubjects)
-                        .newSubjects(newSubjects)
-                        .artsPhysicalSubjects(artsPhysicalSubjects)
-                        .build();
+                middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder().generalSubjects(generalSubjects)
+                        .newSubjects(newSubjects).artsPhysicalSubjects(artsPhysicalSubjects).build();
             }
 
             @DisplayName("ConstraintViolation을 발생시킨다.")
@@ -95,9 +92,7 @@ public class SubjectNameValidatorTest {
             void setUp() {
                 middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder()
                         .generalSubjects(Arrays.asList("국어", "도덕", "사회", "역사", "수학", "과학", "기술가정", "영어"))
-                        .newSubjects(null)
-                        .artsPhysicalSubjects(Arrays.asList("체육", "미술", "음악"))
-                        .build();
+                        .newSubjects(null).artsPhysicalSubjects(Arrays.asList("체육", "미술", "음악")).build();
             }
 
             @DisplayName("ConstraintViolation을 발생시키지 않는다.")
@@ -107,6 +102,5 @@ public class SubjectNameValidatorTest {
                 assertTrue(result);
             }
         }
-
     }
 }

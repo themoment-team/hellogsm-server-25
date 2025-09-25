@@ -1,8 +1,8 @@
 package team.themoment.hellogsmv3.global.exception;
 
-import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @EnableWebMvc
@@ -60,7 +61,8 @@ public class GlobalExceptionHandler {
     public CommonApiResponse maxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
         log.warn("The file is too big : {}", ex.getMessage());
         log.trace("The file is too big Details : ", ex);
-        return CommonApiResponse.error("The file is too big, limited file size : " + ex.getMaxUploadSize(), HttpStatus.BAD_REQUEST);
+        return CommonApiResponse.error("The file is too big, limited file size : " + ex.getMaxUploadSize(),
+                HttpStatus.BAD_REQUEST);
     }
 
     private static String methodArgumentNotValidExceptionToJson(MethodArgumentNotValidException ex) {
@@ -77,5 +79,4 @@ public class GlobalExceptionHandler {
 
         return new JSONObject(globalResults).toString().replace("\"", "'");
     }
-
 }

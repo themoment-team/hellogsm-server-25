@@ -1,13 +1,10 @@
 package team.themoment.hellogsmv3.domain.oneseo.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
+import jakarta.persistence.*;
+import lombok.*;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 
 @Getter
 @Entity

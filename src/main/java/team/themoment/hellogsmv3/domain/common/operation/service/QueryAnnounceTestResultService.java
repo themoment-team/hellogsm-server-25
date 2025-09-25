@@ -1,9 +1,10 @@
 package team.themoment.hellogsmv3.domain.common.operation.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.common.operation.dto.response.AnnounceTestResultResDto;
 import team.themoment.hellogsmv3.domain.common.operation.entity.OperationTestResult;
 import team.themoment.hellogsmv3.domain.common.operation.repository.OperationTestResultRepository;
@@ -22,7 +23,6 @@ public class QueryAnnounceTestResultService {
 
         return AnnounceTestResultResDto.builder()
                 .firstTestResultAnnouncementYn(testResult.getFirstTestResultAnnouncementYn())
-                .secondTestResultAnnouncementYn(testResult.getSecondTestResultAnnouncementYn())
-                .build();
+                .secondTestResultAnnouncementYn(testResult.getSecondTestResultAnnouncementYn()).build();
     }
 }

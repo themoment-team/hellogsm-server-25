@@ -1,5 +1,9 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -7,12 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundDuplicateMemberResDto;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
 
 @DisplayName("QueryCheckDuplicateMemberService 클래스의")
 class QueryCheckDuplicateMemberServiceTest {
@@ -20,7 +21,6 @@ class QueryCheckDuplicateMemberServiceTest {
     private MemberRepository memberRepository;
     @InjectMocks
     private QueryCheckDuplicateMemberService queryCheckDuplicateMemberService;
-
 
     @BeforeEach
     void setUp() {
@@ -56,7 +56,6 @@ class QueryCheckDuplicateMemberServiceTest {
                 // then
                 assertEquals(NO, resDto.duplicateMemberYn());
             }
-
         }
     }
 }

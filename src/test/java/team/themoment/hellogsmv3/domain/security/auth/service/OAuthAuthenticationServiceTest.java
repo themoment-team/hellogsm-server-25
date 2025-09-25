@@ -1,7 +1,11 @@
 package team.themoment.hellogsmv3.domain.security.auth.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
+
+import java.time.Duration;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,21 +21,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
+import team.themoment.hellogsmv3.global.security.auth.dto.UserAuthInfo;
 import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticationService;
 import team.themoment.hellogsmv3.global.security.auth.service.OAuthProviderFactory;
 import team.themoment.hellogsmv3.global.security.auth.service.provider.OAuthProvider;
-import team.themoment.hellogsmv3.global.security.auth.dto.UserAuthInfo;
-
-import java.time.Duration;
-import org.springframework.test.util.ReflectionTestUtils;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
 
 @DisplayName("OAuthAuthenticationService 클래스의")
 class OAuthAuthenticationServiceTest {
@@ -82,12 +83,8 @@ class OAuthAuthenticationServiceTest {
 
             @BeforeEach
             void setUp() {
-                existingMember = Member.builder()
-                        .id(memberId)
-                        .email(email)
-                        .role(Role.APPLICANT)
-                        .authReferrerType(authReferrerType)
-                        .build();
+                existingMember = Member.builder().id(memberId).email(email).role(Role.APPLICANT)
+                        .authReferrerType(authReferrerType).build();
 
                 userAuthInfo = new UserAuthInfo(email, provider, authReferrerType);
 
@@ -96,7 +93,8 @@ class OAuthAuthenticationServiceTest {
                 given(memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email))
                         .willReturn(Optional.of(existingMember));
                 given(request.getSession(false)).willReturn(session);
-                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)).willReturn(null);
+                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY))
+                        .willReturn(null);
                 given(session.getCreationTime()).willReturn(System.currentTimeMillis());
                 given(session.getLastAccessedTime()).willReturn(System.currentTimeMillis());
             }
@@ -104,8 +102,10 @@ class OAuthAuthenticationServiceTest {
             @Test
             @DisplayName("OAuth 인증을 완료하고 보안 컨텍스트에 인증 정보를 설정한다")
             void it_completes_oauth_authentication_and_sets_security_context() {
-                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
-                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(
+                        SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext)
+                            .thenReturn(securityContext);
 
                     oAuthAuthenticationService.execute(provider, code, request);
 
@@ -134,7 +134,8 @@ class OAuthAuthenticationServiceTest {
                     assertNotNull(oAuth2User.getAttribute("last_login_time"));
 
                     mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
-                    verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                            securityContext);
                     verify(session).setMaxInactiveInterval(10800);
                 }
             }
@@ -155,12 +156,8 @@ class OAuthAuthenticationServiceTest {
 
             @BeforeEach
             void setUp() {
-                newMember = Member.builder()
-                        .id(newMemberId)
-                        .email(email)
-                        .role(Role.UNAUTHENTICATED)
-                        .authReferrerType(authReferrerType)
-                        .build();
+                newMember = Member.builder().id(newMemberId).email(email).role(Role.UNAUTHENTICATED)
+                        .authReferrerType(authReferrerType).build();
 
                 userAuthInfo = new UserAuthInfo(email, provider, authReferrerType);
 
@@ -170,7 +167,8 @@ class OAuthAuthenticationServiceTest {
                         .willReturn(Optional.empty());
                 given(memberRepository.save(any(Member.class))).willReturn(newMember);
                 given(request.getSession(false)).willReturn(session);
-                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)).willReturn(null);
+                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY))
+                        .willReturn(null);
                 given(session.getCreationTime()).willReturn(System.currentTimeMillis());
                 given(session.getLastAccessedTime()).willReturn(System.currentTimeMillis());
             }
@@ -178,8 +176,10 @@ class OAuthAuthenticationServiceTest {
             @Test
             @DisplayName("새로운 회원을 생성하고 OAuth 인증을 완료한다")
             void it_creates_new_member_and_completes_oauth_authentication() {
-                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
-                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(
+                        SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext)
+                            .thenReturn(securityContext);
 
                     oAuthAuthenticationService.execute(provider, code, request);
 
@@ -201,7 +201,8 @@ class OAuthAuthenticationServiceTest {
                     assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
 
                     mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
-                    verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(session).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                            securityContext);
                     verify(session).setMaxInactiveInterval(10800);
                 }
             }
@@ -222,12 +223,8 @@ class OAuthAuthenticationServiceTest {
 
             @BeforeEach
             void setUp() {
-                existingMember = Member.builder()
-                        .id(1L)
-                        .email(email)
-                        .role(Role.APPLICANT)
-                        .authReferrerType(authReferrerType)
-                        .build();
+                existingMember = Member.builder().id(1L).email(email).role(Role.APPLICANT)
+                        .authReferrerType(authReferrerType).build();
 
                 userAuthInfo = new UserAuthInfo(email, provider, authReferrerType);
                 newSession = mock(HttpSession.class);
@@ -249,8 +246,10 @@ class OAuthAuthenticationServiceTest {
             @Test
             @DisplayName("새로운 세션을 생성하고 보안 컨텍스트를 설정한다")
             void it_creates_new_session_and_sets_security_context() {
-                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
-                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(
+                        SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext)
+                            .thenReturn(securityContext);
 
                     oAuthAuthenticationService.execute(provider, code, request);
 
@@ -258,7 +257,8 @@ class OAuthAuthenticationServiceTest {
                     verify(session).invalidate();
 
                     verify(request).getSession(true);
-                    verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                            securityContext);
                     verify(newSession).setMaxInactiveInterval(10800);
 
                     mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
@@ -281,12 +281,8 @@ class OAuthAuthenticationServiceTest {
 
             @BeforeEach
             void setUp() {
-                existingMember = Member.builder()
-                        .id(1L)
-                        .email(email)
-                        .role(Role.APPLICANT)
-                        .authReferrerType(authReferrerType)
-                        .build();
+                existingMember = Member.builder().id(1L).email(email).role(Role.APPLICANT)
+                        .authReferrerType(authReferrerType).build();
 
                 userAuthInfo = new UserAuthInfo(email, provider, authReferrerType);
                 newSession = mock(HttpSession.class);
@@ -302,14 +298,17 @@ class OAuthAuthenticationServiceTest {
             @Test
             @DisplayName("새로운 세션을 생성하고 보안 컨텍스트를 설정한다")
             void it_creates_new_session_and_sets_security_context() {
-                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
-                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(
+                        SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext)
+                            .thenReturn(securityContext);
 
                     oAuthAuthenticationService.execute(provider, code, request);
 
                     verify(request).getSession(false);
                     verify(request).getSession(true);
-                    verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                    verify(newSession).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                            securityContext);
                     verify(newSession).setMaxInactiveInterval(10800);
 
                     mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));
@@ -331,11 +330,7 @@ class OAuthAuthenticationServiceTest {
 
             @BeforeEach
             void setUp() {
-                memberWithNullRole = Member.builder()
-                        .id(1L)
-                        .email(email)
-                        .role(null)
-                        .authReferrerType(authReferrerType)
+                memberWithNullRole = Member.builder().id(1L).email(email).role(null).authReferrerType(authReferrerType)
                         .build();
 
                 userAuthInfo = new UserAuthInfo(email, provider, authReferrerType);
@@ -345,7 +340,8 @@ class OAuthAuthenticationServiceTest {
                 given(memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email))
                         .willReturn(Optional.of(memberWithNullRole));
                 given(request.getSession(false)).willReturn(session);
-                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)).willReturn(null);
+                given(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY))
+                        .willReturn(null);
                 given(session.getCreationTime()).willReturn(System.currentTimeMillis());
                 given(session.getLastAccessedTime()).willReturn(System.currentTimeMillis());
             }
@@ -353,8 +349,10 @@ class OAuthAuthenticationServiceTest {
             @Test
             @DisplayName("기본 권한 UNAUTHENTICATED를 설정한다")
             void it_sets_default_unauthenticated_authority() {
-                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
-                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext).thenReturn(securityContext);
+                try (MockedStatic<SecurityContextHolder> mockSecurityContextHolder = mockStatic(
+                        SecurityContextHolder.class)) {
+                    mockSecurityContextHolder.when(SecurityContextHolder::createEmptyContext)
+                            .thenReturn(securityContext);
 
                     oAuthAuthenticationService.execute(provider, code, request);
 
@@ -365,7 +363,8 @@ class OAuthAuthenticationServiceTest {
                     assertInstanceOf(OAuth2AuthenticationToken.class, authentication);
                     OAuth2AuthenticationToken oAuthToken = (OAuth2AuthenticationToken) authentication;
 
-                    assertTrue(oAuthToken.getAuthorities().contains(new SimpleGrantedAuthority(Role.UNAUTHENTICATED.name())));
+                    assertTrue(oAuthToken.getAuthorities()
+                            .contains(new SimpleGrantedAuthority(Role.UNAUTHENTICATED.name())));
 
                     verify(session).setMaxInactiveInterval(10800);
                     mockSecurityContextHolder.verify(() -> SecurityContextHolder.setContext(securityContext));

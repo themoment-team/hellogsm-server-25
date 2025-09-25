@@ -1,5 +1,14 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -12,19 +21,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @DisplayName("UploadExcelService 클래스의")
 class UploadExcelServiceTest {
@@ -40,10 +41,14 @@ class UploadExcelServiceTest {
     private AutoCloseable mocks;
 
     @BeforeEach
-    void setUp() { mocks = MockitoAnnotations.openMocks(this); }
+    void setUp() {
+        mocks = MockitoAnnotations.openMocks(this);
+    }
 
     @AfterEach
-    void tearDown() throws Exception { mocks.close(); }
+    void tearDown() throws Exception {
+        mocks.close();
+    }
 
     @Nested
     @DisplayName("execute 메소드는")
@@ -205,25 +210,29 @@ class UploadExcelServiceTest {
         @Nested
         @DisplayName("DB에 존재하지 않는 수험번호만 포함되면")
         class Context_with_not_found_examination_number {
-            @Test
-            @DisplayName("ExpectedException을 던진다")
-            void it_throws_not_found_exception() throws Exception {
-                when(oneseoRepository.findEntranceTestResultByExaminationNumbersIn(any())).thenReturn(Collections.emptyMap());
-                MultipartFile file = buildWorkbook(wb -> {
-                    Sheet sheet = wb.createSheet();
-                    Row header = sheet.createRow(0);
-                    header.createCell(0).setCellValue("수험번호");
-                    header.createCell(1).setCellValue("역검점수");
-                    header.createCell(2).setCellValue("면접점수");
-                    Row r1 = sheet.createRow(1);
-                    r1.createCell(0).setCellValue("9999");
-                    r1.createCell(1).setCellValue(10);
-                    r1.createCell(2).setCellValue(20);
+        @Test
+      @DisplayName("ExpectedException을 던진다")
+      void it_throws_not_found_exception() throws Exception {
+        when(oneseoRepository.findEntranceTestResultByExaminationNumbersIn(any()))
+            .thenReturn(Collections.emptyMap());
+        MultipartFile file =
+            buildWorkbook(
+                wb -> {
+                  Sheet sheet = wb.createSheet();
+                  Row header = sheet.createRow(0);
+                  header.createCell(0).setCellValue("수험번호");
+                  header.createCell(1).setCellValue("역검점수");
+                  header.createCell(2).setCellValue("면접점수");
+                  Row r1 = sheet.createRow(1);
+                  r1.createCell(0).setCellValue("9999");
+                  r1.createCell(1).setCellValue(10);
+                  r1.createCell(2).setCellValue(20);
                 });
-                ExpectedException ex = assertThrows(ExpectedException.class, () -> uploadExcelService.execute(file));
-                assertTrue(ex.getMessage().contains("존재하지 않습니다"));
-                assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
-            }
+        ExpectedException ex =
+            assertThrows(ExpectedException.class, () -> uploadExcelService.execute(file));
+        assertTrue(ex.getMessage().contains("존재하지 않습니다"));
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+      }
         }
     }
 
@@ -231,25 +240,26 @@ class UploadExcelServiceTest {
         try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             consumer.accept(wb);
             wb.write(bos);
-            return new MockMultipartFile(
-                    "file",
-                    "test.xlsx",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    bos.toByteArray()
-            );
+            return new MockMultipartFile("file", "test.xlsx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", bos.toByteArray());
         }
     }
 
-    private EntranceTestResult mockEntranceResult(String examinationNumber, BigDecimal competency, BigDecimal interview) {
+    private EntranceTestResult mockEntranceResult(String examinationNumber, BigDecimal competency,
+            BigDecimal interview) {
         EntranceTestResult result = mock(EntranceTestResult.class);
         final BigDecimal[] compHolder = {competency};
         final BigDecimal[] interHolder = {interview};
         when(result.getCompetencyEvaluationScore()).thenAnswer(a -> compHolder[0]);
         when(result.getInterviewScore()).thenAnswer(a -> interHolder[0]);
-        doAnswer(a -> { compHolder[0] = a.getArgument(0); return null; })
-                .when(result).modifyCompetencyEvaluationScore(any(BigDecimal.class));
-        doAnswer(a -> { interHolder[0] = a.getArgument(0); return null; })
-                .when(result).modifyInterviewScore(any(BigDecimal.class));
+        doAnswer(a -> {
+            compHolder[0] = a.getArgument(0);
+            return null;
+        }).when(result).modifyCompetencyEvaluationScore(any(BigDecimal.class));
+        doAnswer(a -> {
+            interHolder[0] = a.getArgument(0);
+            return null;
+        }).when(result).modifyInterviewScore(any(BigDecimal.class));
         return result;
     }
 
@@ -267,5 +277,7 @@ class UploadExcelServiceTest {
     }
 
     @FunctionalInterface
-    private interface WorkbookConsumer { void accept(XSSFWorkbook wb); }
+    private interface WorkbookConsumer {
+        void accept(XSSFWorkbook wb);
+    }
 }
