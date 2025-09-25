@@ -1,7 +1,5 @@
 package team.themoment.hellogsmv3.global.security.auth.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -10,8 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +20,11 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
@@ -35,87 +37,77 @@ import team.themoment.hellogsmv3.global.security.auth.service.provider.OAuthProv
 @Slf4j
 public class OAuthAuthenticationService {
 
-  private final OAuthProviderFactory oAuthProviderFactory;
-  private final MemberRepository memberRepository;
+    private final OAuthProviderFactory oAuthProviderFactory;
+    private final MemberRepository memberRepository;
 
-  @Value("${spring.session.timeout:${server.servlet.session.timeout}}")
-  private Duration sessionTimeout;
+    @Value("${spring.session.timeout:${server.servlet.session.timeout}}")
+    private Duration sessionTimeout;
 
-  public void execute(String provider, String code, HttpServletRequest request) {
+    public void execute(String provider, String code, HttpServletRequest request) {
 
-    String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
-    OAuthProvider oAuthProvider = oAuthProviderFactory.getProvider(provider);
+        String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
+        OAuthProvider oAuthProvider = oAuthProviderFactory.getProvider(provider);
 
-    UserAuthInfo userAuthInfo = oAuthProvider.authenticate(decodedCode);
-    completeAuthentication(userAuthInfo, request);
-  }
-
-  private void completeAuthentication(UserAuthInfo userAuthInfo, HttpServletRequest request) {
-    Member member = getOrCreateMember(userAuthInfo.email(), userAuthInfo.authReferrerType());
-    OAuth2User oauth2User = createOAuth2User(member, userAuthInfo.provider(), userAuthInfo.email());
-    Authentication authentication =
-        new OAuth2AuthenticationToken(
-            oauth2User, oauth2User.getAuthorities(), userAuthInfo.provider());
-    setSecurityContext(request, authentication);
-  }
-
-  private Member getOrCreateMember(String email, AuthReferrerType authReferrerType) {
-    return memberRepository
-        .findByAuthReferrerTypeAndEmail(authReferrerType, email)
-        .orElseGet(
-            () -> memberRepository.save(Member.buildMemberWithOauthInfo(email, authReferrerType)));
-  }
-
-  private OAuth2User createOAuth2User(Member member, String provider, String email) {
-    Map<String, Object> attributes = createUserAttributes(member, provider, email);
-    Collection<GrantedAuthority> authorities = createAuthorities(member.getRole());
-    return new DefaultOAuth2User(authorities, attributes, "id");
-  }
-
-  private Map<String, Object> createUserAttributes(Member member, String provider, String email) {
-    Role memberRole = Optional.ofNullable(member.getRole()).orElse(Role.UNAUTHENTICATED);
-    return Map.of(
-        "id", member.getId(),
-        "role", memberRole,
-        "provider", provider,
-        "email", email,
-        "last_login_time", LocalDateTime.now());
-  }
-
-  private Collection<GrantedAuthority> createAuthorities(Role role) {
-    Role userRole = Optional.ofNullable(role).orElse(Role.UNAUTHENTICATED);
-    return List.of(
-        new SimpleGrantedAuthority("OAUTH2_USER"),
-        new SimpleGrantedAuthority("SCOPE_email"),
-        new SimpleGrantedAuthority(userRole.name()));
-  }
-
-  private void setSecurityContext(HttpServletRequest request, Authentication authentication) {
-    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-    securityContext.setAuthentication(authentication);
-
-    HttpSession oldSession = request.getSession(false);
-    if (oldSession != null) {
-      try {
-        oldSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-        oldSession.getCreationTime();
-        oldSession.getLastAccessedTime();
-      } catch (IllegalStateException e) {
-        try {
-          oldSession.invalidate();
-        } catch (Exception ex) {
-          log.error("세션 무효화 중 예외 발생", ex);
-        }
-        oldSession = null;
-      }
+        UserAuthInfo userAuthInfo = oAuthProvider.authenticate(decodedCode);
+        completeAuthentication(userAuthInfo, request);
     }
 
-    HttpSession session = (oldSession != null) ? oldSession : request.getSession(true);
+    private void completeAuthentication(UserAuthInfo userAuthInfo, HttpServletRequest request) {
+        Member member = getOrCreateMember(userAuthInfo.email(), userAuthInfo.authReferrerType());
+        OAuth2User oauth2User = createOAuth2User(member, userAuthInfo.provider(), userAuthInfo.email());
+        Authentication authentication = new OAuth2AuthenticationToken(oauth2User, oauth2User.getAuthorities(),
+                userAuthInfo.provider());
+        setSecurityContext(request, authentication);
+    }
 
-    SecurityContextHolder.setContext(securityContext);
-    session.setAttribute(
-        HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+    private Member getOrCreateMember(String email, AuthReferrerType authReferrerType) {
+        return memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email)
+                .orElseGet(() -> memberRepository.save(Member.buildMemberWithOauthInfo(email, authReferrerType)));
+    }
 
-    session.setMaxInactiveInterval((int) sessionTimeout.getSeconds());
-  }
+    private OAuth2User createOAuth2User(Member member, String provider, String email) {
+        Map<String, Object> attributes = createUserAttributes(member, provider, email);
+        Collection<GrantedAuthority> authorities = createAuthorities(member.getRole());
+        return new DefaultOAuth2User(authorities, attributes, "id");
+    }
+
+    private Map<String, Object> createUserAttributes(Member member, String provider, String email) {
+        Role memberRole = Optional.ofNullable(member.getRole()).orElse(Role.UNAUTHENTICATED);
+        return Map.of("id", member.getId(), "role", memberRole, "provider", provider, "email", email, "last_login_time",
+                LocalDateTime.now());
+    }
+
+    private Collection<GrantedAuthority> createAuthorities(Role role) {
+        Role userRole = Optional.ofNullable(role).orElse(Role.UNAUTHENTICATED);
+        return List.of(new SimpleGrantedAuthority("OAUTH2_USER"), new SimpleGrantedAuthority("SCOPE_email"),
+                new SimpleGrantedAuthority(userRole.name()));
+    }
+
+    private void setSecurityContext(HttpServletRequest request, Authentication authentication) {
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            try {
+                oldSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+                oldSession.getCreationTime();
+                oldSession.getLastAccessedTime();
+            } catch (IllegalStateException e) {
+                try {
+                    oldSession.invalidate();
+                } catch (Exception ex) {
+                    log.error("세션 무효화 중 예외 발생", ex);
+                }
+                oldSession = null;
+            }
+        }
+
+        HttpSession session = (oldSession != null) ? oldSession : request.getSession(true);
+
+        SecurityContextHolder.setContext(securityContext);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+        session.setMaxInactiveInterval((int) sessionTimeout.getSeconds());
+    }
 }

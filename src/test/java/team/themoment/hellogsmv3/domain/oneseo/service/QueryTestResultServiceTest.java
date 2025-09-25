@@ -11,6 +11,7 @@ import static team.themoment.hellogsmv3.domain.common.testResult.type.TestType.S
 
 import java.time.LocalDate;
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.common.testResult.dto.response.FoundTestResultResDto;
 import team.themoment.hellogsmv3.domain.common.testResult.service.QueryTestResultService;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
@@ -33,222 +35,170 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 @DisplayName("QueryTestResultService 클래스의")
 class QueryTestResultServiceTest {
-  @Mock private OneseoService oneseoService;
-  @Mock private OneseoRepository oneseoRepository;
-  @Mock private CommonCodeService commonCodeService;
-  @InjectMocks private QueryTestResultService queryTestResultService;
+    @Mock
+    private OneseoService oneseoService;
+    @Mock
+    private OneseoRepository oneseoRepository;
+    @Mock
+    private CommonCodeService commonCodeService;
+    @InjectMocks
+    private QueryTestResultService queryTestResultService;
 
-  private final Long memberId = 1L;
-  private final String code = "123456";
-  private final String phoneNumber = "01012345678";
-  private final String oneseoCode = "A-1";
-  private final String examinationNumber = "0101";
+    private final Long memberId = 1L;
+    private final String code = "123456";
+    private final String phoneNumber = "01012345678";
+    private final String oneseoCode = "A-1";
+    private final String examinationNumber = "0101";
 
-  private final Member firstTestMember =
-      Member.builder()
-          .id(memberId)
-          .name("홍길동")
-          .birth(LocalDate.of(2009, 1, 1))
-          .phoneNumber(phoneNumber)
-          .sex(Sex.MALE)
-          .build();
+    private final Member firstTestMember = Member.builder().id(memberId).name("홍길동").birth(LocalDate.of(2009, 1, 1))
+            .phoneNumber(phoneNumber).sex(Sex.MALE).build();
 
-  private final Member secondTestMember =
-      Member.builder()
-          .id(memberId)
-          .name("김철수")
-          .birth(LocalDate.of(2009, 1, 1))
-          .phoneNumber(phoneNumber)
-          .sex(Sex.MALE)
-          .build();
+    private final Member secondTestMember = Member.builder().id(memberId).name("김철수").birth(LocalDate.of(2009, 1, 1))
+            .phoneNumber(phoneNumber).sex(Sex.MALE).build();
 
-  private final Oneseo firstTestOneseo =
-      Oneseo.builder()
-          .id(1L)
-          .member(firstTestMember)
-          .entranceTestResult(
-              EntranceTestResult.builder()
-                  .id(1L)
-                  .firstTestPassYn(YesNo.YES)
-                  .secondTestPassYn(YesNo.NO)
-                  .build())
-          .build();
+    private final Oneseo firstTestOneseo = Oneseo.builder().id(1L).member(firstTestMember)
+            .entranceTestResult(
+                    EntranceTestResult.builder().id(1L).firstTestPassYn(YesNo.YES).secondTestPassYn(YesNo.NO).build())
+            .build();
 
-  private final Oneseo secondTestOneseo =
-      Oneseo.builder()
-          .id(1L)
-          .member(secondTestMember)
-          .entranceTestResult(
-              EntranceTestResult.builder()
-                  .id(1L)
-                  .firstTestPassYn(YesNo.YES)
-                  .secondTestPassYn(YesNo.YES)
-                  .build())
-          .decidedMajor(Major.SW)
-          .build();
+    private final Oneseo secondTestOneseo = Oneseo.builder().id(1L).member(secondTestMember)
+            .entranceTestResult(
+                    EntranceTestResult.builder().id(1L).firstTestPassYn(YesNo.YES).secondTestPassYn(YesNo.YES).build())
+            .decidedMajor(Major.SW).build();
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
-
-  @Nested
-  @DisplayName("execute 메소드는")
-  class Describe_execute {
-
-    @Nested
-    @DisplayName("1차 전형 결과 조회 시")
-    class Context_with_first_test_type {
-
-      @Nested
-      @DisplayName("발표 시간이 되었고 유효한 정보가 주어지면")
-      class Context_with_valid_announcement_time_and_info {
-
-        @Test
-        @DisplayName("1차 전형 결과를 반환한다")
-        void it_returns_first_test_result() {
-          given(oneseoService.validateFirstTestResultAnnouncement()).willReturn(false);
-          given(
-                  oneseoRepository.findByGuardianOrTeacherPhoneNumberAndSubmitCode(
-                      phoneNumber, oneseoCode))
-              .willReturn(Optional.of(firstTestOneseo));
-          doNothing()
-              .when(commonCodeService)
-              .validateAndDelete(anyLong(), anyString(), anyString(), any());
-
-          FoundTestResultResDto result =
-              queryTestResultService.execute(memberId, code, phoneNumber, oneseoCode, FIRST);
-
-          assertEquals("홍길동", result.name());
-          assertEquals(YesNo.YES, result.firstTestPassYn());
-          assertNull(result.secondTestPassYn());
-          assertNull(result.decidedMajor());
-        }
-      }
-
-      @Nested
-      @DisplayName("발표 시간이 되지 않았으면")
-      class Context_with_invalid_announcement_time {
-
-        @Test
-        @DisplayName("ExpectedException을 던진다")
-        void it_throws_expected_exception() {
-          given(oneseoService.validateFirstTestResultAnnouncement()).willReturn(true);
-
-          ExpectedException exception =
-              assertThrows(
-                  ExpectedException.class,
-                  () ->
-                      queryTestResultService.execute(
-                          memberId, code, phoneNumber, oneseoCode, FIRST));
-
-          assertEquals("1차 전형 결과 발표 전 입니다.", exception.getMessage());
-          assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-        }
-      }
-
-      @Nested
-      @DisplayName("해당 전화번호와 접수번호로 원서를 찾을 수 없으면")
-      class Context_with_non_existing_oneseo {
-
-        @Test
-        @DisplayName("ExpectedException을 던진다")
-        void it_throws_expected_exception() {
-          given(oneseoService.validateFirstTestResultAnnouncement()).willReturn(false);
-          given(
-                  oneseoRepository.findByGuardianOrTeacherPhoneNumberAndSubmitCode(
-                      phoneNumber, oneseoCode))
-              .willReturn(Optional.empty());
-
-          ExpectedException exception =
-              assertThrows(
-                  ExpectedException.class,
-                  () ->
-                      queryTestResultService.execute(
-                          memberId, code, phoneNumber, oneseoCode, FIRST));
-
-          assertEquals("해당 전화번호, 접수번호로 작성된 원서를 찾을 수 없습니다.", exception.getMessage());
-          assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-        }
-      }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Nested
-    @DisplayName("2차 전형 결과 조회 시")
-    class Context_with_second_test_type {
+    @DisplayName("execute 메소드는")
+    class Describe_execute {
 
-      @Nested
-      @DisplayName("발표 시간이 되었고 유효한 정보가 주어지면")
-      class Context_with_valid_announcement_time_and_info {
+        @Nested
+        @DisplayName("1차 전형 결과 조회 시")
+        class Context_with_first_test_type {
 
-        @Test
-        @DisplayName("2차 전형 결과를 반환한다")
-        void it_returns_second_test_result() {
-          given(oneseoService.validateSecondTestResultAnnouncement()).willReturn(false);
-          given(
-                  oneseoRepository.findByGuardianOrTeacherPhoneNumberAndExaminationNumber(
-                      phoneNumber, examinationNumber))
-              .willReturn(Optional.of(secondTestOneseo));
-          doNothing()
-              .when(commonCodeService)
-              .validateAndDelete(anyLong(), anyString(), anyString(), any());
+            @Nested
+            @DisplayName("발표 시간이 되었고 유효한 정보가 주어지면")
+            class Context_with_valid_announcement_time_and_info {
 
-          FoundTestResultResDto result =
-              queryTestResultService.execute(
-                  memberId, code, phoneNumber, examinationNumber, SECOND);
+                @Test
+                @DisplayName("1차 전형 결과를 반환한다")
+                void it_returns_first_test_result() {
+                    given(oneseoService.validateFirstTestResultAnnouncement()).willReturn(false);
+                    given(oneseoRepository.findByGuardianOrTeacherPhoneNumberAndSubmitCode(phoneNumber, oneseoCode))
+                            .willReturn(Optional.of(firstTestOneseo));
+                    doNothing().when(commonCodeService).validateAndDelete(anyLong(), anyString(), anyString(), any());
 
-          assertEquals("김철수", result.name());
-          assertEquals(YesNo.YES, result.firstTestPassYn());
-          assertEquals(YesNo.YES, result.secondTestPassYn());
-          assertEquals(Major.SW, result.decidedMajor());
+                    FoundTestResultResDto result = queryTestResultService.execute(memberId, code, phoneNumber,
+                            oneseoCode, FIRST);
+
+                    assertEquals("홍길동", result.name());
+                    assertEquals(YesNo.YES, result.firstTestPassYn());
+                    assertNull(result.secondTestPassYn());
+                    assertNull(result.decidedMajor());
+                }
+            }
+
+            @Nested
+            @DisplayName("발표 시간이 되지 않았으면")
+            class Context_with_invalid_announcement_time {
+
+                @Test
+                @DisplayName("ExpectedException을 던진다")
+                void it_throws_expected_exception() {
+                    given(oneseoService.validateFirstTestResultAnnouncement()).willReturn(true);
+
+                    ExpectedException exception = assertThrows(ExpectedException.class,
+                            () -> queryTestResultService.execute(memberId, code, phoneNumber, oneseoCode, FIRST));
+
+                    assertEquals("1차 전형 결과 발표 전 입니다.", exception.getMessage());
+                    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+                }
+            }
+
+            @Nested
+            @DisplayName("해당 전화번호와 접수번호로 원서를 찾을 수 없으면")
+            class Context_with_non_existing_oneseo {
+
+                @Test
+                @DisplayName("ExpectedException을 던진다")
+                void it_throws_expected_exception() {
+                    given(oneseoService.validateFirstTestResultAnnouncement()).willReturn(false);
+                    given(oneseoRepository.findByGuardianOrTeacherPhoneNumberAndSubmitCode(phoneNumber, oneseoCode))
+                            .willReturn(Optional.empty());
+
+                    ExpectedException exception = assertThrows(ExpectedException.class,
+                            () -> queryTestResultService.execute(memberId, code, phoneNumber, oneseoCode, FIRST));
+
+                    assertEquals("해당 전화번호, 접수번호로 작성된 원서를 찾을 수 없습니다.", exception.getMessage());
+                    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+                }
+            }
         }
-      }
 
-      @Nested
-      @DisplayName("발표 시간이 되지 않았으면")
-      class Context_with_invalid_announcement_time {
+        @Nested
+        @DisplayName("2차 전형 결과 조회 시")
+        class Context_with_second_test_type {
 
-        @Test
-        @DisplayName("ExpectedException을 던진다")
-        void it_throws_expected_exception() {
-          given(oneseoService.validateSecondTestResultAnnouncement()).willReturn(true);
+            @Nested
+            @DisplayName("발표 시간이 되었고 유효한 정보가 주어지면")
+            class Context_with_valid_announcement_time_and_info {
 
-          ExpectedException exception =
-              assertThrows(
-                  ExpectedException.class,
-                  () ->
-                      queryTestResultService.execute(
-                          memberId, code, phoneNumber, examinationNumber, SECOND));
+                @Test
+                @DisplayName("2차 전형 결과를 반환한다")
+                void it_returns_second_test_result() {
+                    given(oneseoService.validateSecondTestResultAnnouncement()).willReturn(false);
+                    given(oneseoRepository.findByGuardianOrTeacherPhoneNumberAndExaminationNumber(phoneNumber,
+                            examinationNumber)).willReturn(Optional.of(secondTestOneseo));
+                    doNothing().when(commonCodeService).validateAndDelete(anyLong(), anyString(), anyString(), any());
 
-          assertEquals("2차 전형 결과 발표 전 입니다.", exception.getMessage());
-          assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+                    FoundTestResultResDto result = queryTestResultService.execute(memberId, code, phoneNumber,
+                            examinationNumber, SECOND);
+
+                    assertEquals("김철수", result.name());
+                    assertEquals(YesNo.YES, result.firstTestPassYn());
+                    assertEquals(YesNo.YES, result.secondTestPassYn());
+                    assertEquals(Major.SW, result.decidedMajor());
+                }
+            }
+
+            @Nested
+            @DisplayName("발표 시간이 되지 않았으면")
+            class Context_with_invalid_announcement_time {
+
+                @Test
+                @DisplayName("ExpectedException을 던진다")
+                void it_throws_expected_exception() {
+                    given(oneseoService.validateSecondTestResultAnnouncement()).willReturn(true);
+
+                    ExpectedException exception = assertThrows(ExpectedException.class, () -> queryTestResultService
+                            .execute(memberId, code, phoneNumber, examinationNumber, SECOND));
+
+                    assertEquals("2차 전형 결과 발표 전 입니다.", exception.getMessage());
+                    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+                }
+            }
+
+            @Nested
+            @DisplayName("해당 전화번호와 수험번호로 원서를 찾을 수 없으면")
+            class Context_with_non_existing_oneseo {
+
+                @Test
+                @DisplayName("ExpectedException을 던진다.")
+                void it_throws_expected_exception() {
+                    given(oneseoService.validateSecondTestResultAnnouncement()).willReturn(false);
+                    given(oneseoRepository.findByGuardianOrTeacherPhoneNumberAndExaminationNumber(phoneNumber,
+                            examinationNumber)).willReturn(Optional.empty());
+
+                    ExpectedException exception = assertThrows(ExpectedException.class, () -> queryTestResultService
+                            .execute(memberId, code, phoneNumber, examinationNumber, SECOND));
+
+                    assertEquals("해당 전화번호, 수험번호로 작성된 원서를 찾을 수 없습니다.", exception.getMessage());
+                    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+                }
+            }
         }
-      }
-
-      @Nested
-      @DisplayName("해당 전화번호와 수험번호로 원서를 찾을 수 없으면")
-      class Context_with_non_existing_oneseo {
-
-        @Test
-        @DisplayName("ExpectedException을 던진다.")
-        void it_throws_expected_exception() {
-          given(oneseoService.validateSecondTestResultAnnouncement()).willReturn(false);
-          given(
-                  oneseoRepository.findByGuardianOrTeacherPhoneNumberAndExaminationNumber(
-                      phoneNumber, examinationNumber))
-              .willReturn(Optional.empty());
-
-          ExpectedException exception =
-              assertThrows(
-                  ExpectedException.class,
-                  () ->
-                      queryTestResultService.execute(
-                          memberId, code, phoneNumber, examinationNumber, SECOND));
-
-          assertEquals("해당 전화번호, 수험번호로 작성된 원서를 찾을 수 없습니다.", exception.getMessage());
-          assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-        }
-      }
     }
-  }
 }

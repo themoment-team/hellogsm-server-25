@@ -6,11 +6,13 @@ import static org.mockito.Mockito.*;
 import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
 
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
 import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
@@ -18,51 +20,51 @@ import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
 @DisplayName("GenerateTestCodeServiceImpl 클래스의")
 class GenerateTestCodeServiceImplTest {
 
-  @Mock private CodeRepository codeRepository;
+    @Mock
+    private CodeRepository codeRepository;
 
-  @InjectMocks private GenerateTestCodeServiceImpl generateTestCodeServiceImpl;
+    @InjectMocks
+    private GenerateTestCodeServiceImpl generateTestCodeServiceImpl;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
-
-  @Nested
-  @DisplayName("execute 메서드는")
-  class Describe_execute {
-
-    private final Long memberId = 1L;
-    private final GenerateCodeReqDto reqDto = new GenerateCodeReqDto("01012345678");
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Nested
-    @DisplayName("유효한 요청이 주어지면")
-    class Context_with_valid_request {
+    @DisplayName("execute 메서드는")
+    class Describe_execute {
 
-      @BeforeEach
-      void setUp() {
-        given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP))
-            .willReturn(Optional.empty());
-        given(codeRepository.findByCode(anyString())).willReturn(Optional.empty());
-      }
+        private final Long memberId = 1L;
+        private final GenerateCodeReqDto reqDto = new GenerateCodeReqDto("01012345678");
 
-      @Test
-      @DisplayName("새로운 테스트 코드를 생성하고 저장한다")
-      void it_generates_and_saves_a_new_test_code() {
-        String code = generateTestCodeServiceImpl.execute(memberId, reqDto);
+        @Nested
+        @DisplayName("유효한 요청이 주어지면")
+        class Context_with_valid_request {
 
-        assertNotNull(code);
-        assertEquals(6, code.length());
+            @BeforeEach
+            void setUp() {
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.empty());
+                given(codeRepository.findByCode(anyString())).willReturn(Optional.empty());
+            }
 
-        ArgumentCaptor<AuthenticationCode> authCodeCaptor =
-            ArgumentCaptor.forClass(AuthenticationCode.class);
-        verify(codeRepository).save(authCodeCaptor.capture());
-        AuthenticationCode savedAuthCode = authCodeCaptor.getValue();
+            @Test
+            @DisplayName("새로운 테스트 코드를 생성하고 저장한다")
+            void it_generates_and_saves_a_new_test_code() {
+                String code = generateTestCodeServiceImpl.execute(memberId, reqDto);
 
-        assertEquals(memberId, savedAuthCode.getMemberId());
-        assertEquals(reqDto.phoneNumber(), savedAuthCode.getPhoneNumber());
-        assertEquals(code, savedAuthCode.getCode());
-        assertEquals(0, savedAuthCode.getCount());
-      }
+                assertNotNull(code);
+                assertEquals(6, code.length());
+
+                ArgumentCaptor<AuthenticationCode> authCodeCaptor = ArgumentCaptor.forClass(AuthenticationCode.class);
+                verify(codeRepository).save(authCodeCaptor.capture());
+                AuthenticationCode savedAuthCode = authCodeCaptor.getValue();
+
+                assertEquals(memberId, savedAuthCode.getMemberId());
+                assertEquals(reqDto.phoneNumber(), savedAuthCode.getPhoneNumber());
+                assertEquals(code, savedAuthCode.getCode());
+                assertEquals(0, savedAuthCode.getCount());
+            }
+        }
     }
-  }
 }

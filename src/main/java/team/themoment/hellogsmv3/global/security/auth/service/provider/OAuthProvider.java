@@ -5,11 +5,11 @@ import team.themoment.hellogsmv3.global.security.auth.dto.UserAuthInfo;
 
 public interface OAuthProvider {
 
-  String TOKEN_PREFIX = "Bearer ";
+    String TOKEN_PREFIX = "Bearer ";
 
-  String getProviderName();
+    String getProviderName();
 
-  AuthReferrerType getAuthReferrerType();
+    AuthReferrerType getAuthReferrerType();
 
-  UserAuthInfo authenticate(String authorizationCode);
+    UserAuthInfo authenticate(String authorizationCode);
 }

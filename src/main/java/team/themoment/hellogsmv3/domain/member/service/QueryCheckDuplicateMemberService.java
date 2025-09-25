@@ -2,8 +2,9 @@ package team.themoment.hellogsmv3.domain.member.service;
 
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundDuplicateMemberResDto;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 
@@ -11,10 +12,9 @@ import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 @RequiredArgsConstructor
 public class QueryCheckDuplicateMemberService {
 
-  private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-  public FoundDuplicateMemberResDto execute(String phoneNumber) {
-    return new FoundDuplicateMemberResDto(
-        memberRepository.existsByPhoneNumber(phoneNumber) ? YES : NO);
-  }
+    public FoundDuplicateMemberResDto execute(String phoneNumber) {
+        return new FoundDuplicateMemberResDto(memberRepository.existsByPhoneNumber(phoneNumber) ? YES : NO);
+    }
 }

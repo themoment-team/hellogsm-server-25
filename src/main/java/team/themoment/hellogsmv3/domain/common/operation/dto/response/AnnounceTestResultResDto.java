@@ -9,6 +9,6 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 @Builder
 @AllArgsConstructor
 public class AnnounceTestResultResDto {
-  private YesNo firstTestResultAnnouncementYn;
-  private YesNo secondTestResultAnnouncementYn;
+    private YesNo firstTestResultAnnouncementYn;
+    private YesNo secondTestResultAnnouncementYn;
 }

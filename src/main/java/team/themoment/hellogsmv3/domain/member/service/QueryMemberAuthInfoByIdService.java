@@ -1,8 +1,9 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberAuthInfoResDto;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
@@ -12,22 +13,13 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 @RequiredArgsConstructor
 public class QueryMemberAuthInfoByIdService {
 
-  private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-  public FoundMemberAuthInfoResDto execute(Long memberId) {
-    Member member =
-        memberRepository
-            .findById(memberId)
-            .orElseThrow(
-                () ->
-                    new ExpectedException(
-                        "존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
+    public FoundMemberAuthInfoResDto execute(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new ExpectedException("존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
 
-    return FoundMemberAuthInfoResDto.builder()
-        .memberId(member.getId())
-        .email(member.getEmail())
-        .authReferrerType(member.getAuthReferrerType())
-        .role(member.getRole())
-        .build();
-  }
+        return FoundMemberAuthInfoResDto.builder().memberId(member.getId()).email(member.getEmail())
+                .authReferrerType(member.getAuthReferrerType()).role(member.getRole()).build();
+    }
 }
