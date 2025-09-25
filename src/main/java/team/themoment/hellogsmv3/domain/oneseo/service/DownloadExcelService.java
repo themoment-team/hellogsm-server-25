@@ -173,7 +173,7 @@ public class DownloadExcelService {
 
         return List.of(String.valueOf(index), formatSubmitCode(oneseo.getOneseoSubmitCode()),
                 safeToString(oneseo.getExaminationNumber()), safeToString(oneseo.getMember().getName()),
-                firstDesiredMajor, secondDesiredMajor, thirdDesiredMajor,formatBirth(oneseo.getMember().getBirth()),
+                firstDesiredMajor, secondDesiredMajor, thirdDesiredMajor, formatBirth(oneseo.getMember().getBirth()),
                 convertSex(oneseo.getMember().getSex()), buildAddress(oneseoPrivacyDetail),
                 safeToString(oneseoPrivacyDetail.getSchoolName()),
                 getMetropolitanName(oneseoPrivacyDetail.getSchoolAddress()),
