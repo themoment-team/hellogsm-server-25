@@ -9,8 +9,9 @@ plugins {
 spotless {
 	java {
 		target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
-		googleJavaFormat('1.28.0')
-		importOrder()
+		eclipse()
+		indentWithSpaces(4)
+		importOrder('java', 'javax', 'org', 'com', '')
 		removeUnusedImports()
 		endWithNewline()
 		trimTrailingWhitespace()
