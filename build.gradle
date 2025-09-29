@@ -23,7 +23,7 @@ spotless {
 }
 
 group = 'team.themoment'
-version = '0.0.1-SNAPSHOT'
+version = 'v20241011.0'
 
 java {
 	sourceCompatibility = '17'
