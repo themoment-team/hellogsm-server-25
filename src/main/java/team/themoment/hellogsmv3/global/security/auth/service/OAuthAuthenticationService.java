@@ -8,8 +8,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,6 +31,7 @@ import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
+import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.auth.dto.UserAuthInfo;
 import team.themoment.hellogsmv3.global.security.auth.service.provider.OAuthProvider;
 
@@ -49,6 +52,9 @@ public class OAuthAuthenticationService {
         OAuthProvider oAuthProvider = oAuthProviderFactory.getProvider(provider);
 
         UserAuthInfo userAuthInfo = oAuthProvider.authenticate(decodedCode);
+
+        emailFormatCheck(userAuthInfo.email());
+
         completeAuthentication(userAuthInfo, request);
     }
 
@@ -109,5 +115,11 @@ public class OAuthAuthenticationService {
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
         session.setMaxInactiveInterval((int) sessionTimeout.getSeconds());
+    }
+
+    private void emailFormatCheck(String email) {
+        if (!Pattern.compile("^s\\d{5}@gsm\\.hs\\.kr$").matcher(email).matches()) {
+            throw new ExpectedException("학교 이메일로 가입해주세요.", HttpStatus.FORBIDDEN);
+        }
     }
 }
