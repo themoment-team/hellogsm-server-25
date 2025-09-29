@@ -74,7 +74,7 @@ class OAuthAuthenticationServiceTest {
 
             private final String provider = "google";
             private final String code = "auth_code_123";
-            private final String email = "test@example.com";
+            private final String email = "s24058@gsm.hs.kr";
             private final AuthReferrerType authReferrerType = AuthReferrerType.GOOGLE;
             private final Long memberId = 1L;
 
@@ -147,7 +147,7 @@ class OAuthAuthenticationServiceTest {
 
             private final String provider = "google";
             private final String code = "auth_code_123";
-            private final String email = "newuser@example.com";
+            private final String email = "s24059@gsm.hs.kr";
             private final AuthReferrerType authReferrerType = AuthReferrerType.GOOGLE;
             private final Long newMemberId = 2L;
 
@@ -214,7 +214,7 @@ class OAuthAuthenticationServiceTest {
 
             private final String provider = "google";
             private final String code = "auth_code_123";
-            private final String email = "test@example.com";
+            private final String email = "s23020@gsm.hs.kr";
             private final AuthReferrerType authReferrerType = AuthReferrerType.GOOGLE;
 
             private Member existingMember;
@@ -272,7 +272,7 @@ class OAuthAuthenticationServiceTest {
 
             private final String provider = "google";
             private final String code = "auth_code_123";
-            private final String email = "test@example.com";
+            private final String email = "s24059@gsm.hs.kr";
             private final AuthReferrerType authReferrerType = AuthReferrerType.GOOGLE;
 
             private Member existingMember;
@@ -322,7 +322,7 @@ class OAuthAuthenticationServiceTest {
 
             private final String provider = "google";
             private final String code = "auth_code_123";
-            private final String email = "test@example.com";
+            private final String email = "s23009@gsm.hs.kr";
             private final AuthReferrerType authReferrerType = AuthReferrerType.GOOGLE;
 
             private Member memberWithNullRole;
