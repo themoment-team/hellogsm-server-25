@@ -1,5 +1,7 @@
 package team.themoment.hellogsmv3.global.security.auth.service.provider;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -64,9 +66,11 @@ public class GoogleOAuthProvider implements OAuthProvider {
 
     private GoogleTokenResDto exchangeCodeForToken(String code, ClientRegistration clientRegistration) {
         try {
-            return googleOAuth2Client.exchangeCodeForToken(clientRegistration.getAuthorizationGrantType().getValue(),
-                    clientRegistration.getClientId(), clientRegistration.getClientSecret(), code,
+            Map<String, String> params = Map.of("grant_type", clientRegistration.getAuthorizationGrantType().getValue(),
+                    "client_id", clientRegistration.getClientId(), "client_secret",
+                    clientRegistration.getClientSecret(), "code", code, "redirect_uri",
                     clientRegistration.getRedirectUri());
+            return googleOAuth2Client.exchangeCodeForToken(params);
         } catch (Exception e) {
             throw new ExpectedException("Google OAuth 토큰 교환에 실패했습니다: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
