@@ -1,11 +1,13 @@
-FROM openjdk:17-jdk
+FROM openjdk:17
 
 EXPOSE 8080
 
 WORKDIR /hellogsm-server-v3
 
-COPY build/libs/hellogsm-server-25-v20241011.0.jar hellogsm-stage-server.jar
+ARG JAR_FILE=build/libs/*.jar
+
+COPY ${JAR_FILE} hellogsm-stage-server.jar
 
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-ENTRYPOINT ["java", "-jar", "hellogsm-stage-server.jar", "--spring.profiles.active=dev"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "hellogsm-stage-server.jar"]
