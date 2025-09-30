@@ -87,7 +87,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 	/** swagger **/
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
 	/** actuator **/
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
