@@ -3,6 +3,7 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 import java.math.BigDecimal;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
@@ -20,6 +21,7 @@ public class ModifyCompetencyEvaluationScoreService {
     private final OneseoService oneseoService;
     private final EntranceTestResultRepository entranceTestResultRepository;
 
+    @Transactional
     public void execute(Long memberId, CompetencyEvaluationScoreReqDto competencyEvaluationScoreReqDto) {
         Member member = memberService.findByIdOrThrow(memberId);
         Oneseo oneseo = oneseoService.findByMemberOrThrow(member);

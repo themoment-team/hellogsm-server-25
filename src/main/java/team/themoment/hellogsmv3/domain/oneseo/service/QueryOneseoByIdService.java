@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
@@ -27,6 +28,7 @@ public class QueryOneseoByIdService {
     private final OneseoService oneseoService;
 
     @Cacheable(value = ONESEO_CACHE_VALUE, key = "#memberId")
+    @Transactional(readOnly = true)
     public FoundOneseoResDto execute(Long memberId) {
         Member member = memberService.findByIdOrThrow(memberId);
         Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
