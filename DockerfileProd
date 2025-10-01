@@ -1,4 +1,6 @@
-FROM openjdk:17
+FROM eclipse-temurin:17-jre
+
+EXPOSE 8080
 
 WORKDIR /app
 
@@ -8,4 +10,4 @@ COPY ${JAR_FILE} hellogsm-prod-server.jar
 
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "hellogsm-prod-server.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "hellogsm-prod-server.jar"]
