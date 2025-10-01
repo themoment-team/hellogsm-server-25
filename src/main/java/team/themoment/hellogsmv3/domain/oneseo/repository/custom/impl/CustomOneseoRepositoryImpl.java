@@ -114,7 +114,7 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .where(isExistAppliedScreening
                         ? oneseo.appliedScreening.eq(screening)
                         : oneseo.wantedScreening.eq(screening))
-                .orderBy(entranceTestResult.documentEvaluationScore.desc()).fetch();
+                .orderBy(oneseo.oneseoSubmitCode.asc()).fetch();
     }
 
     @Override
@@ -125,7 +125,7 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .join(entranceTestResult.entranceTestFactorsDetail, entranceTestFactorsDetail).fetchJoin()
                 .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement).fetchJoin()
                 .where(entranceTestResult.firstTestPassYn.eq(NO).or(entranceTestResult.secondTestPassYn.eq(NO)))
-                .orderBy(entranceTestResult.documentEvaluationScore.desc()).fetch();
+                .orderBy(oneseo.oneseoSubmitCode.asc()).fetch();
     }
 
     private long getTotalCount(BooleanBuilder builder) {
