@@ -171,7 +171,7 @@ public class DownloadExcelService {
         String secondDesiredMajor = safeToString(oneseo.getDesiredMajors().getSecondDesiredMajor());
         String thirdDesiredMajor = safeToString(oneseo.getDesiredMajors().getThirdDesiredMajor());
 
-        return List.of(String.valueOf(index), formatSubmitCode(oneseo.getOneseoSubmitCode()),
+        return List.of(String.valueOf(index), safeToString(oneseo.getOneseoSubmitCode()),
                 safeToString(oneseo.getExaminationNumber()), safeToString(oneseo.getMember().getName()),
                 firstDesiredMajor, secondDesiredMajor, thirdDesiredMajor, formatBirth(oneseo.getMember().getBirth()),
                 convertSex(oneseo.getMember().getSex()), buildAddress(oneseoPrivacyDetail),
@@ -213,22 +213,6 @@ public class DownloadExcelService {
         if (studentNumber == null)
             return "검정고시";
         return studentNumber;
-    }
-
-    private String formatSubmitCode(String submitCode) {
-        if (submitCode == null)
-            return "";
-        String[] parts = submitCode.split("-");
-        if (parts.length != 2)
-            return submitCode;
-
-        try {
-            String prefix = parts[0];
-            String number = String.format("%03d", Integer.parseInt(parts[1]));
-            return prefix + "-" + number;
-        } catch (NumberFormatException e) {
-            return submitCode;
-        }
     }
 
     private String convertSex(team.themoment.hellogsmv3.domain.member.entity.type.Sex sex) {
