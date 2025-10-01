@@ -13,4 +13,4 @@ $ ./gradlew bootRun
 
 ### Tech Stack
 
-Spring Boot, Java, JPA, QueryDSL, MySQL, Redis, AWS RDS, AWS S3, AWS EC2, Nginx, GitHub Actions
+Spring Boot, Java, JPA, QueryDSL, MySQL, Redis, AWS RDS, AWS S3, AWS EC2, GitHub Actions
