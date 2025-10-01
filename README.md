@@ -9,7 +9,6 @@
 $ git clone https://github.com/themoment-team/hellogsm-server-25.git
 - start project
 $ ./gradlew bootRun
-- access
 ```
 
 ### Tech Stack
