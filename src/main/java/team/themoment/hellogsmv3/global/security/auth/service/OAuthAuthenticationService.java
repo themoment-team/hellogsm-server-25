@@ -125,7 +125,7 @@ public class OAuthAuthenticationService {
      */
     @Deprecated(since = "2025-10-01", forRemoval = true)
     private void emailFormatCheck(String email) {
-        if (!Pattern.compile("^s\\d{5}@gsm\\.hs\\.kr$").matcher(email).matches()) {
+        if (!Pattern.compile("^[\\w.-]+@gsm\\.hs\\.kr$").matcher(email).matches()) {
             throw new ExpectedException("학교 이메일로 가입해주세요.", HttpStatus.FORBIDDEN);
         }
     }
