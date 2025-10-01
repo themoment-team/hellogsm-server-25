@@ -76,10 +76,6 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	/** object serialize **/
-	implementation 'com.google.code.gson:gson:2.13.1'
-	implementation group: 'net.minidev', name: 'json-smart', version: '2.6.0'
-
 	/** aws **/
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-sns:3.4.0'
