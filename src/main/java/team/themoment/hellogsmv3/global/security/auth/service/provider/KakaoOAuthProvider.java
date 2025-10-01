@@ -1,5 +1,7 @@
 package team.themoment.hellogsmv3.global.security.auth.service.provider;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -66,9 +68,11 @@ public class KakaoOAuthProvider implements OAuthProvider {
 
     private KakaoTokenResDto exchangeCodeForToken(String code, ClientRegistration clientRegistration) {
         try {
-            return kakaoOAuth2Client.exchangeCodeForToken(clientRegistration.getAuthorizationGrantType().getValue(),
-                    clientRegistration.getClientId(), clientRegistration.getClientSecret(), code,
+            Map<String, String> params = Map.of("grant_type", clientRegistration.getAuthorizationGrantType().getValue(),
+                    "client_id", clientRegistration.getClientId(), "client_secret",
+                    clientRegistration.getClientSecret(), "code", code, "redirect_uri",
                     clientRegistration.getRedirectUri());
+            return kakaoOAuth2Client.exchangeCodeForToken(params);
         } catch (Exception e) {
             throw new ExpectedException("Kakao OAuth 토큰 교환에 실패했습니다: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
