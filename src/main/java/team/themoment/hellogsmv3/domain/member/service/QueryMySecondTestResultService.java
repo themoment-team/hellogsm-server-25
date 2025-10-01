@@ -1,6 +1,7 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberSecondTestResDto;
@@ -16,6 +17,7 @@ public class QueryMySecondTestResultService {
     private final MemberService memberService;
     private final OneseoService oneseoService;
 
+    @Transactional(readOnly = true)
     public FoundMemberSecondTestResDto execute(Long memberId) {
         Member member = memberService.findByIdOrThrow(memberId);
         Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
