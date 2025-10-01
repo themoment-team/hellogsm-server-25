@@ -118,10 +118,12 @@ public class OAuthAuthenticationService {
     }
 
     /**
-     * GSM 학교 이메일 형식인지 확인
-     * prod 환경에서 테스트를 위해 임시로 적용되었음
-     * @param email 이메일
-     * @throws ExpectedException 이메일 형식이 맞지 않을 경우
+     * GSM 학교 이메일 형식인지 확인 prod 환경에서 테스트를 위해 임시로 적용되었음
+     *
+     * @param email
+     *            이메일
+     * @throws ExpectedException
+     *             이메일 형식이 맞지 않을 경우
      */
     @Deprecated(since = "2025-10-01", forRemoval = true)
     private void emailFormatCheck(String email) {
