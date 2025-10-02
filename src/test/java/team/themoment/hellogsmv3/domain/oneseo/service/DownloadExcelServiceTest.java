@@ -103,10 +103,10 @@ public class DownloadExcelServiceTest {
                     assertEquals(1, workbook.getSheetAt(2).getLastRowNum());
                     assertEquals(1, workbook.getSheetAt(3).getLastRowNum());
 
-                    assertSheetData(workbook.getSheetAt(0), oneseoGeneral, "A-001", "일반전형");
-                    assertSheetData(workbook.getSheetAt(1), oneseoSpecial, "B-002", "특별전형");
-                    assertSheetData(workbook.getSheetAt(2), oneseoExtra, "C-003", "국가보훈대상자");
-                    assertSheetData(workbook.getSheetAt(3), oneseoFallen, "A-004", "일반전형");
+                    assertSheetData(workbook.getSheetAt(0), oneseoGeneral, "A-1", "일반전형");
+                    assertSheetData(workbook.getSheetAt(1), oneseoSpecial, "B-2", "특별전형");
+                    assertSheetData(workbook.getSheetAt(2), oneseoExtra, "C-3", "국가보훈대상자");
+                    assertSheetData(workbook.getSheetAt(3), oneseoFallen, "A-4", "일반전형");
                 }
             }
         }
