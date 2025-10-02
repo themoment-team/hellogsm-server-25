@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.entity.OneseoPrivacyDetail;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
@@ -167,9 +168,9 @@ public class DownloadExcelService {
 
         BigDecimal finalScore = calculateFinalScore(entranceTestResult);
 
-        String firstDesiredMajor = safeToString(oneseo.getDesiredMajors().getFirstDesiredMajor());
-        String secondDesiredMajor = safeToString(oneseo.getDesiredMajors().getSecondDesiredMajor());
-        String thirdDesiredMajor = safeToString(oneseo.getDesiredMajors().getThirdDesiredMajor());
+        String firstDesiredMajor = convertMajorDisplayName(oneseo.getDesiredMajors().getFirstDesiredMajor());
+        String secondDesiredMajor = convertMajorDisplayName(oneseo.getDesiredMajors().getSecondDesiredMajor());
+        String thirdDesiredMajor = convertMajorDisplayName(oneseo.getDesiredMajors().getThirdDesiredMajor());
 
         return List.of(String.valueOf(index), safeToString(oneseo.getOneseoSubmitCode()),
                 safeToString(oneseo.getExaminationNumber()), safeToString(oneseo.getMember().getName()),
@@ -196,6 +197,12 @@ public class DownloadExcelService {
 
     private String safeToString(Object obj) {
         return obj != null ? obj.toString() : "";
+    }
+
+    private String convertMajorDisplayName(Major major) {
+        if (major == null)
+            return "";
+        return major == Major.IOT ? "IoT" : major.toString();
     }
 
     private String formatBirth(LocalDate birth) {
