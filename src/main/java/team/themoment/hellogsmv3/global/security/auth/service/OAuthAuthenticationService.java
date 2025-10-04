@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -46,6 +47,7 @@ public class OAuthAuthenticationService {
     @Value("${spring.session.timeout:${server.servlet.session.timeout}}")
     private Duration sessionTimeout;
 
+    @Transactional
     public void execute(String provider, String code, HttpServletRequest request) {
 
         String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
