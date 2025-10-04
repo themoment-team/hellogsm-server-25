@@ -47,7 +47,6 @@ public class OAuthAuthenticationService {
     @Value("${spring.session.timeout:${server.servlet.session.timeout}}")
     private Duration sessionTimeout;
 
-    @Transactional
     public void execute(String provider, String code, HttpServletRequest request) {
 
         String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
@@ -68,7 +67,8 @@ public class OAuthAuthenticationService {
         setSecurityContext(request, authentication);
     }
 
-    private Member getOrCreateMember(String email, AuthReferrerType authReferrerType) {
+    @Transactional
+    protected Member getOrCreateMember(String email, AuthReferrerType authReferrerType) {
         return memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email)
                 .orElseGet(() -> memberRepository.save(Member.buildMemberWithOauthInfo(email, authReferrerType)));
     }
