@@ -2,6 +2,7 @@ package team.themoment.hellogsmv3.domain.member.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.dto.response.FoundMemberAuthInfoResDto;
@@ -15,6 +16,7 @@ public class QueryMemberAuthInfoByIdService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true)
     public FoundMemberAuthInfoResDto execute(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new ExpectedException("존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
