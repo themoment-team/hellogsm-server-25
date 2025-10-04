@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.TestResultTag;
@@ -20,6 +21,7 @@ public class SearchOneseoService {
 
     private final OneseoRepository oneseoRepository;
 
+    @Transactional(readOnly = true)
     public SearchOneseosResDto execute(Integer page, Integer size, TestResultTag testResultTag,
             ScreeningCategory screeningTag, YesNo isSubmitted, String keyword) {
 

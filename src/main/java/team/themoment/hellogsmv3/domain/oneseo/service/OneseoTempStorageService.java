@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
@@ -28,6 +29,7 @@ public class OneseoTempStorageService {
     private final OneseoRepository oneseoRepository;
 
     @CachePut(value = ONESEO_CACHE_VALUE, key = "#memberId")
+    @Transactional(readOnly = true)
     public FoundOneseoResDto execute(OneseoTempReqDto reqDto, Integer step, Long memberId) {
         Member member = memberService.findByIdOrThrow(memberId);
 
