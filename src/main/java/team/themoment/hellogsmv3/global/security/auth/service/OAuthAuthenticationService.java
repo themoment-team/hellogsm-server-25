@@ -22,7 +22,6 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -67,7 +66,6 @@ public class OAuthAuthenticationService {
         setSecurityContext(request, authentication);
     }
 
-    @Transactional
     protected Member getOrCreateMember(String email, AuthReferrerType authReferrerType) {
         return memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email)
                 .orElseGet(() -> memberRepository.save(Member.buildMemberWithOauthInfo(email, authReferrerType)));
