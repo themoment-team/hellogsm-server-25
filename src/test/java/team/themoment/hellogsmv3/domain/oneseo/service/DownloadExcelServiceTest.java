@@ -164,7 +164,7 @@ public class DownloadExcelServiceTest {
             assertEquals(oneseo.getMember().getName(), dataRow.getCell(3).getStringCellValue());
             assertEquals("AI", dataRow.getCell(4).getStringCellValue());
             assertEquals("SW", dataRow.getCell(5).getStringCellValue());
-            assertEquals("IOT", dataRow.getCell(6).getStringCellValue());
+            assertEquals("IoT", dataRow.getCell(6).getStringCellValue());
             assertEquals("20240731", dataRow.getCell(7).getStringCellValue());
             assertEquals("남자", dataRow.getCell(8).getStringCellValue());
             assertEquals("광주광역시 광산구 송정동 상무대로 312 동행관", dataRow.getCell(9).getStringCellValue());
