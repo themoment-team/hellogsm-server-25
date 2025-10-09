@@ -66,7 +66,7 @@ public class OAuthAuthenticationService {
         setSecurityContext(request, authentication);
     }
 
-    private Member getOrCreateMember(String email, AuthReferrerType authReferrerType) {
+    protected Member getOrCreateMember(String email, AuthReferrerType authReferrerType) {
         return memberRepository.findByAuthReferrerTypeAndEmail(authReferrerType, email)
                 .orElseGet(() -> memberRepository.save(Member.buildMemberWithOauthInfo(email, authReferrerType)));
     }

@@ -3,6 +3,7 @@ package team.themoment.hellogsmv3.domain.oneseo.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
@@ -14,6 +15,7 @@ public class QueryAdmissionTicketsService {
 
     private final CustomOneseoRepository oneseoRepository;
 
+    @Transactional(readOnly = true)
     public List<AdmissionTicketsResDto> execute() {
         return oneseoRepository.findAdmissionTickets();
     }
