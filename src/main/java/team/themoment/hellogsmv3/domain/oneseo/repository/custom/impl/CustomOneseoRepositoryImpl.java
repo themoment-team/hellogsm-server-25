@@ -21,10 +21,12 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.FoundMemberAndOneseoDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.TestResultTag;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
@@ -115,7 +117,8 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                         ? oneseo.appliedScreening.eq(screening)
                         : oneseo.wantedScreening.eq(screening))
                 .orderBy(oneseo.oneseoSubmitCode.substring(0, 1).asc(),
-                        oneseo.oneseoSubmitCode.substring(2).castToNum(Integer.class).asc()).fetch();
+                        oneseo.oneseoSubmitCode.substring(2).castToNum(Integer.class).asc())
+                .fetch();
     }
 
     @Override
@@ -127,7 +130,8 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement).fetchJoin()
                 .where(entranceTestResult.firstTestPassYn.eq(NO).or(entranceTestResult.secondTestPassYn.eq(NO)))
                 .orderBy(oneseo.oneseoSubmitCode.substring(0, 1).asc(),
-                        oneseo.oneseoSubmitCode.substring(2).castToNum(Integer.class).asc()).fetch();
+                        oneseo.oneseoSubmitCode.substring(2).castToNum(Integer.class).asc())
+                .fetch();
     }
 
     private long getTotalCount(BooleanBuilder builder) {
@@ -194,5 +198,15 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .join(entranceTestResult.oneseo, oneseo).where(oneseo.examinationNumber.in(examinationNumbers)).fetch()
                 .stream().collect(Collectors.toMap(tuple -> tuple.get(oneseo.examinationNumber),
                         tuple -> tuple.get(entranceTestResult)));
+    }
+
+    @Override
+    public FoundMemberAndOneseoDto findMemberAndOneseoByMemberId(Long memberId) {
+        Tuple result = queryFactory.select(member, oneseo).from(member).leftJoin(oneseo).on(oneseo.member.eq(member))
+                .where(member.id.eq(memberId)).fetchOne();
+        if (result == null)
+            return new FoundMemberAndOneseoDto(null, null);
+
+        return new FoundMemberAndOneseoDto(result.get(member), result.get(oneseo));
     }
 }
