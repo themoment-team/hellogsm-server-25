@@ -1,18 +1,21 @@
 package team.themoment.hellogsmv3.domain.member.repository;
 
-import jakarta.persistence.LockModeType;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import jakarta.persistence.LockModeType;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
 
-import java.util.Optional;
-
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByAuthReferrerTypeAndEmail(AuthReferrerType authRefType, String email);
+
     boolean existsByPhoneNumber(String phoneNumber);
+
     Optional<Member> findByPhoneNumber(String phoneNumber);
 
     @Query("DELETE FROM Member m WHERE m = :member")

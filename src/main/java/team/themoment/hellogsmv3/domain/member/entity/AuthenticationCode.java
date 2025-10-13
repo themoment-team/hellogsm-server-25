@@ -1,15 +1,15 @@
 package team.themoment.hellogsmv3.domain.member.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.UniqueElements;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
-import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
 
-import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,7 +34,8 @@ public class AuthenticationCode {
         return this;
     }
 
-    public AuthenticationCode(Long memberId, String code, String phoneNumber, LocalDateTime createdAt, AuthCodeType authCodeType, boolean isTest) {
+    public AuthenticationCode(Long memberId, String code, String phoneNumber, LocalDateTime createdAt,
+            AuthCodeType authCodeType, boolean isTest) {
         this.memberId = memberId;
         this.code = code;
         this.authenticated = false;

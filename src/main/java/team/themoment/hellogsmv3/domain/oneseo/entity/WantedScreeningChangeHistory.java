@@ -1,12 +1,13 @@
 package team.themoment.hellogsmv3.domain.oneseo.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import lombok.*;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
 
 @Getter
 @Entity

@@ -1,9 +1,9 @@
 package team.themoment.hellogsmv3.domain.oneseo.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.math.BigDecimal;
 
 @Getter
 @Entity
@@ -51,12 +51,10 @@ public class EntranceTestFactorsDetail {
     @Column(name = "score_3_2", precision = 6, scale = 3)
     private BigDecimal score3_2;
 
-    public void updateGradeEntranceTestFactorsDetail(
-            BigDecimal generalSubjectsScore, BigDecimal artsPhysicalSubjectsScore,
-            BigDecimal totalSubjectsScore, BigDecimal attendanceScore,
-            BigDecimal volunteerScore, BigDecimal totalNonSubjectsScore,
-            BigDecimal score1_2, BigDecimal score2_1, BigDecimal score2_2,
-            BigDecimal score3_1, BigDecimal score3_2) {
+    public void updateGradeEntranceTestFactorsDetail(BigDecimal generalSubjectsScore,
+            BigDecimal artsPhysicalSubjectsScore, BigDecimal totalSubjectsScore, BigDecimal attendanceScore,
+            BigDecimal volunteerScore, BigDecimal totalNonSubjectsScore, BigDecimal score1_2, BigDecimal score2_1,
+            BigDecimal score2_2, BigDecimal score3_1, BigDecimal score3_2) {
         this.generalSubjectsScore = generalSubjectsScore;
         this.artsPhysicalSubjectsScore = artsPhysicalSubjectsScore;
         this.totalSubjectsScore = totalSubjectsScore;
@@ -70,10 +68,8 @@ public class EntranceTestFactorsDetail {
         this.score3_2 = score3_2;
     }
 
-    public void updateGedEntranceTestFactorsDetail(
-            BigDecimal attendanceScore, BigDecimal volunteerScore,
-            BigDecimal totalSubjectsScore, BigDecimal totalNonSubjectsScore
-    ) {
+    public void updateGedEntranceTestFactorsDetail(BigDecimal attendanceScore, BigDecimal volunteerScore,
+            BigDecimal totalSubjectsScore, BigDecimal totalNonSubjectsScore) {
         this.attendanceScore = attendanceScore;
         this.volunteerScore = volunteerScore;
         this.totalSubjectsScore = totalSubjectsScore;

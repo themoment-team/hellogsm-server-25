@@ -1,26 +1,26 @@
 package team.themoment.hellogsmv3.domain.oneseo.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.DesiredMajors;
-import team.themoment.hellogsmv3.domain.member.entity.Member;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
-import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.*;
+import org.hibernate.annotations.DynamicUpdate;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import team.themoment.hellogsmv3.domain.member.entity.Member;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.DesiredMajors;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
+import team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo;
 
 @Getter
 @Entity
 @Table(name = "tb_oneseo", indexes = {
         @Index(name = "idx_applied_screening_and_real_oneseo_arrived_yn", columnList = "applied_screening, real_oneseo_arrived_yn"),
-        @Index(name = "idx_real_oneseo_arrived_yn", columnList = "real_oneseo_arrived_yn")
-})
+        @Index(name = "idx_real_oneseo_arrived_yn", columnList = "real_oneseo_arrived_yn")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder

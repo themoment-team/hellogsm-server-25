@@ -1,13 +1,12 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team.themoment.hellogsmv3.domain.member.entity.Member;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.EntranceIntentionReqDto;
-import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
@@ -22,8 +21,7 @@ public class ModifyEntranceIntentionService {
 
     @Transactional
     public void execute(Long memberId, EntranceIntentionReqDto reqDto) {
-        Member member = memberService.findByIdOrThrow(memberId);
-        Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
+        Oneseo oneseo = oneseoService.findWithMemberByMemberIdOrThrow(memberId);
 
         isAfterFinalTest(oneseo);
 

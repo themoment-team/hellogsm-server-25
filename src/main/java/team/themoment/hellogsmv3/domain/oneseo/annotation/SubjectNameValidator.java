@@ -1,10 +1,10 @@
 package team.themoment.hellogsmv3.domain.oneseo.annotation;
 
+import java.util.Collections;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
-
-import java.util.Collections;
 
 public class SubjectNameValidator implements ConstraintValidator<ValidSubjectName, MiddleSchoolAchievementReqDto> {
 
@@ -16,26 +16,21 @@ public class SubjectNameValidator implements ConstraintValidator<ValidSubjectNam
     }
 
     @Override
-    public boolean isValid(MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto, ConstraintValidatorContext context) {
+    public boolean isValid(MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto,
+            ConstraintValidatorContext context) {
 
-        if (
-                middleSchoolAchievementReqDto.generalSubjects() == null ||
-                middleSchoolAchievementReqDto.artsPhysicalSubjects() == null ||
-                middleSchoolAchievementReqDto.newSubjects() == null
-        ) {
+        if (middleSchoolAchievementReqDto.generalSubjects() == null
+                || middleSchoolAchievementReqDto.artsPhysicalSubjects() == null
+                || middleSchoolAchievementReqDto.newSubjects() == null) {
             return true;
         }
 
-        boolean isValid = Collections.disjoint(
-                middleSchoolAchievementReqDto.generalSubjects(),
-                middleSchoolAchievementReqDto.newSubjects()
-        ) && Collections.disjoint(
-                middleSchoolAchievementReqDto.artsPhysicalSubjects(),
-                middleSchoolAchievementReqDto.newSubjects()
-        ) && Collections.disjoint(
-                middleSchoolAchievementReqDto.artsPhysicalSubjects(),
-                middleSchoolAchievementReqDto.generalSubjects()
-        );
+        boolean isValid = Collections.disjoint(middleSchoolAchievementReqDto.generalSubjects(),
+                middleSchoolAchievementReqDto.newSubjects())
+                && Collections.disjoint(middleSchoolAchievementReqDto.artsPhysicalSubjects(),
+                        middleSchoolAchievementReqDto.newSubjects())
+                && Collections.disjoint(middleSchoolAchievementReqDto.artsPhysicalSubjects(),
+                        middleSchoolAchievementReqDto.generalSubjects());
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

@@ -1,15 +1,16 @@
 package team.themoment.hellogsmv3.global.config;
 
-import lombok.RequiredArgsConstructor;
+import java.util.concurrent.Executor;
+
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import team.themoment.hellogsmv3.global.exception.GlobalAsyncExceptionHandler;
 
-import java.util.concurrent.Executor;
+import lombok.RequiredArgsConstructor;
+import team.themoment.hellogsmv3.global.exception.GlobalAsyncExceptionHandler;
 
 @EnableAsync
 @Configuration
@@ -31,7 +32,7 @@ public class AsyncConfig implements AsyncConfigurer {
     }
 
     @Override
-    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler(){
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return globalAsyncExceptionHandler;
     }
 }

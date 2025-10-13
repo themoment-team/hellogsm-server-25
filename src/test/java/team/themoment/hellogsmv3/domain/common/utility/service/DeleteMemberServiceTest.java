@@ -1,5 +1,13 @@
 package team.themoment.hellogsmv3.domain.common.utility.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType;
@@ -16,14 +25,6 @@ import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @DisplayName("DeleteMemberService 클래스의")
 class DeleteMemberServiceTest {
@@ -62,14 +63,8 @@ class DeleteMemberServiceTest {
             void setUp() {
                 existingMember = mock(Member.class);
                 existingOneseo = mock(Oneseo.class);
-                existingAuthCode = new AuthenticationCode(
-                        memberId,
-                        "123456",
-                        phoneNumber,
-                        LocalDateTime.now(),
-                        AuthCodeType.SIGNUP,
-                        true
-                );
+                existingAuthCode = new AuthenticationCode(memberId, "123456", phoneNumber, LocalDateTime.now(),
+                        AuthCodeType.SIGNUP, true);
 
                 given(existingMember.getId()).willReturn(memberId);
                 given(memberRepository.findByPhoneNumber(phoneNumber)).willReturn(Optional.of(existingMember));

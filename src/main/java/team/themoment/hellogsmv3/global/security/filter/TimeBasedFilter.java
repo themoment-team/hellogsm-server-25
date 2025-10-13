@@ -1,21 +1,23 @@
 package team.themoment.hellogsmv3.global.security.filter;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.filter.OncePerRequestFilter;
 import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class TimeBasedFilter extends OncePerRequestFilter {
@@ -29,13 +31,15 @@ public class TimeBasedFilter extends OncePerRequestFilter {
         }
     }
 
-    public TimeBasedFilter addFilter(HttpMethod httpMethod, String uri, LocalDateTime startTime, LocalDateTime endTime) {
+    public TimeBasedFilter addFilter(HttpMethod httpMethod, String uri, LocalDateTime startTime,
+            LocalDateTime endTime) {
         urlRequestPeriods.put(uri + ":" + httpMethod, new RequestPeriod(startTime, endTime));
         return this;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String requestUri = request.getRequestURI();
         HttpMethod requestMethod;
 
@@ -55,8 +59,8 @@ public class TimeBasedFilter extends OncePerRequestFilter {
             if (requestPeriod.isWithinRange(currentTime)) {
                 filterChain.doFilter(request, response);
             } else {
-                String message = String.format("%s 요청이 거부되었습니다. " +
-                        "현재 시간: %s, 해당 요청은 %s ~ %s 이내에만 처리 가능합니다.", requestPeriodKey, currentTime, requestPeriod.startTime, requestPeriod.endTime);
+                String message = String.format("%s 요청이 거부되었습니다. " + "현재 시간: %s, 해당 요청은 %s ~ %s 이내에만 처리 가능합니다.",
+                        requestPeriodKey, currentTime, requestPeriod.startTime, requestPeriod.endTime);
                 log.warn(message);
                 sendErrorResponse(response, message);
             }
@@ -71,8 +75,7 @@ public class TimeBasedFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(
-                CommonApiResponse.error(message, HttpStatus.FORBIDDEN)
-        ));
+        response.getWriter()
+                .write(objectMapper.writeValueAsString(CommonApiResponse.error(message, HttpStatus.FORBIDDEN)));
     }
 }

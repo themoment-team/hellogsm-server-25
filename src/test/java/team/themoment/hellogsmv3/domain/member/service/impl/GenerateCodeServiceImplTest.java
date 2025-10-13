@@ -1,23 +1,24 @@
 package team.themoment.hellogsmv3.domain.member.service.impl;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.dto.request.GenerateCodeReqDto;
 import team.themoment.hellogsmv3.domain.member.entity.AuthenticationCode;
 import team.themoment.hellogsmv3.domain.member.repository.CodeRepository;
 import team.themoment.hellogsmv3.domain.member.service.SendCodeNotificationService;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static team.themoment.hellogsmv3.domain.member.entity.type.AuthCodeType.*;
 
 @DisplayName("GenerateTestResultCodeServiceImpl 클래스의")
 class GenerateCodeServiceImplTest {
@@ -84,14 +85,16 @@ class GenerateCodeServiceImplTest {
             @BeforeEach
             void setUp() {
                 existingCode = mock(AuthenticationCode.class);
-                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP)).willReturn(Optional.of(existingCode));
+                given(codeRepository.findByMemberIdAndAuthCodeType(memberId, SIGNUP))
+                        .willReturn(Optional.of(existingCode));
                 given(existingCode.getCount()).willReturn(5);
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_an_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> generateCodeServiceImpl.execute(memberId, reqDto));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> generateCodeServiceImpl.execute(memberId, reqDto));
                 assertEquals("너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요. 특정 시간 내 제한 횟수인 5회를 초과하였습니다.", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
             }

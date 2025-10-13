@@ -1,7 +1,8 @@
 package team.themoment.hellogsmv3.global.exception.error;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
 
 @Getter
 public class ExpectedException extends RuntimeException {
@@ -21,5 +22,4 @@ public class ExpectedException extends RuntimeException {
     public synchronized Throwable fillInStackTrace() {
         return this;
     }
-
 }

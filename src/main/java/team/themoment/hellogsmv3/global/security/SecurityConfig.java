@@ -1,7 +1,8 @@
 package team.themoment.hellogsmv3.global.security;
 
-import jakarta.servlet.Filter;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,14 +10,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
-import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
-import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import jakarta.servlet.Filter;
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.entity.type.Role;
 import team.themoment.hellogsmv3.global.common.logging.LoggingFilter;
 import team.themoment.hellogsmv3.global.security.data.AuthEnvironment;
@@ -24,9 +25,6 @@ import team.themoment.hellogsmv3.global.security.data.ScheduleEnvironment;
 import team.themoment.hellogsmv3.global.security.filter.TimeBasedFilter;
 import team.themoment.hellogsmv3.global.security.handler.CustomAccessDeniedHandler;
 import team.themoment.hellogsmv3.global.security.handler.CustomAuthenticationEntryPoint;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -47,11 +45,6 @@ public class SecurityConfig {
                 .addFilter(HttpMethod.POST, "/oneseo/v3/oneseo/me", oneseoSubmissionStart, oneseoSubmissionEnd)
                 .addFilter(HttpMethod.PUT, "/oneseo/v3/oneseo/{memberId}", oneseoSubmissionStart, oneseoSubmissionEnd)
                 .addFilter(HttpMethod.POST, "/oneseo/v3/image", oneseoSubmissionStart, oneseoSubmissionEnd);
-    }
-
-    @Bean
-    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
-        return new DefaultAuthorizationCodeTokenResponseClient();
     }
 
     @Configuration
@@ -75,13 +68,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(authEnv.allowedOrigins());
 
-        configuration.setAllowedMethods(Arrays.asList(
-                HttpMethod.GET.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.PATCH.name(),
-                HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()));
+        configuration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name(),
+                HttpMethod.PUT.name(), HttpMethod.PATCH.name(), HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name()));
 
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -90,22 +78,17 @@ public class SecurityConfig {
     }
 
     private void basicSetting(HttpSecurity http) throws Exception {
-        http.formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .sessionFixation().migrateSession()
-                );
+        http.formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionFixation().migrateSession());
     }
 
     private void cors(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource()));
     }
 
     private void exceptionHandling(HttpSecurity http) throws Exception {
-        http.exceptionHandling(handling -> handling
-                .accessDeniedHandler(accessDeniedHandler)
+        http.exceptionHandling(handling -> handling.accessDeniedHandler(accessDeniedHandler)
                 .authenticationEntryPoint(authenticationEntryPoint));
     }
 
@@ -119,129 +102,62 @@ public class SecurityConfig {
                 .requestMatchers("/auth/v3/**").permitAll()
 
                 // member
-                .requestMatchers(HttpMethod.GET, "/member/v3/member/me").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/member/v3/member/{memberId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.POST,
-                        "/member/v3/member/me/send-code",
-                        "/member/v3/member/me/auth-code"
-                ).hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.POST, "/member/v3/member/me/send-code-test").hasAnyAuthority(
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.POST, "/member/v3/member/me").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/member/v3/auth-info/me").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/member/v3/auth-info/{memberId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/member/v3/first-test-result/me").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/member/v3/second-test-result/me").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/member/v3/check-duplicate").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.ROOT.name()
-                )
+                .requestMatchers(HttpMethod.GET, "/member/v3/member/me")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.APPLICANT.name(), Role.ADMIN.name(),
+                        Role.ROOT.name())
+                .requestMatchers(HttpMethod.GET, "/member/v3/member/{memberId}").hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.POST, "/member/v3/member/me/send-code", "/member/v3/member/me/auth-code")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.APPLICANT.name(), Role.ADMIN.name(),
+                        Role.ROOT.name())
+                .requestMatchers(HttpMethod.POST, "/member/v3/member/me/send-code-test")
+                .hasAnyAuthority(Role.ROOT.name()).requestMatchers(HttpMethod.POST, "/member/v3/member/me")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.APPLICANT.name(), Role.ADMIN.name(),
+                        Role.ROOT.name())
+                .requestMatchers(HttpMethod.GET, "/member/v3/auth-info/me")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.APPLICANT.name(), Role.ADMIN.name(),
+                        Role.ROOT.name())
+                .requestMatchers(HttpMethod.GET, "/member/v3/auth-info/{memberId}").hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/member/v3/first-test-result/me")
+                .hasAnyAuthority(Role.APPLICANT.name(), Role.ROOT.name())
+                .requestMatchers(HttpMethod.GET, "/member/v3/second-test-result/me")
+                .hasAnyAuthority(Role.APPLICANT.name(), Role.ROOT.name())
+                .requestMatchers(HttpMethod.GET, "/member/v3/check-duplicate")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.ROOT.name())
 
                 // oneseo
-                .requestMatchers("/oneseo/v3/oneseo/me").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers("/oneseo/v3/oneseo/{memberId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/arrived-status/{memberId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/competency-score/{memberId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/interview-score/{memberId}").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.POST, "/oneseo/v3/image").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.DELETE, "/oneseo/v3/oneseo/me").hasAnyAuthority(
-                        Role.APPLICANT.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/oneseo/v3/oneseo/search").hasAnyAuthority(
-                        Role.ADMIN.name(),
-                        Role.ROOT.name()
-                )
-                .requestMatchers(HttpMethod.PUT, "/oneseo/v3/final-submit").hasAnyAuthority(
-                        Role.APPLICANT.name()
-                )
-                .requestMatchers(HttpMethod.POST, "/oneseo/v3/excel").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/oneseo/v3/excel").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/oneseo/v3/admission-tickets").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
-                .requestMatchers(HttpMethod.GET, "/oneseo/v3/editability").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
+                .requestMatchers("/oneseo/v3/oneseo/me").hasAnyAuthority(Role.APPLICANT.name(), Role.ROOT.name())
+                .requestMatchers("/oneseo/v3/oneseo/{memberId}").hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/arrived-status/{memberId}")
+                .hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/competency-score/{memberId}")
+                .hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.PATCH, "/oneseo/v3/interview-score/{memberId}")
+                .hasAnyAuthority(Role.ADMIN.name()).requestMatchers(HttpMethod.POST, "/oneseo/v3/image")
+                .hasAnyAuthority(Role.APPLICANT.name(), Role.ADMIN.name(), Role.ROOT.name())
+                .requestMatchers(HttpMethod.DELETE, "/oneseo/v3/oneseo/me")
+                .hasAnyAuthority(Role.APPLICANT.name(), Role.ROOT.name())
+                .requestMatchers(HttpMethod.GET, "/oneseo/v3/oneseo/search")
+                .hasAnyAuthority(Role.ADMIN.name(), Role.ROOT.name())
+                .requestMatchers(HttpMethod.PUT, "/oneseo/v3/final-submit").hasAnyAuthority(Role.APPLICANT.name())
+                .requestMatchers(HttpMethod.POST, "/oneseo/v3/excel").hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/oneseo/v3/excel").hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/oneseo/v3/admission-tickets").hasAnyAuthority(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/oneseo/v3/editability").hasAnyAuthority(Role.ADMIN.name())
 
                 // operation test result api
-                .requestMatchers("/operation/**").hasAnyAuthority(
-                        Role.ADMIN.name()
-                )
+                .requestMatchers("/operation/**").hasAnyAuthority(Role.ADMIN.name())
 
                 // test result api
-                .requestMatchers("/test-result/v3/auth-code").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name()
-                )
-                .requestMatchers("/test-result/v3/send-code").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name()
-                )
-                .requestMatchers("/test-result/v3/my/**").hasAnyAuthority(
-                        Role.UNAUTHENTICATED.name(),
-                        Role.APPLICANT.name()
-                )
-
-                // mock score calculate api
-                .requestMatchers(HttpMethod.POST, "/oneseo/v3/calculate-mock-score").permitAll()
+                .requestMatchers("/test-result/v3/auth-code")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.APPLICANT.name())
+                .requestMatchers("/test-result/v3/send-code")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.APPLICANT.name())
+                .requestMatchers("/test-result/v3/my/**")
+                .hasAnyAuthority(Role.UNAUTHENTICATED.name(), Role.APPLICANT.name())
 
                 // common / get date api
                 .requestMatchers(HttpMethod.GET, "/date").permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/utility/v3/**").permitAll()
-
-                .anyRequest().permitAll()
-        );
+                .requestMatchers(HttpMethod.DELETE, "/utility/v3/**").permitAll().anyRequest().permitAll());
     }
 
     private void addLoggingFilter(HttpSecurity http) {

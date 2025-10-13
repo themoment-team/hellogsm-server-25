@@ -1,16 +1,17 @@
 package team.themoment.hellogsmv3.domain.member.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import team.themoment.hellogsmv3.domain.member.entity.type.Role;
-import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
-import team.themoment.hellogsmv3.domain.member.entity.type.Sex;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import lombok.*;
+import team.themoment.hellogsmv3.domain.member.entity.type.AuthReferrerType;
+import team.themoment.hellogsmv3.domain.member.entity.type.Role;
+import team.themoment.hellogsmv3.domain.member.entity.type.Sex;
 
 @Getter
 @Builder
@@ -59,10 +60,7 @@ public class Member {
     private LocalDateTime updatedTime;
 
     public static Member buildMemberWithOauthInfo(String email, AuthReferrerType authRefType) {
-        return Member.builder()
-                .email(email)
-                .authReferrerType(authRefType)
-                .build();
+        return Member.builder().email(email).authReferrerType(authRefType).build();
     }
 
     public Member modifyMember(String name, LocalDate birth, String phoneNumber, Sex sex) {

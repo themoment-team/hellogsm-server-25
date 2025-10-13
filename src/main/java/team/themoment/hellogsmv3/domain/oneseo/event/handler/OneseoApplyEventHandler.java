@@ -1,11 +1,15 @@
 package team.themoment.hellogsmv3.domain.oneseo.event.handler;
 
-import lombok.RequiredArgsConstructor;
+import static team.themoment.hellogsmv3.global.thirdParty.feign.client.type.Env.dev;
+import static team.themoment.hellogsmv3.global.thirdParty.feign.client.type.Env.prod;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+
+import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.oneseo.event.OneseoApplyEvent;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.DiscordAlarmReqDto;
@@ -13,9 +17,6 @@ import team.themoment.hellogsmv3.global.thirdParty.feign.client.type.Channel;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.type.Env;
 import team.themoment.hellogsmv3.global.thirdParty.feign.client.type.NoticeLevel;
 import team.themoment.hellogsmv3.global.thirdParty.feign.service.DiscordAlarmFeignClientService;
-
-import static team.themoment.hellogsmv3.global.thirdParty.feign.client.type.Env.prod;
-import static team.themoment.hellogsmv3.global.thirdParty.feign.client.type.Env.dev;
 
 @Component
 @RequiredArgsConstructor
@@ -41,22 +42,14 @@ public class OneseoApplyEventHandler {
     }
 
     private DiscordAlarmReqDto buildReqDto(String title, String content, Env env) {
-        return DiscordAlarmReqDto.builder()
-                .title(title)
-                .content(content)
-                .noticeLevel(NoticeLevel.info)
-                .channel(Channel.info)
-                .env(env)
-                .build();
+        return DiscordAlarmReqDto.builder().title(title).content(content).noticeLevel(NoticeLevel.info)
+                .channel(Channel.info).env(env).build();
     }
 
     private String makeTitle(OneseoApplyEvent oneseoApplyEvent) {
         String summitCode = oneseoApplyEvent.getSummitCode();
 
-        return String.format(
-                "원서가 작성되었습니다! [%s]",
-                summitCode
-        );
+        return String.format("원서가 작성되었습니다! [%s]", summitCode);
     }
 
     private String makeContent(OneseoApplyEvent oneseoApplyEvent) {
@@ -77,10 +70,8 @@ public class OneseoApplyEventHandler {
             case EXTRA_ADMISSION, EXTRA_VETERANS -> "정원 외 특별전형";
         };
 
-        return String.format(
-                "### 이름 \n%s%s \n### 졸업상태 \n%s \n### 전형 \n%s \n### 현재 작성된 원서 수 \n%s개",
-                name, masking, graduationType, screening, count
-        );
+        return String.format("### 이름 \n%s%s \n### 졸업상태 \n%s \n### 전형 \n%s \n### 현재 작성된 원서 수 \n%s개", name, masking,
+                graduationType, screening, count);
     }
 
     private Env getEnv() {

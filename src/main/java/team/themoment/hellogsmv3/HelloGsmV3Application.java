@@ -13,5 +13,4 @@ public class HelloGsmV3Application {
     public static void main(String[] args) {
         SpringApplication.run(HelloGsmV3Application.class, args);
     }
-
 }

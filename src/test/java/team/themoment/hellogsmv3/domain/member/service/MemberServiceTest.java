@@ -1,5 +1,11 @@
 package team.themoment.hellogsmv3.domain.member.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,15 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.repository.MemberRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
 
 @DisplayName("MemberService 클래스의")
 public class MemberServiceTest {
@@ -37,9 +38,7 @@ public class MemberServiceTest {
     class Describe_findByIdOrThrow {
 
         private final Long memberId = 1L;
-        private final Member member = Member.builder()
-                .id(memberId)
-                .build();
+        private final Member member = Member.builder().id(memberId).build();
 
         @Nested
         @DisplayName("존재하는 회원 ID가 주어지면")
@@ -70,9 +69,8 @@ public class MemberServiceTest {
             @Test
             @DisplayName("ExpectedException을 던진다.")
             void it_throws_expected_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () ->
-                        memberService.findByIdOrThrow(memberId)
-                );
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> memberService.findByIdOrThrow(memberId));
 
                 assertEquals("존재하지 않는 지원자입니다. member ID: " + memberId, exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());

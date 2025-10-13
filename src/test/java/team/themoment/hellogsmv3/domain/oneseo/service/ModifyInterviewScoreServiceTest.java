@@ -1,5 +1,12 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.InterviewScoreReqDto;
@@ -16,13 +24,6 @@ import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
 import team.themoment.hellogsmv3.domain.oneseo.entity.Oneseo;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @DisplayName("ModifyInterviewScoreService 클래스의")
 public class ModifyInterviewScoreServiceTest {
@@ -57,22 +58,14 @@ public class ModifyInterviewScoreServiceTest {
 
             @BeforeEach
             void setUp() {
-                Member member = Member.builder()
-                        .id(memberId)
-                        .build();
+                Member member = Member.builder().id(memberId).build();
 
-                entranceTestResult = EntranceTestResult.builder()
-                        .interviewScore(BigDecimal.valueOf(75))
-                        .firstTestPassYn(null)
-                        .build();
+                entranceTestResult = EntranceTestResult.builder().interviewScore(BigDecimal.valueOf(75))
+                        .firstTestPassYn(null).build();
 
-                Oneseo oneseo = Oneseo.builder()
-                        .member(member)
-                        .entranceTestResult(entranceTestResult)
-                        .build();
+                Oneseo oneseo = Oneseo.builder().member(member).entranceTestResult(entranceTestResult).build();
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-                given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
             }
 
             @Test
@@ -81,7 +74,8 @@ public class ModifyInterviewScoreServiceTest {
                 InterviewScoreReqDto interviewScoreReqDto = new InterviewScoreReqDto(updatedInterviewScore);
                 modifyInterviewScoreService.execute(memberId, interviewScoreReqDto);
 
-                ArgumentCaptor<EntranceTestResult> entranceTestResultCaptor = ArgumentCaptor.forClass(EntranceTestResult.class);
+                ArgumentCaptor<EntranceTestResult> entranceTestResultCaptor = ArgumentCaptor
+                        .forClass(EntranceTestResult.class);
 
                 verify(entranceTestResultRepository).save(entranceTestResultCaptor.capture());
 
@@ -97,7 +91,8 @@ public class ModifyInterviewScoreServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(memberService.findByIdOrThrow(memberId)).willThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: ", HttpStatus.NOT_FOUND));
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId))
+                        .willThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: ", HttpStatus.NOT_FOUND));
             }
 
             @Test
@@ -105,7 +100,8 @@ public class ModifyInterviewScoreServiceTest {
             void it_throws_expected_exception() {
                 InterviewScoreReqDto interviewScoreReqDto = new InterviewScoreReqDto(updatedInterviewScore);
 
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> modifyInterviewScoreService.execute(memberId, interviewScoreReqDto));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> modifyInterviewScoreService.execute(memberId, interviewScoreReqDto));
 
                 assertEquals("존재하지 않는 지원자입니다. member ID: ", exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
@@ -118,12 +114,8 @@ public class ModifyInterviewScoreServiceTest {
 
             @BeforeEach
             void setUp() {
-                Member member = Member.builder()
-                        .id(memberId)
-                        .build();
-
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-                given(oneseoService.findByMemberOrThrow(member)).willThrow(new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willThrow(
+                        new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
             }
 
             @Test
@@ -131,7 +123,8 @@ public class ModifyInterviewScoreServiceTest {
             void it_throws_expected_exception() {
                 InterviewScoreReqDto interviewScoreReqDto = new InterviewScoreReqDto(updatedInterviewScore);
 
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> modifyInterviewScoreService.execute(memberId, interviewScoreReqDto));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> modifyInterviewScoreService.execute(memberId, interviewScoreReqDto));
 
                 assertEquals("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());

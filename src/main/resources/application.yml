@@ -32,6 +32,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
 
   data:
     redis:
@@ -70,10 +71,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             authorization-uri: https://kauth.kakao.com/oauth/authorize
 
-  mvc:
-    throw-exception-if-no-handler-found: true
-    converters:
-      preferred-json-mapper: jackson
   web:
     resources:
       add-mappings: false
@@ -94,6 +91,9 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
+  http:
+    converters:
+      preferred-json-mapper: jackson
 
 auth:
   allowed-origins:
@@ -127,9 +127,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,prometheus
       base-path: ${ACTUATOR_BASE_PATH}
+  endpoint:
+    prometheus:
+      access: read_only
 
 discord-alarm:
   url: ${DISCORD_RELAY_SERVER_URL}
   api-key: ${DISCORD_RELAY_SERVER_API_KEY}
+
+lambda-score-calculator:
+  url: ${SCORE_CALCULATOR_SERVICE_URL}
+  api-key: ${SCORE_CALCULATOR_API_KEY}

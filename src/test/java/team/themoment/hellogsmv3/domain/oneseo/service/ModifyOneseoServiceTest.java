@@ -1,40 +1,44 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.CANDIDATE;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Major.*;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.GENERAL;
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.SPECIAL;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.http.HttpStatus;
+
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
-import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
+import team.themoment.hellogsmv3.domain.oneseo.dto.response.CalculatedScoreResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.*;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.DesiredMajors;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Major;
 import team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening;
+import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestFactorsDetailRepository;
+import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.MiddleSchoolAchievementRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoPrivacyDetailRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.OneseoRepository;
 import team.themoment.hellogsmv3.domain.oneseo.repository.ScreeningChangeHistoryRepository;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.CANDIDATE;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.GraduationType.GED;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Major.*;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.GENERAL;
-import static team.themoment.hellogsmv3.domain.oneseo.entity.type.Screening.SPECIAL;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.dto.request.LambdaScoreCalculatorReqDto;
+import team.themoment.hellogsmv3.global.thirdParty.feign.client.lambda.LambdaScoreCalculatorClient;
 
 @DisplayName("ModifyOneseoService 클래스의")
 class ModifyOneseoServiceTest {
@@ -48,13 +52,15 @@ class ModifyOneseoServiceTest {
     @Mock
     private ScreeningChangeHistoryRepository screeningChangeHistoryRepository;
     @Mock
+    private EntranceTestResultRepository entranceTestResultRepository;
+    @Mock
+    private EntranceTestFactorsDetailRepository entranceTestFactorsDetailRepository;
+    @Mock
     private OneseoService oneseoService;
     @Mock
     private MemberService memberService;
     @Mock
-    private CalculateGradeService calculateGradeService;
-    @Mock
-    private CalculateGedService calculateGedService;
+    private LambdaScoreCalculatorClient lambdaScoreCalculatorClient;
 
     @InjectMocks
     private ModifyOneseoService modifyOneseoService;
@@ -82,21 +88,11 @@ class ModifyOneseoServiceTest {
         String freeSemester = "3-1";
 
         MiddleSchoolAchievementReqDto middleSchoolAchievementReqDto = MiddleSchoolAchievementReqDto.builder()
-                .achievement1_2(null)
-                .achievement2_1(achievement)
-                .achievement2_2(achievement)
-                .achievement3_1(achievement)
-                .achievement3_2(null)
-                .generalSubjects(generalSubjects)
-                .newSubjects(newSubjects)
-                .artsPhysicalAchievement(artsPhysicalAchievement)
-                .artsPhysicalSubjects(artsPhysicalSubjects)
-                .absentDays(absentDays)
-                .attendanceDays(attendanceDays)
-                .volunteerTime(volunteerTime)
-                .liberalSystem(liberalSystem)
-                .freeSemester(freeSemester)
-                .build();
+                .achievement1_2(null).achievement2_1(achievement).achievement2_2(achievement)
+                .achievement3_1(achievement).achievement3_2(null).generalSubjects(generalSubjects)
+                .newSubjects(newSubjects).artsPhysicalAchievement(artsPhysicalAchievement)
+                .artsPhysicalSubjects(artsPhysicalSubjects).absentDays(absentDays).attendanceDays(attendanceDays)
+                .volunteerTime(volunteerTime).liberalSystem(liberalSystem).freeSemester(freeSemester).build();
 
         String guardianName = "김보호";
         String guardianPhoneNumber = "01000000001";
@@ -114,31 +110,14 @@ class ModifyOneseoServiceTest {
         String schoolAddress = "광주 어딘가";
         Screening screening = GENERAL;
         String graduationDate = "2020-02";
-        DesiredMajors desiredMajors = DesiredMajors.builder()
-                .firstDesiredMajor(firstDesiredMajor)
-                .secondDesiredMajor(secondDesiredMajor)
-                .thirdDesiredMajor(thirdDesiredMajor)
-                .build();
+        String studentNumber = "30508";
+        DesiredMajors desiredMajors = DesiredMajors.builder().firstDesiredMajor(firstDesiredMajor)
+                .secondDesiredMajor(secondDesiredMajor).thirdDesiredMajor(thirdDesiredMajor).build();
 
-        OneseoReqDto oneseoReqDto = new OneseoReqDto(
-                guardianName,
-                guardianPhoneNumber,
-                relationshipWithGuardian,
-                profileImg,
-                address,
-                detailAddress,
-                graduationType,
-                schoolTeacherName,
-                schoolTeacherPhoneNumber,
-                firstDesiredMajor,
-                secondDesiredMajor,
-                thirdDesiredMajor,
-                middleSchoolAchievementReqDto,
-                schoolName,
-                schoolAddress,
-                screening,
-                graduationDate
-        );
+        OneseoReqDto oneseoReqDto = new OneseoReqDto(guardianName, guardianPhoneNumber, relationshipWithGuardian,
+                profileImg, address, detailAddress, graduationType, schoolTeacherName, schoolTeacherPhoneNumber,
+                firstDesiredMajor, secondDesiredMajor, thirdDesiredMajor, middleSchoolAchievementReqDto, schoolName,
+                schoolAddress, screening, graduationDate, studentNumber);
 
         @Nested
         @DisplayName("유효한 회원 ID와 요청 데이터가 주어지면")
@@ -147,44 +126,40 @@ class ModifyOneseoServiceTest {
             @Test
             @DisplayName("기존의 Oneseo, OneseoPrivacyDetail, MiddleSchoolAchievement 엔티티를 수정하고 저장한다")
             void it_modifies_and_saves_existing_entities() {
-
-                Oneseo oneseo = Oneseo.builder()
-                        .id(1L)
-                        .desiredMajors(desiredMajors)
-                        .entranceTestResult(EntranceTestResult.builder()
-                                .firstTestPassYn(null)
-                                .build())
-                        .wantedScreeningChangeHistory(new ArrayList<>())
-                        .build();
-
-                OneseoPrivacyDetail oneseoPrivacyDetail = OneseoPrivacyDetail.builder()
-                        .id(1L)
-                        .oneseo(oneseo)
-                        .graduationType(CANDIDATE)
-                        .build();
-
-                MiddleSchoolAchievement middleSchoolAchievement = MiddleSchoolAchievement.builder()
-                        .id(1L)
-                        .oneseo(oneseo)
-                        .build();
-
                 Member existingMember = mock(Member.class);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
-                given(oneseoService.findByMemberOrThrow(existingMember)).willReturn(oneseo);
+                Oneseo oneseo = Oneseo.builder().id(1L).member(existingMember).desiredMajors(desiredMajors)
+                        .entranceTestResult(EntranceTestResult.builder().firstTestPassYn(null).build())
+                        .wantedScreeningChangeHistory(new ArrayList<>()).build();
+
+                OneseoPrivacyDetail oneseoPrivacyDetail = OneseoPrivacyDetail.builder().id(1L).oneseo(oneseo)
+                        .graduationType(CANDIDATE).build();
+
+                MiddleSchoolAchievement middleSchoolAchievement = MiddleSchoolAchievement.builder().id(1L)
+                        .oneseo(oneseo).build();
+
+                CalculatedScoreResDto mockCalculatedScore = mock(CalculatedScoreResDto.class);
+
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
                 given(oneseoPrivacyDetailRepository.findByOneseo(oneseo)).willReturn(oneseoPrivacyDetail);
                 given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(middleSchoolAchievement);
-                given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(middleSchoolAchievement);
+                given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class)))
+                        .willReturn(mockCalculatedScore);
+                given(entranceTestResultRepository.findByOneseo(any(Oneseo.class))).willReturn(null);
 
                 modifyOneseoService.execute(oneseoReqDto, memberId);
                 ArgumentCaptor<Oneseo> oneseoCaptor = ArgumentCaptor.forClass(Oneseo.class);
-                ArgumentCaptor<OneseoPrivacyDetail> oneseoPrivacyDetailCaptor = ArgumentCaptor.forClass(OneseoPrivacyDetail.class);
-                ArgumentCaptor<MiddleSchoolAchievement> middleSchoolAchievementCaptor = ArgumentCaptor.forClass(MiddleSchoolAchievement.class);
+                ArgumentCaptor<OneseoPrivacyDetail> oneseoPrivacyDetailCaptor = ArgumentCaptor
+                        .forClass(OneseoPrivacyDetail.class);
+                ArgumentCaptor<MiddleSchoolAchievement> middleSchoolAchievementCaptor = ArgumentCaptor
+                        .forClass(MiddleSchoolAchievement.class);
 
                 verify(oneseoRepository).save(oneseoCaptor.capture());
                 verify(oneseoPrivacyDetailRepository).save(oneseoPrivacyDetailCaptor.capture());
                 verify(middleSchoolAchievementRepository).save(middleSchoolAchievementCaptor.capture());
-                verify(calculateGradeService).execute(any(MiddleSchoolAchievementCalcDto.class), eq(oneseo), eq(CANDIDATE));
+                verify(lambdaScoreCalculatorClient).calculateScore(any(LambdaScoreCalculatorReqDto.class));
+                verify(entranceTestFactorsDetailRepository).save(any(EntranceTestFactorsDetail.class));
+                verify(entranceTestResultRepository).save(any(EntranceTestResult.class));
 
                 Oneseo capturedOneseo = oneseoCaptor.getValue();
                 OneseoPrivacyDetail capturedPrivacyDetail = oneseoPrivacyDetailCaptor.getValue();
@@ -213,11 +188,11 @@ class ModifyOneseoServiceTest {
 
                 assertEquals(middleSchoolAchievement.getId(), capturedAchievement.getId());
                 assertEquals(middleSchoolAchievement.getOneseo().getId(), capturedAchievement.getOneseo().getId());
-                assertEquals(null, capturedAchievement.getAchievement1_2());
+                assertNull(capturedAchievement.getAchievement1_2());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
-                assertEquals(achievement, capturedAchievement.getAchievement2_1());
+                assertEquals(achievement, capturedAchievement.getAchievement2_2());
                 assertEquals(achievement, capturedAchievement.getAchievement3_1());
-                assertEquals(null, capturedAchievement.getAchievement3_2());
+                assertNull(capturedAchievement.getAchievement3_2());
                 assertEquals(generalSubjects, capturedAchievement.getGeneralSubjects());
                 assertEquals(newSubjects, capturedAchievement.getNewSubjects());
                 assertEquals(artsPhysicalAchievement, capturedAchievement.getArtsPhysicalAchievement());
@@ -227,7 +202,7 @@ class ModifyOneseoServiceTest {
                 assertEquals(volunteerTime, capturedAchievement.getVolunteerTime());
                 assertEquals(liberalSystem, capturedAchievement.getLiberalSystem());
                 assertEquals(freeSemester, capturedAchievement.getFreeSemester());
-                assertEquals(null, capturedAchievement.getGedAvgScore());
+                assertNull(capturedAchievement.getGedAvgScore());
             }
 
             @Test
@@ -235,34 +210,32 @@ class ModifyOneseoServiceTest {
             void it_change_screening_entity_save() {
                 Screening beforeScreening = SPECIAL;
                 Screening afterScreening = GENERAL;
-
-                Oneseo oneseo = Oneseo.builder()
-                        .id(1L)
-                        .wantedScreening(beforeScreening)
-                        .desiredMajors(desiredMajors)
-                        .entranceTestResult(EntranceTestResult.builder()
-                                .firstTestPassYn(null)
-                                .build())
-                        .wantedScreeningChangeHistory(new ArrayList<>())
-                        .build();
-
                 Member existingMember = mock(Member.class);
+                Oneseo oneseo = Oneseo.builder().id(1L).member(existingMember).wantedScreening(beforeScreening)
+                        .desiredMajors(desiredMajors)
+                        .entranceTestResult(EntranceTestResult.builder().firstTestPassYn(null).build())
+                        .wantedScreeningChangeHistory(new ArrayList<>()).build();
+
                 OneseoPrivacyDetail existingPrivacyDetail = mock(OneseoPrivacyDetail.class);
                 MiddleSchoolAchievement existingAchievement = mock(MiddleSchoolAchievement.class);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
-                given(oneseoService.findByMemberOrThrow(existingMember)).willReturn(oneseo);
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
                 given(oneseoPrivacyDetailRepository.findByOneseo(oneseo)).willReturn(existingPrivacyDetail);
                 given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(existingAchievement);
-                given(existingPrivacyDetail.getGraduationType()).willReturn(GED);
+                given(entranceTestResultRepository.findByOneseo(any(Oneseo.class))).willReturn(null);
+                CalculatedScoreResDto mockCalculatedScore = mock(CalculatedScoreResDto.class);
+                given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class)))
+                        .willReturn(mockCalculatedScore);
 
                 modifyOneseoService.execute(oneseoReqDto, memberId);
-                ArgumentCaptor<WantedScreeningChangeHistory> screeningChangeHistoryArgumentCaptor = ArgumentCaptor.forClass(WantedScreeningChangeHistory.class);
+                ArgumentCaptor<WantedScreeningChangeHistory> screeningChangeHistoryArgumentCaptor = ArgumentCaptor
+                        .forClass(WantedScreeningChangeHistory.class);
 
                 verify(screeningChangeHistoryRepository).save(screeningChangeHistoryArgumentCaptor.capture());
-                verify(calculateGedService).execute(any(MiddleSchoolAchievementCalcDto.class), eq(oneseo), eq(GED));
+                verify(lambdaScoreCalculatorClient).calculateScore(any(LambdaScoreCalculatorReqDto.class));
 
-                WantedScreeningChangeHistory capturedScreeningChangeHistory = screeningChangeHistoryArgumentCaptor.getValue();
+                WantedScreeningChangeHistory capturedScreeningChangeHistory = screeningChangeHistoryArgumentCaptor
+                        .getValue();
 
                 assertEquals(beforeScreening, capturedScreeningChangeHistory.getBeforeScreening());
                 assertEquals(afterScreening, capturedScreeningChangeHistory.getAfterScreening());
@@ -276,13 +249,14 @@ class ModifyOneseoServiceTest {
             @BeforeEach
             void setUp() {
                 doThrow(new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.BAD_REQUEST))
-                        .when(memberService).findByIdOrThrow(memberId);
+                        .when(oneseoService).findWithMemberByMemberIdOrThrow(memberId);
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_an_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> modifyOneseoService.execute(oneseoReqDto, memberId));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> modifyOneseoService.execute(oneseoReqDto, memberId));
                 assertEquals("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
             }
@@ -294,16 +268,15 @@ class ModifyOneseoServiceTest {
 
             @BeforeEach
             void setUp() {
-                Member existingMember = mock(Member.class);
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
                 doThrow(new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.BAD_REQUEST))
-                        .when(oneseoService).findByMemberOrThrow(existingMember);
+                        .when(oneseoService).findWithMemberByMemberIdOrThrow(memberId);
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다")
             void it_throws_an_exception() {
-                ExpectedException exception = assertThrows(ExpectedException.class, () -> modifyOneseoService.execute(oneseoReqDto, memberId));
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> modifyOneseoService.execute(oneseoReqDto, memberId));
                 assertEquals("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
             }

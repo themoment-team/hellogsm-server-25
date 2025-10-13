@@ -1,11 +1,12 @@
 package team.themoment.hellogsmv3.global.thirdParty.aws.sns.template;
 
-import io.awspring.cloud.s3.S3Exception;
+import java.io.IOException;
+
 import org.springframework.stereotype.Component;
+
+import io.awspring.cloud.s3.S3Exception;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
-
-import java.io.IOException;
 
 @Component
 public class AwsTemplate<T> {

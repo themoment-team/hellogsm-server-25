@@ -1,17 +1,18 @@
 package team.themoment.hellogsmv3.global.thirdParty.feign.config;
 
-import feign.FeignException;
-import feign.Response;
-import feign.codec.ErrorDecoder;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.StreamUtils;
-import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StreamUtils;
+
+import feign.FeignException;
+import feign.Response;
+import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
+import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 @Slf4j
 public class FeignErrorDecoder implements ErrorDecoder {
@@ -25,8 +26,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
             Map<String, Collection<String>> headers = response.headers();
             String url = response.request().url();
             String httpMethod = response.request().httpMethod().name();
-            log.error("Feign 클라이언트 오류 - 메서드: {}, HTTP 메서드: {}, URL: {}, 상태: {}, 이유: {}",
-                    methodKey, httpMethod, url, status, response.reason());
+            log.error("Feign 클라이언트 오류 - 메서드: {}, HTTP 메서드: {}, URL: {}, 상태: {}, 이유: {}", methodKey, httpMethod, url,
+                    status, response.reason());
             log.error("응답 헤더: {}", headers);
             log.error("응답 본문: {}", errorBody);
             logRequestDetails(response, methodKey);

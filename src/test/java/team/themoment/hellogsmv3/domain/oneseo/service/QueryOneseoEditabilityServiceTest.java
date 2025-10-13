@@ -1,5 +1,8 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.given;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -7,11 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.OneseoEditabilityResDto;
 import team.themoment.hellogsmv3.domain.oneseo.repository.EntranceTestResultRepository;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.BDDMockito.given;
 
 @DisplayName("QueryOneseoEditabilityService 클래스의")
 class QueryOneseoEditabilityServiceTest {
