@@ -65,8 +65,7 @@ public class ModifyInterviewScoreServiceTest {
 
                 Oneseo oneseo = Oneseo.builder().member(member).entranceTestResult(entranceTestResult).build();
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-                given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
             }
 
             @Test
@@ -92,7 +91,7 @@ public class ModifyInterviewScoreServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(memberService.findByIdOrThrow(memberId))
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId))
                         .willThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: ", HttpStatus.NOT_FOUND));
             }
 
@@ -115,10 +114,7 @@ public class ModifyInterviewScoreServiceTest {
 
             @BeforeEach
             void setUp() {
-                Member member = Member.builder().id(memberId).build();
-
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-                given(oneseoService.findByMemberOrThrow(member)).willThrow(
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willThrow(
                         new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
             }
 

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.InterviewScoreReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
@@ -23,8 +22,7 @@ public class ModifyInterviewScoreService {
 
     @Transactional
     public void execute(Long memberId, InterviewScoreReqDto reqDto) {
-        Member member = memberService.findByIdOrThrow(memberId);
-        Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
+        Oneseo oneseo = oneseoService.findWithMemberByMemberIdOrThrow(memberId);
 
         EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
         OneseoService.isBeforeSecondTest(entranceTestResult.getSecondTestPassYn());

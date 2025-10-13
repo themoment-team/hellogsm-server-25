@@ -76,8 +76,7 @@ class QueryOneseoByIdServiceTest {
                 middleSchoolAchievement = buildMiddleSchoolAchievement();
                 oneseo = buildOneseo(member, middleSchoolAchievement, oneseoPrivacyDetail);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-                given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
                 given(oneseoPrivacyDetailRepository.findByOneseo(oneseo)).willReturn(oneseoPrivacyDetail);
                 given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(middleSchoolAchievement);
             }
@@ -151,8 +150,7 @@ class QueryOneseoByIdServiceTest {
             void setUp_it_throws_expected_exception() {
                 member = buildMember(memberId);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-                when(oneseoService.findByMemberOrThrow(member)).thenThrow(
+                when(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).thenThrow(
                         new ExpectedException("원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
             }
 
@@ -174,13 +172,13 @@ class QueryOneseoByIdServiceTest {
         @DisplayName("존재하지 않는 회원 ID가 주어지면")
         class Context_with_non_existing_member_id {
 
-        @BeforeEach
-      void setUp() {
-        when(memberService.findByIdOrThrow(memberId))
-            .thenThrow(
-                new ExpectedException(
-                    "존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
-      }
+            @BeforeEach
+            void setUp() {
+                when(oneseoService.findWithMemberByMemberIdOrThrow(memberId))
+                    .thenThrow(
+                        new ExpectedException(
+                            "존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
+            }
 
             @Test
             @DisplayName("ExpectedException을 던진다")

@@ -62,8 +62,7 @@ public class ModifyCompetencyEvaluationScoreServiceTest {
 
                 Oneseo oneseo = Oneseo.builder().member(member).entranceTestResult(entranceTestResult).build();
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-                given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
             }
 
             @Test
@@ -85,7 +84,7 @@ public class ModifyCompetencyEvaluationScoreServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(memberService.findByIdOrThrow(memberId))
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId))
                         .willThrow(new ExpectedException("존재하지 않는 지원자입니다. member ID: ", HttpStatus.NOT_FOUND));
             }
 

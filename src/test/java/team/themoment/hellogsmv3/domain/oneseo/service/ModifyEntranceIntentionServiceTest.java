@@ -59,8 +59,6 @@ public class ModifyEntranceIntentionServiceTest {
             @BeforeEach
             void setUp() {
                 member = Member.builder().id(memberId).build();
-
-                given(memberService.findByIdOrThrow(memberId)).willReturn(member);
             }
 
             @Nested
@@ -78,7 +76,7 @@ public class ModifyEntranceIntentionServiceTest {
                         oneseo = Oneseo.builder().member(member).decidedMajor(Major.SW).entranceIntentionYn(defaultYn)
                                 .build();
 
-                        given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+                        given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
                     }
 
                     @Test
@@ -106,7 +104,7 @@ public class ModifyEntranceIntentionServiceTest {
                         Oneseo oneseo = Oneseo.builder().member(member).decidedMajor(null) // 최종 합격하지 않은 상태
                                 .build();
 
-                        given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+                        given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
                     }
 
                     @Test
@@ -129,7 +127,7 @@ public class ModifyEntranceIntentionServiceTest {
 
                 @BeforeEach
                 void setUp() {
-                    given(oneseoService.findByMemberOrThrow(member)).willThrow(new ExpectedException(
+                    given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willThrow(new ExpectedException(
                             "해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
                 }
 
@@ -153,7 +151,7 @@ public class ModifyEntranceIntentionServiceTest {
 
             @BeforeEach
             void setUp() {
-                given(memberService.findByIdOrThrow(memberId)).willThrow(
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willThrow(
                         new ExpectedException("존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND));
             }
 

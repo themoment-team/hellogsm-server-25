@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.common.operation.repository.OperationTestResultRepository;
-import team.themoment.hellogsmv3.domain.member.entity.Member;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.FoundMemberAndOneseoDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
@@ -177,9 +177,12 @@ public class OneseoService {
         return target == null || target.isBlank();
     }
 
-    public Oneseo findByMemberOrThrow(Member member) {
-        return oneseoRepository.findByMember(member)
-                .orElseThrow(() -> new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + member.getId(),
-                        HttpStatus.NOT_FOUND));
+    public Oneseo findWithMemberByMemberIdOrThrow(Long memberId) {
+        FoundMemberAndOneseoDto queryResult = oneseoRepository.findMemberAndOneseoByMemberId(memberId);
+        if (queryResult.member() == null)
+            throw new ExpectedException("존재하지 않는 지원자입니다. member ID: " + memberId, HttpStatus.NOT_FOUND);
+        if (queryResult.oneseo() == null)
+            throw new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.NOT_FOUND);
+        return queryResult.oneseo();
     }
 }

@@ -30,15 +30,14 @@ public class QueryOneseoByIdService {
     @Cacheable(value = ONESEO_CACHE_VALUE, key = "#memberId")
     @Transactional(readOnly = true)
     public FoundOneseoResDto execute(Long memberId) {
-        Member member = memberService.findByIdOrThrow(memberId);
-        Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
+        Oneseo oneseo = oneseoService.findWithMemberByMemberIdOrThrow(memberId);
         OneseoPrivacyDetail oneseoPrivacyDetail = oneseoPrivacyDetailRepository.findByOneseo(oneseo);
         MiddleSchoolAchievement middleSchoolAchievement = middleSchoolAchievementRepository.findByOneseo(oneseo);
 
         CalculatedScoreResDto calculatedScoreResDto = buildCalculatedScoreResDto(oneseo,
                 oneseoPrivacyDetail.getGraduationType());
 
-        OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto = buildOneseoPrivacyDetailResDto(member,
+        OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto = buildOneseoPrivacyDetailResDto(oneseo.getMember(),
                 oneseoPrivacyDetail);
         MiddleSchoolAchievementResDto middleSchoolAchievementResDto = buildMiddleSchoolAchievementResDto(
                 middleSchoolAchievement);

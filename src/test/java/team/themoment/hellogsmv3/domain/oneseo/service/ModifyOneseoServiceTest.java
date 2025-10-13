@@ -126,8 +126,9 @@ class ModifyOneseoServiceTest {
             @Test
             @DisplayName("기존의 Oneseo, OneseoPrivacyDetail, MiddleSchoolAchievement 엔티티를 수정하고 저장한다")
             void it_modifies_and_saves_existing_entities() {
+                Member existingMember = mock(Member.class);
 
-                Oneseo oneseo = Oneseo.builder().id(1L).desiredMajors(desiredMajors)
+                Oneseo oneseo = Oneseo.builder().id(1L).member(existingMember).desiredMajors(desiredMajors)
                         .entranceTestResult(EntranceTestResult.builder().firstTestPassYn(null).build())
                         .wantedScreeningChangeHistory(new ArrayList<>()).build();
 
@@ -137,11 +138,9 @@ class ModifyOneseoServiceTest {
                 MiddleSchoolAchievement middleSchoolAchievement = MiddleSchoolAchievement.builder().id(1L)
                         .oneseo(oneseo).build();
 
-                Member existingMember = mock(Member.class);
                 CalculatedScoreResDto mockCalculatedScore = mock(CalculatedScoreResDto.class);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
-                given(oneseoService.findByMemberOrThrow(existingMember)).willReturn(oneseo);
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
                 given(oneseoPrivacyDetailRepository.findByOneseo(oneseo)).willReturn(oneseoPrivacyDetail);
                 given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(middleSchoolAchievement);
                 given(lambdaScoreCalculatorClient.calculateScore(any(LambdaScoreCalculatorReqDto.class)))
@@ -211,17 +210,16 @@ class ModifyOneseoServiceTest {
             void it_change_screening_entity_save() {
                 Screening beforeScreening = SPECIAL;
                 Screening afterScreening = GENERAL;
-
-                Oneseo oneseo = Oneseo.builder().id(1L).wantedScreening(beforeScreening).desiredMajors(desiredMajors)
+                Member existingMember = mock(Member.class);
+                Oneseo oneseo = Oneseo.builder().id(1L).member(existingMember).wantedScreening(beforeScreening)
+                        .desiredMajors(desiredMajors)
                         .entranceTestResult(EntranceTestResult.builder().firstTestPassYn(null).build())
                         .wantedScreeningChangeHistory(new ArrayList<>()).build();
 
-                Member existingMember = mock(Member.class);
                 OneseoPrivacyDetail existingPrivacyDetail = mock(OneseoPrivacyDetail.class);
                 MiddleSchoolAchievement existingAchievement = mock(MiddleSchoolAchievement.class);
 
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
-                given(oneseoService.findByMemberOrThrow(existingMember)).willReturn(oneseo);
+                given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
                 given(oneseoPrivacyDetailRepository.findByOneseo(oneseo)).willReturn(existingPrivacyDetail);
                 given(middleSchoolAchievementRepository.findByOneseo(oneseo)).willReturn(existingAchievement);
                 given(entranceTestResultRepository.findByOneseo(any(Oneseo.class))).willReturn(null);
@@ -251,7 +249,7 @@ class ModifyOneseoServiceTest {
             @BeforeEach
             void setUp() {
                 doThrow(new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.BAD_REQUEST))
-                        .when(memberService).findByIdOrThrow(memberId);
+                        .when(oneseoService).findWithMemberByMemberIdOrThrow(memberId);
             }
 
             @Test
@@ -270,10 +268,8 @@ class ModifyOneseoServiceTest {
 
             @BeforeEach
             void setUp() {
-                Member existingMember = mock(Member.class);
-                given(memberService.findByIdOrThrow(memberId)).willReturn(existingMember);
                 doThrow(new ExpectedException("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, HttpStatus.BAD_REQUEST))
-                        .when(oneseoService).findByMemberOrThrow(existingMember);
+                        .when(oneseoService).findWithMemberByMemberIdOrThrow(memberId);
             }
 
             @Test

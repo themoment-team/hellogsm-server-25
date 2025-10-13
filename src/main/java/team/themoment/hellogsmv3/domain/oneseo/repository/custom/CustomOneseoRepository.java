@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.FoundMemberAndOneseoDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.TestResultTag;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.AdmissionTicketsResDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.SearchOneseoResDto;
@@ -39,4 +40,6 @@ public interface CustomOneseoRepository {
     List<Oneseo> findAllFailedWithAllDetails();
 
     Map<String, EntranceTestResult> findEntranceTestResultByExaminationNumbersIn(List<String> examinationNumbers);
+
+    FoundMemberAndOneseoDto findMemberAndOneseoByMemberId(Long memberId);
 }

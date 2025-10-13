@@ -44,8 +44,7 @@ public class ModifyOneseoService {
 
         isValidMiddleSchoolInfo(reqDto);
 
-        Member currentMember = memberService.findByIdOrThrow(memberId);
-        Oneseo currentOneseo = oneseoService.findByMemberOrThrow(currentMember);
+        Oneseo currentOneseo = oneseoService.findWithMemberByMemberIdOrThrow(memberId);
 
         EntranceTestResult entranceTestResult = currentOneseo.getEntranceTestResult();
         OneseoService.isBeforeFirstTest(entranceTestResult.getFirstTestPassYn());
@@ -53,7 +52,7 @@ public class ModifyOneseoService {
         OneseoPrivacyDetail oneseoPrivacyDetail = oneseoPrivacyDetailRepository.findByOneseo(currentOneseo);
         MiddleSchoolAchievement middleSchoolAchievement = middleSchoolAchievementRepository.findByOneseo(currentOneseo);
 
-        Oneseo modifiedOneseo = buildOneseo(reqDto, currentOneseo, currentMember);
+        Oneseo modifiedOneseo = buildOneseo(reqDto, currentOneseo);
         oneseoService.assignSubmitCode(modifiedOneseo, currentOneseo.getWantedScreening());
 
         saveOneseoPrivacyDetail(reqDto, oneseoPrivacyDetail, modifiedOneseo);
@@ -64,7 +63,7 @@ public class ModifyOneseoService {
 
         CalculatedScoreResDto calculatedScoreResDto = calculateMiddleSchoolAchievement(reqDto.graduationType(),
                 reqDto.middleSchoolAchievement(), currentOneseo);
-        OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto = buildOneseoPrivacyDetailResDto(currentMember,
+        OneseoPrivacyDetailResDto oneseoPrivacyDetailResDto = buildOneseoPrivacyDetailResDto(currentOneseo.getMember(),
                 oneseoPrivacyDetail);
         MiddleSchoolAchievementResDto middleSchoolAchievementResDto = buildMiddleSchoolAchievementResDto(
                 middleSchoolAchievement);
@@ -218,8 +217,8 @@ public class ModifyOneseoService {
         }
     }
 
-    private Oneseo buildOneseo(OneseoReqDto reqDto, Oneseo oneseo, Member currentMember) {
-        return Oneseo.builder().id(oneseo.getId()).member(currentMember)
+    private Oneseo buildOneseo(OneseoReqDto reqDto, Oneseo oneseo) {
+        return Oneseo.builder().id(oneseo.getId()).member(oneseo.getMember())
                 .desiredMajors(DesiredMajors.builder().firstDesiredMajor(reqDto.firstDesiredMajor())
                         .secondDesiredMajor(reqDto.secondDesiredMajor()).thirdDesiredMajor(reqDto.thirdDesiredMajor())
                         .build())
