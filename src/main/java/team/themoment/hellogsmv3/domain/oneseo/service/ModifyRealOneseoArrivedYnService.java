@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.ArrivedStatusResDto;
 import team.themoment.hellogsmv3.domain.oneseo.entity.EntranceTestResult;
@@ -21,8 +20,7 @@ public class ModifyRealOneseoArrivedYnService {
 
     @Transactional
     public ArrivedStatusResDto execute(Long memberId) {
-        Member member = memberService.findByIdOrThrow(memberId);
-        Oneseo oneseo = oneseoService.findByMemberOrThrow(member);
+        Oneseo oneseo = oneseoService.findWithMemberByMemberIdOrThrow(memberId);
 
         EntranceTestResult entranceTestResult = oneseo.getEntranceTestResult();
         OneseoService.isBeforeFirstTest(entranceTestResult.getFirstTestPassYn());
