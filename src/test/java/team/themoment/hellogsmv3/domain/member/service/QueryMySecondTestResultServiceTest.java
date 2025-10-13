@@ -51,8 +51,7 @@ public class QueryMySecondTestResultServiceTest {
                     .entranceTestResult(EntranceTestResult.builder().secondTestPassYn(YesNo.YES).build())
                     .decidedMajor(Major.SW).build();
 
-            given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-            given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+            given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
         }
 
         @Nested

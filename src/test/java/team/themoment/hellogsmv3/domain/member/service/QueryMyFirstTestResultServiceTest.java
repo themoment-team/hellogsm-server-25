@@ -49,8 +49,7 @@ public class QueryMyFirstTestResultServiceTest {
             oneseo = Oneseo.builder().member(member)
                     .entranceTestResult(EntranceTestResult.builder().firstTestPassYn(YesNo.YES).build()).build();
 
-            given(memberService.findByIdOrThrow(memberId)).willReturn(member);
-            given(oneseoService.findByMemberOrThrow(member)).willReturn(oneseo);
+            given(oneseoService.findWithMemberByMemberIdOrThrow(memberId)).willReturn(oneseo);
         }
 
         @Nested

@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
 import team.themoment.hellogsmv3.domain.member.entity.Member;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.FoundMemberAndOneseoDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
@@ -47,44 +48,67 @@ public class OneseoServiceTest {
     }
 
     @Nested
-    @DisplayName("findByMemberOrThrow 메소드는")
-    class Describe_findByMemberOrThrow {
+    @DisplayName("findWithMemberByMemberIdOrThrow 메소드는")
+    class Describe_findWithMemberByMemberIdOrThrow {
 
         private final Long memberId = 1L;
         private final Member member = Member.builder().id(memberId).build();
         private final Oneseo oneseo = Oneseo.builder().member(member).build();
 
         @Nested
-        @DisplayName("존재하는 회원과 원서가 주어지면")
-        class Context_with_existing_member_and_oneseo {
+        @DisplayName("존재하는 회원 ID와 원서가 주어지면")
+        class Context_with_existing_member_id_and_oneseo {
 
             @BeforeEach
             void setUp() {
-                given(oneseoRepository.findByMember(member)).willReturn(Optional.of(oneseo));
+                FoundMemberAndOneseoDto queryResult = new FoundMemberAndOneseoDto(member, oneseo);
+                given(oneseoRepository.findMemberAndOneseoByMemberId(memberId)).willReturn(queryResult);
             }
 
             @Test
             @DisplayName("Oneseo 객체를 반환한다.")
             void it_returns_oneseo() {
-                Oneseo foundOneseo = oneseoService.findByMemberOrThrow(member);
+                Oneseo foundOneseo = oneseoService.findWithMemberByMemberIdOrThrow(memberId);
                 assertEquals(oneseo, foundOneseo);
             }
         }
 
         @Nested
-        @DisplayName("존재하지 않는 원서가 주어지면")
-        class Context_with_non_existing_oneseo {
+        @DisplayName("존재하지 않는 회원 ID가 주어지면")
+        class Context_with_non_existing_member_id {
 
             @BeforeEach
             void setUp() {
-                given(oneseoRepository.findByMember(member)).willReturn(Optional.empty());
+                FoundMemberAndOneseoDto queryResult = new FoundMemberAndOneseoDto(null, null);
+                given(oneseoRepository.findMemberAndOneseoByMemberId(memberId)).willReturn(queryResult);
             }
 
             @Test
             @DisplayName("ExpectedException을 던진다.")
-            void it_throws_expected_exception() {
+            void it_throws_expected_exception_for_non_existing_member() {
                 ExpectedException exception = assertThrows(ExpectedException.class,
-                        () -> oneseoService.findByMemberOrThrow(member));
+                        () -> oneseoService.findWithMemberByMemberIdOrThrow(memberId));
+
+                assertEquals("존재하지 않는 지원자입니다. member ID: " + memberId, exception.getMessage());
+                assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하는 회원 ID이지만 원서가 없으면")
+        class Context_with_existing_member_id_but_no_oneseo {
+
+            @BeforeEach
+            void setUp() {
+                FoundMemberAndOneseoDto queryResult = new FoundMemberAndOneseoDto(member, null);
+                given(oneseoRepository.findMemberAndOneseoByMemberId(memberId)).willReturn(queryResult);
+            }
+
+            @Test
+            @DisplayName("ExpectedException을 던진다.")
+            void it_throws_expected_exception_for_non_existing_oneseo() {
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> oneseoService.findWithMemberByMemberIdOrThrow(memberId));
 
                 assertEquals("해당 지원자의 원서를 찾을 수 없습니다. member ID: " + memberId, exception.getMessage());
                 assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
