@@ -64,8 +64,8 @@ class UploadExcelServiceTest {
                 String exam1 = "1001";
                 String exam2 = "1002";
 
-                EntranceTestResult r1 = mockEntranceResult("1001", new BigDecimal("10"), new BigDecimal("11"));
-                EntranceTestResult r2 = mockEntranceResult("1002", new BigDecimal("20"), new BigDecimal("21"));
+                EntranceTestResult r1 = mockEntranceResult(new BigDecimal("10"), new BigDecimal("11"));
+                EntranceTestResult r2 = mockEntranceResult(new BigDecimal("20"), new BigDecimal("21"));
                 Map<String, EntranceTestResult> map = new HashMap<>();
                 map.put(exam1, r1);
                 map.put(exam2, r2);
@@ -81,17 +81,17 @@ class UploadExcelServiceTest {
                     Sheet sheet = wb.createSheet();
                     Row header = sheet.createRow(0);
                     header.createCell(0).setCellValue("수험번호");
-                    header.createCell(1).setCellValue("역검점수");
-                    header.createCell(2).setCellValue("면접점수");
+                    header.createCell(3).setCellValue("역검점수");
+                    header.createCell(4).setCellValue("면접점수");
                     Row row1 = sheet.createRow(1);
                     row1.createCell(0).setCellValue(exam1);
-                    row1.createCell(1).setCellValue(70.2);
-                    row1.createCell(2).setCellValue(60);
+                    row1.createCell(3).setCellValue(70.2);
+                    row1.createCell(4).setCellValue(60);
                     Row row2 = sheet.createRow(2);
                     row2.createCell(0).setCellValue(Double.parseDouble(exam2));
-                    Cell cFormula = row2.createCell(1);
+                    Cell cFormula = row2.createCell(3);
                     cFormula.setCellFormula("40+20.255");
-                    row2.createCell(2).setCellValue("65.2399");
+                    row2.createCell(4).setCellValue("65.2399");
                 });
 
                 // when
@@ -119,16 +119,16 @@ class UploadExcelServiceTest {
                     Sheet sheet = wb.createSheet();
                     Row header = sheet.createRow(0);
                     header.createCell(0).setCellValue("수험번호");
-                    header.createCell(1).setCellValue("역검점수");
-                    header.createCell(2).setCellValue("면접점수");
+                    header.createCell(3).setCellValue("역검점수");
+                    header.createCell(4).setCellValue("면접점수");
                     Row r1 = sheet.createRow(1);
                     r1.createCell(0).setCellValue("1001");
-                    r1.createCell(1).setCellValue("10");
-                    r1.createCell(2).setCellValue("20");
+                    r1.createCell(3).setCellValue("10");
+                    r1.createCell(4).setCellValue("20");
                     Row r2 = sheet.createRow(2);
                     r2.createCell(0).setCellValue("1001");
-                    r2.createCell(1).setCellValue("30");
-                    r2.createCell(2).setCellValue("40");
+                    r2.createCell(3).setCellValue("30");
+                    r2.createCell(4).setCellValue("40");
                 });
                 ExpectedException ex = assertThrows(ExpectedException.class, () -> uploadExcelService.execute(file));
                 assertTrue(ex.getMessage().contains("중복"));
@@ -147,12 +147,12 @@ class UploadExcelServiceTest {
                     Sheet sheet = wb.createSheet();
                     Row header = sheet.createRow(0);
                     header.createCell(0).setCellValue("수험번호");
-                    header.createCell(1).setCellValue("역검점수");
-                    header.createCell(2).setCellValue("면접점수");
+                    header.createCell(3).setCellValue("역검점수");
+                    header.createCell(4).setCellValue("면접점수");
                     Row r1 = sheet.createRow(1);
                     r1.createCell(0).setCellValue("1001");
-                    r1.createCell(1).setCellValue(150);
-                    r1.createCell(2).setCellValue(10);
+                    r1.createCell(3).setCellValue(150);
+                    r1.createCell(4).setCellValue(10);
                 });
                 ExpectedException ex = assertThrows(ExpectedException.class, () -> uploadExcelService.execute(file));
                 assertTrue(ex.getMessage().contains("0 이상 100 이하"));
@@ -171,12 +171,12 @@ class UploadExcelServiceTest {
                     Sheet sheet = wb.createSheet();
                     Row header = sheet.createRow(0);
                     header.createCell(0).setCellValue("수험번호");
-                    header.createCell(1).setCellValue("역검점수");
-                    header.createCell(2).setCellValue("면접점수");
+                    header.createCell(3).setCellValue("역검점수");
+                    header.createCell(4).setCellValue("면접점수");
                     Row r1 = sheet.createRow(1);
                     r1.createCell(0).setCellValue("1001");
-                    r1.createCell(1).setCellValue("7O.2");
-                    r1.createCell(2).setCellValue("60");
+                    r1.createCell(3).setCellValue("7O.2");
+                    r1.createCell(4).setCellValue("60");
                 });
                 ExpectedException ex = assertThrows(ExpectedException.class, () -> uploadExcelService.execute(file));
                 assertTrue(ex.getMessage().contains("점수 형식"));
@@ -194,12 +194,12 @@ class UploadExcelServiceTest {
                     Sheet sheet = wb.createSheet();
                     Row header = sheet.createRow(0);
                     header.createCell(0).setCellValue("수험번호");
-                    header.createCell(1).setCellValue("역검점수");
-                    header.createCell(2).setCellValue("면접점수");
+                    header.createCell(3).setCellValue("역검점수");
+                    header.createCell(4).setCellValue("면접점수");
                     Row r1 = sheet.createRow(1);
                     r1.createCell(0).setBlank();
-                    r1.createCell(1).setCellValue(10);
-                    r1.createCell(2).setCellValue(20);
+                    r1.createCell(3).setCellValue(10);
+                    r1.createCell(4).setCellValue(20);
                 });
                 ExpectedException ex = assertThrows(ExpectedException.class, () -> uploadExcelService.execute(file));
                 assertTrue(ex.getMessage().contains("필수 셀이 비어있습니다"));
@@ -221,12 +221,12 @@ class UploadExcelServiceTest {
                   Sheet sheet = wb.createSheet();
                   Row header = sheet.createRow(0);
                   header.createCell(0).setCellValue("수험번호");
-                  header.createCell(1).setCellValue("역검점수");
-                  header.createCell(2).setCellValue("면접점수");
+                  header.createCell(3).setCellValue("역검점수");
+                  header.createCell(4).setCellValue("면접점수");
                   Row r1 = sheet.createRow(1);
                   r1.createCell(0).setCellValue("9999");
-                  r1.createCell(1).setCellValue(10);
-                  r1.createCell(2).setCellValue(20);
+                  r1.createCell(3).setCellValue(10);
+                  r1.createCell(4).setCellValue(20);
                 });
         ExpectedException ex =
             assertThrows(ExpectedException.class, () -> uploadExcelService.execute(file));
@@ -245,8 +245,7 @@ class UploadExcelServiceTest {
         }
     }
 
-    private EntranceTestResult mockEntranceResult(String examinationNumber, BigDecimal competency,
-            BigDecimal interview) {
+    private EntranceTestResult mockEntranceResult(BigDecimal competency, BigDecimal interview) {
         EntranceTestResult result = mock(EntranceTestResult.class);
         final BigDecimal[] compHolder = {competency};
         final BigDecimal[] interHolder = {interview};
@@ -264,7 +263,7 @@ class UploadExcelServiceTest {
     }
 
     private void mockFindEntranceResults(String exam) {
-        EntranceTestResult r = mockEntranceResult(exam, BigDecimal.ZERO, BigDecimal.ZERO);
+        EntranceTestResult r = mockEntranceResult(BigDecimal.ZERO, BigDecimal.ZERO);
         Map<String, EntranceTestResult> map = new HashMap<>();
         map.put(exam, r);
         when(oneseoRepository.findEntranceTestResultByExaminationNumbersIn(any())).thenReturn(map);

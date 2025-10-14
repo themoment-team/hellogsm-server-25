@@ -30,7 +30,7 @@ public class UploadExcelService {
 
     @Getter
     private enum CellIndex {
-        EXAMINATION_NUMBER(0), COMPETENCY_EVALUATION_SCORE(1), INTERVIEW_SCORE(2);
+        EXAMINATION_NUMBER(0), COMPETENCY_EVALUATION_SCORE(3), INTERVIEW_SCORE(4);
         private final int index;
 
         CellIndex(int index) {
