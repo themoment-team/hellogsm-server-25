@@ -40,12 +40,15 @@ public class SecurityConfig {
     public Filter timeBasedFilter() {
         LocalDateTime oneseoSubmissionStart = scheduleEnv.oneseoSubmissionStart();
         LocalDateTime oneseoSubmissionEnd = scheduleEnv.oneseoSubmissionEnd();
+        LocalDateTime interview = scheduleEnv.interview();
+        LocalDateTime finalResultsAnnouncement = scheduleEnv.finalResultsAnnouncement();
 
         return new TimeBasedFilter()
                 .addFilter(HttpMethod.POST, "/oneseo/v3/temp-storage", oneseoSubmissionStart, oneseoSubmissionEnd)
                 .addFilter(HttpMethod.POST, "/oneseo/v3/oneseo/me", oneseoSubmissionStart, oneseoSubmissionEnd)
                 .addFilter(HttpMethod.PUT, "/oneseo/v3/oneseo/{memberId}", oneseoSubmissionStart, oneseoSubmissionEnd)
-                .addFilter(HttpMethod.POST, "/oneseo/v3/image", oneseoSubmissionStart, oneseoSubmissionEnd);
+                .addFilter(HttpMethod.POST, "/oneseo/v3/image", oneseoSubmissionStart, oneseoSubmissionEnd)
+                .addFilter(HttpMethod.POST, "/oneseo/v3/excel", interview, finalResultsAnnouncement);
     }
 
     @Configuration
