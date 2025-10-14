@@ -245,8 +245,7 @@ class UploadExcelServiceTest {
         }
     }
 
-    private EntranceTestResult mockEntranceResult(BigDecimal competency,
-            BigDecimal interview) {
+    private EntranceTestResult mockEntranceResult(BigDecimal competency, BigDecimal interview) {
         EntranceTestResult result = mock(EntranceTestResult.class);
         final BigDecimal[] compHolder = {competency};
         final BigDecimal[] interHolder = {interview};
