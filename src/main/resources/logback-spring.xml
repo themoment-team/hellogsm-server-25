@@ -4,7 +4,7 @@
 
     <appender name="stage_aws_cloud_watch_log" class="ca.pjer.logback.AwsLogsAppender">
         <layout>
-            <pattern>[%thread] [%date{yyyy-MM-dd HH:mm:ss,SSS, Asia/Seoul}] [%level] [%file:%line] - %msg%n</pattern>
+            <pattern>[%thread] [%date{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul}] [%level] [%file:%line] - %msg%n</pattern>
         </layout>
         <logGroupName>hellogsm-stage-log</logGroupName>
         <logStreamUuidPrefix>[hello-gsm]-</logStreamUuidPrefix>
@@ -17,7 +17,7 @@
 
     <appender name="prod_aws_cloud_watch_log" class="ca.pjer.logback.AwsLogsAppender">
         <layout>
-            <pattern>[%thread] [%date{yyyy-MM-dd HH:mm:ss,SSS, Asia/Seoul}] [%level] [%file:%line] - %msg%n</pattern>
+            <pattern>[%thread] [%date{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul}] [%level] [%file:%line] - %msg%n</pattern>
         </layout>
         <logGroupName>hellogsm-prod-log</logGroupName>
         <logStreamUuidPrefix>[hello-gsm]-</logStreamUuidPrefix>
@@ -28,7 +28,7 @@
         <retentionTimeDays>0</retentionTimeDays>
     </appender>
 
-    <property name="CONSOLE_LOG_PATTERN" value="%highlight(%-5level) %date{yyyy-MM-dd HH:mm:ss.SSS, Asia/Seoul} [%thread] %cyan([%C{0} :: %M :: %L]) - %msg%n"/>
+    <property name="CONSOLE_LOG_PATTERN" value="%highlight(%-5level) %date{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul} [%thread] %cyan([%C{0} :: %M :: %L]) - %msg%n"/>
     <appender name="console_log" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
