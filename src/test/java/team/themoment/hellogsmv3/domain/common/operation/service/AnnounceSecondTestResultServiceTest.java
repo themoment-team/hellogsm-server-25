@@ -56,6 +56,7 @@ class AnnounceSecondTestResultServiceTest {
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
                 given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(entranceTestResultRepository.existsByFirstTestPassYn(NO)).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
                 given(operationTestResultRepository.findTestResult()).willReturn(Optional.empty());
@@ -80,6 +81,7 @@ class AnnounceSecondTestResultServiceTest {
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().plusDays(1));
                 given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(entranceTestResultRepository.existsByFirstTestPassYn(NO)).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
             }
@@ -103,6 +105,7 @@ class AnnounceSecondTestResultServiceTest {
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
                 given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(entranceTestResultRepository.existsByFirstTestPassYn(NO)).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
 
@@ -133,6 +136,7 @@ class AnnounceSecondTestResultServiceTest {
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
                 given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(entranceTestResultRepository.existsByFirstTestPassYn(NO)).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
                 given(testResult.getSecondTestResultAnnouncementYn()).willReturn(NO);
