@@ -44,6 +44,15 @@ public class GlobalExceptionHandler {
         return CommonApiResponse.error("field validation failed : " + ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public CommonApiResponse illegalStateException(IllegalStateException ex) {
+        if (ex.getMessage() != null && ex.getMessage().contains("creationTime key must not be null")) {
+            log.warn("Corrupted session detected, treating as invalid session: {}", ex.getMessage());
+            return CommonApiResponse.error("Session is invalid or expired", HttpStatus.UNAUTHORIZED);
+        }
+        return unExpectedException(ex); // 다른 IllegalStateException은 RuntimeException 핸들러로 위임
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public CommonApiResponse unExpectedException(RuntimeException ex) {
         log.error("UnExpectedException Occur : ", ex);
