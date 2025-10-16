@@ -55,7 +55,6 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
-                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
                 given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
@@ -80,7 +79,6 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().plusDays(1));
-                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
                 given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
@@ -104,7 +102,6 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
-                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
                 given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
@@ -133,7 +130,6 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
-                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(true);
             }
 
             @Test
@@ -154,7 +150,6 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
-                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(true);
             }
@@ -177,7 +172,6 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
-                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
                 given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(true);
@@ -203,7 +197,6 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
-                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
                 given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);

@@ -39,7 +39,6 @@ public class AnnounceSecondTestResultService {
 
     private void validateSecondTestResultAnnouncementPeriod() {
         if (LocalDateTime.now().isBefore(scheduleEnv.finalResultsAnnouncement())
-                || entranceTestResultRepository.existsByFirstTestPassYnIsNull()
                 || entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES)
                 || operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)
         ) {
