@@ -22,6 +22,4 @@ public interface EntranceTestResultRepository extends JpaRepository<EntranceTest
      * @author 김태은
      */
     boolean existsByFirstTestPassYnAndSecondTestPassYnIsNull(YesNo firstTestPassYn);
-
-    boolean existsByFirstTestPassYn(YesNo firstTestPassYn);
 }
