@@ -1,5 +1,6 @@
 package team.themoment.hellogsmv3.domain.common.operation.service;
 
+import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.NO;
 import static team.themoment.hellogsmv3.domain.oneseo.entity.type.YesNo.YES;
 
 import java.time.LocalDateTime;
@@ -39,7 +40,9 @@ public class AnnounceSecondTestResultService {
     private void validateSecondTestResultAnnouncementPeriod() {
         if (LocalDateTime.now().isBefore(scheduleEnv.finalResultsAnnouncement())
                 || entranceTestResultRepository.existsByFirstTestPassYnIsNull()
-                || entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES)) {
+                || entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES)
+                || operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)
+        ) {
             throw new ExpectedException("2차 결과 발표 기간 이전에 발표 여부를 수정할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
