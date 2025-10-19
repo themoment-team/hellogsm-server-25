@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.auth.dto.request.OAuthCodeReqDto;
@@ -23,7 +22,6 @@ import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticatio
 @RestController
 @RequestMapping("/auth/v3")
 @RequiredArgsConstructor
-@Slf4j
 public class AuthController {
 
     private final OAuthAuthenticationService oAuthAuthenticationService;
