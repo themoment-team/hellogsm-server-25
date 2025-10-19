@@ -55,8 +55,10 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
                 given(operationTestResultRepository.findTestResult()).willReturn(Optional.empty());
             }
 
@@ -78,8 +80,13 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().plusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
+
+                OperationTestResult testResult = mock(OperationTestResult.class);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
             }
 
             @Test
@@ -100,8 +107,10 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
 
                 OperationTestResult testResult = mock(OperationTestResult.class);
 
@@ -121,6 +130,114 @@ class AnnounceSecondTestResultServiceTest {
         }
 
         @Nested
+        @DisplayName("1차 배치가 진행되지 않은 경우")
+        class Context_first_test_batch_not_processed {
+
+            @BeforeEach
+            void setUp() {
+                given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(true);
+                given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
+                        .willReturn(false);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
+
+                OperationTestResult testResult = mock(OperationTestResult.class);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
+            }
+
+            @Test
+            @DisplayName("ExpectedException을 던진다")
+            void it_throws_expected_exception() {
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> announceSecondTestResultService.execute());
+
+                assertEquals("2차 결과 발표 기간 이전에 발표 여부를 수정할 수 없습니다.", exception.getMessage());
+                assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+            }
+        }
+
+        @Nested
+        @DisplayName("1차 결과가 발표되지 않은 경우")
+        class Context_first_test_result_not_announced {
+
+            @BeforeEach
+            void setUp() {
+                given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
+                        .willReturn(false);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(true);
+
+                OperationTestResult testResult = mock(OperationTestResult.class);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
+            }
+
+            @Test
+            @DisplayName("ExpectedException을 던진다")
+            void it_throws_expected_exception() {
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> announceSecondTestResultService.execute());
+
+                assertEquals("2차 결과 발표 기간 이전에 발표 여부를 수정할 수 없습니다.", exception.getMessage());
+                assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+            }
+        }
+
+        @Nested
+        @DisplayName("1차 합격자 중 2차 결과가 입력되지 않은 경우")
+        class Context_second_test_result_not_entered_for_first_pass {
+
+            @BeforeEach
+            void setUp() {
+                given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
+                        .willReturn(true);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
+
+                OperationTestResult testResult = mock(OperationTestResult.class);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
+            }
+
+            @Test
+            @DisplayName("ExpectedException을 던진다")
+            void it_throws_expected_exception() {
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> announceSecondTestResultService.execute());
+
+                assertEquals("2차 결과 발표 기간 이전에 발표 여부를 수정할 수 없습니다.", exception.getMessage());
+                assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+            }
+        }
+
+        @Nested
+        @DisplayName("1차 결과 발표 여부가 NO인 경우")
+        class Context_first_test_result_announcement_is_no {
+
+            @BeforeEach
+            void setUp() {
+                given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
+                given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
+                        .willReturn(false);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(true);
+
+                OperationTestResult testResult = mock(OperationTestResult.class);
+                given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
+            }
+
+            @Test
+            @DisplayName("ExpectedException을 던진다")
+            void it_throws_expected_exception() {
+                ExpectedException exception = assertThrows(ExpectedException.class,
+                        () -> announceSecondTestResultService.execute());
+
+                assertEquals("2차 결과 발표 기간 이전에 발표 여부를 수정할 수 없습니다.", exception.getMessage());
+                assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+            }
+        }
+
+        @Nested
         @DisplayName("2차 결과 발표 기간 이후이고, 아직 2차 결과가 발표되지 않은 경우")
         class Context_valid_condition {
 
@@ -129,8 +246,10 @@ class AnnounceSecondTestResultServiceTest {
             @BeforeEach
             void setUp() {
                 given(scheduleEnv.finalResultsAnnouncement()).willReturn(LocalDateTime.now().minusDays(1));
+                given(entranceTestResultRepository.existsByFirstTestPassYnIsNull()).willReturn(false);
                 given(entranceTestResultRepository.existsByFirstTestPassYnAndSecondTestPassYnIsNull(YES))
                         .willReturn(false);
+                given(operationTestResultRepository.existsByFirstTestResultAnnouncementYn(NO)).willReturn(false);
                 given(testResult.getSecondTestResultAnnouncementYn()).willReturn(NO);
                 given(operationTestResultRepository.findTestResult()).willReturn(Optional.of(testResult));
             }
