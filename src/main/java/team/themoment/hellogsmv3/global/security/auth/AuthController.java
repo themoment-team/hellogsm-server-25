@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.auth.dto.request.OAuthCodeReqDto;
@@ -22,6 +23,7 @@ import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticatio
 @RestController
 @RequestMapping("/auth/v3")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final OAuthAuthenticationService oAuthAuthenticationService;
@@ -37,15 +39,12 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     @GetMapping("/logout")
     public CommonApiResponse logout(HttpServletRequest req, HttpServletResponse res) {
-        logoutProcess(req, res, SecurityContextHolder.getContext().getAuthentication());
-        return CommonApiResponse.success("로그아웃 되었습니다.");
-    }
-
-    private static void logoutProcess(HttpServletRequest req, HttpServletResponse res, Authentication auth) {
-        if (auth instanceof OAuth2AuthenticationToken) {
-            new SecurityContextLogoutHandler().logout(req, res, SecurityContextHolder.getContext().getAuthentication());
-        } else {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof OAuth2AuthenticationToken)) {
             throw new ExpectedException("인증 정보가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
+        CommonApiResponse response = CommonApiResponse.success("로그아웃 되었습니다.");
+        new SecurityContextLogoutHandler().logout(req, res, auth);
+        return response;
     }
 }
