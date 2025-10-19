@@ -1,12 +1,15 @@
 package team.themoment.hellogsmv3.global.security.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,8 +21,6 @@ import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.auth.dto.request.OAuthCodeReqDto;
 import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticationService;
-
-import java.io.IOException;
 
 @Tag(name = "Auth API", description = "인증 관련 API입니다.")
 @RestController
