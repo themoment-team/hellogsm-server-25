@@ -1,5 +1,6 @@
 package team.themoment.hellogsmv3.global.security.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,8 @@ import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 import team.themoment.hellogsmv3.global.security.auth.dto.request.OAuthCodeReqDto;
 import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticationService;
 
+import java.io.IOException;
+
 @Tag(name = "Auth API", description = "인증 관련 API입니다.")
 @RestController
 @RequestMapping("/auth/v3")
@@ -25,6 +28,7 @@ import team.themoment.hellogsmv3.global.security.auth.service.OAuthAuthenticatio
 public class AuthController {
 
     private final OAuthAuthenticationService oAuthAuthenticationService;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "OAuth 인증", description = "프론트엔드에서 받은 Authorization Code로 인증을 처리합니다.")
     @PostMapping("/auth/{provider}")
@@ -36,13 +40,17 @@ public class AuthController {
 
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     @GetMapping("/logout")
-    public CommonApiResponse logout(HttpServletRequest req, HttpServletResponse res) {
+    public void logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth instanceof OAuth2AuthenticationToken)) {
             throw new ExpectedException("인증 정보가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
         CommonApiResponse response = CommonApiResponse.success("로그아웃 되었습니다.");
+        res.setStatus(HttpServletResponse.SC_OK);
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+        res.getWriter().write(objectMapper.writeValueAsString(response));
+        res.flushBuffer();
         new SecurityContextLogoutHandler().logout(req, res, auth);
-        return response;
     }
 }
