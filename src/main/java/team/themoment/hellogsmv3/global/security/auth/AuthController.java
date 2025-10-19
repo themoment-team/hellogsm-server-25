@@ -47,11 +47,15 @@ public class AuthController {
             throw new ExpectedException("인증 정보가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
         CommonApiResponse response = CommonApiResponse.success("로그아웃 되었습니다.");
-        res.setStatus(HttpServletResponse.SC_OK);
+        writeJsonResponse(res, HttpServletResponse.SC_OK, response);
+        new SecurityContextLogoutHandler().logout(req, res, auth);
+    }
+
+    private void writeJsonResponse(HttpServletResponse res, int status, Object responseObj) throws IOException {
+        res.setStatus(status);
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
-        res.getWriter().write(objectMapper.writeValueAsString(response));
+        res.getWriter().write(objectMapper.writeValueAsString(responseObj));
         res.flushBuffer();
-        new SecurityContextLogoutHandler().logout(req, res, auth);
     }
 }
