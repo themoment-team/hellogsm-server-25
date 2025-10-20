@@ -1,5 +1,6 @@
 package team.themoment.hellogsmv3.domain.oneseo.service;
 
+import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.buildCalcDtoWithFillEmpty;
 import static team.themoment.hellogsmv3.domain.oneseo.service.OneseoService.isValidMiddleSchoolInfo;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import team.themoment.hellogsmv3.domain.member.entity.Member;
 import team.themoment.hellogsmv3.domain.member.service.MemberService;
+import team.themoment.hellogsmv3.domain.oneseo.dto.internal.MiddleSchoolAchievementCalcDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.MiddleSchoolAchievementReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.request.OneseoReqDto;
 import team.themoment.hellogsmv3.domain.oneseo.dto.response.*;
@@ -248,24 +250,27 @@ public class ModifyOneseoService {
             Oneseo oneseo) {
         MiddleSchoolAchievementReqDto updatedMiddleSchoolAchievement = reqDto.middleSchoolAchievement();
 
+        MiddleSchoolAchievementCalcDto calcDto = buildCalcDtoWithFillEmpty(updatedMiddleSchoolAchievement,
+            reqDto.graduationType());
+
         MiddleSchoolAchievement modifiedMiddleSchoolAchievement = MiddleSchoolAchievement.builder()
                 .id(middleSchoolAchievement.getId()).oneseo(oneseo)
-                .achievement1_2(validationGeneralAchievement(updatedMiddleSchoolAchievement.achievement1_2()))
-                .achievement2_1(validationGeneralAchievement(updatedMiddleSchoolAchievement.achievement2_1()))
-                .achievement2_2(validationGeneralAchievement(updatedMiddleSchoolAchievement.achievement2_2()))
-                .achievement3_1(validationGeneralAchievement(updatedMiddleSchoolAchievement.achievement3_1()))
-                .achievement3_2(validationGeneralAchievement(updatedMiddleSchoolAchievement.achievement3_2()))
+                .achievement1_2(validationGeneralAchievement(calcDto.achievement1_2()))
+                .achievement2_1(validationGeneralAchievement(calcDto.achievement2_1()))
+                .achievement2_2(validationGeneralAchievement(calcDto.achievement2_2()))
+                .achievement3_1(validationGeneralAchievement(calcDto.achievement3_1()))
+                .achievement3_2(validationGeneralAchievement(calcDto.achievement3_2()))
                 .generalSubjects(updatedMiddleSchoolAchievement.generalSubjects())
                 .newSubjects(updatedMiddleSchoolAchievement.newSubjects())
                 .artsPhysicalAchievement(
-                        validationArtsPhysicalAchievement(updatedMiddleSchoolAchievement.artsPhysicalAchievement()))
+                        validationArtsPhysicalAchievement(calcDto.artsPhysicalAchievement()))
                 .artsPhysicalSubjects(updatedMiddleSchoolAchievement.artsPhysicalSubjects())
-                .absentDays(updatedMiddleSchoolAchievement.absentDays())
-                .attendanceDays(updatedMiddleSchoolAchievement.attendanceDays())
-                .volunteerTime(updatedMiddleSchoolAchievement.volunteerTime())
-                .liberalSystem(updatedMiddleSchoolAchievement.liberalSystem())
-                .freeSemester(updatedMiddleSchoolAchievement.freeSemester())
-                .gedAvgScore(updatedMiddleSchoolAchievement.gedAvgScore()).build();
+                .absentDays(calcDto.absentDays())
+                .attendanceDays(calcDto.attendanceDays())
+                .volunteerTime(calcDto.volunteerTime())
+                .liberalSystem(calcDto.liberalSystem())
+                .freeSemester(calcDto.freeSemester())
+                .gedAvgScore(calcDto.gedAvgScore()).build();
 
         oneseo.modifyMiddleSchoolAchievement(modifiedMiddleSchoolAchievement);
         middleSchoolAchievementRepository.save(modifiedMiddleSchoolAchievement);
