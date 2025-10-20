@@ -188,7 +188,7 @@ class ModifyOneseoServiceTest {
 
                 assertEquals(middleSchoolAchievement.getId(), capturedAchievement.getId());
                 assertEquals(middleSchoolAchievement.getOneseo().getId(), capturedAchievement.getOneseo().getId());
-                assertNull(capturedAchievement.getAchievement1_2());
+                assertEquals(achievement, capturedAchievement.getAchievement1_2());
                 assertEquals(achievement, capturedAchievement.getAchievement2_1());
                 assertEquals(achievement, capturedAchievement.getAchievement2_2());
                 assertEquals(achievement, capturedAchievement.getAchievement3_1());
