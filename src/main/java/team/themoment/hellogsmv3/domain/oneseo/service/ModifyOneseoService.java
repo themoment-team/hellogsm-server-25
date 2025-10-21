@@ -240,7 +240,8 @@ public class ModifyOneseoService {
                 .guardianName(reqDto.guardianName()).guardianPhoneNumber(reqDto.guardianPhoneNumber())
                 .relationshipWithGuardian(reqDto.relationshipWithGuardian()).schoolAddress(reqDto.schoolAddress())
                 .schoolName(reqDto.schoolName()).schoolTeacherName(reqDto.schoolTeacherName())
-                .schoolTeacherPhoneNumber(reqDto.schoolTeacherPhoneNumber()).build();
+                .schoolTeacherPhoneNumber(reqDto.schoolTeacherPhoneNumber()).studentNumber(reqDto.studentNumber())
+                .build();
 
         oneseo.modifyOneseoPrivacyDetail(modifiedOneseoPrivacyDetail);
         oneseoPrivacyDetailRepository.save(modifiedOneseoPrivacyDetail);
