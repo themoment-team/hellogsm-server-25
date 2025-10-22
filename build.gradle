@@ -85,7 +85,7 @@ dependencies {
 
 	/** json **/
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    implementation("net.minidev:json-smart:2.6.0")
+	implementation("net.minidev:json-smart:2.6.0")
 
 	/** swagger **/
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
