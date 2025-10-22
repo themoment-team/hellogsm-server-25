@@ -76,12 +76,12 @@ public class GlobalExceptionHandler {
         Map<String, Object> result = new HashMap<>();
         Map<String, String> fieldErrors = new HashMap<>();
         Map<String, String> globalErrors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            fieldErrors.put(error.getField(), error.getDefaultMessage());
-        });
-        ex.getBindingResult().getGlobalErrors().forEach(error -> {
-            globalErrors.put(error.getObjectName(), error.getDefaultMessage());
-        });
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+
+        ex.getBindingResult().getGlobalErrors()
+                .forEach(error -> globalErrors.put(error.getObjectName(), error.getDefaultMessage()));
+
         result.put("fieldErrors", fieldErrors);
         if (!globalErrors.isEmpty()) {
             result.put("globalErrors", globalErrors);
