@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,18 +28,18 @@ public class GlobalExceptionHandler {
         return CommonApiResponse.error(ex.getMessage(), ex.getStatusCode());
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
-    public CommonApiResponse validationException(MethodArgumentNotValidException ex) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class,
+            ConstraintViolationException.class})
+    public CommonApiResponse validationException(Exception ex) {
         log.warn("Validation Failed : {}", ex.getMessage());
         log.trace("Validation Failed Details : ", ex);
-        return CommonApiResponse.error(methodArgumentNotValidExceptionToJson(ex), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public CommonApiResponse validationException(ConstraintViolationException ex) {
-        log.warn("field validation failed : {}", ex.getMessage());
-        log.trace("field validation failed : ", ex);
-        return CommonApiResponse.error("field validation failed : " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        String errorMessage;
+        if (ex instanceof MethodArgumentNotValidException) {
+            errorMessage = methodArgumentNotValidExceptionToJson((MethodArgumentNotValidException) ex);
+        } else {
+            errorMessage = ex.getMessage();
+        }
+        return CommonApiResponse.error(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -74,17 +73,19 @@ public class GlobalExceptionHandler {
     }
 
     private static String methodArgumentNotValidExceptionToJson(MethodArgumentNotValidException ex) {
-        Map<String, Object> globalResults = new HashMap<>();
-        Map<String, String> fieldResults = new HashMap<>();
-
-        ex.getBindingResult().getGlobalErrors().forEach(error -> {
-            globalResults.put(ex.getBindingResult().getObjectName(), error.getDefaultMessage());
-        });
+        Map<String, Object> result = new HashMap<>();
+        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, String> globalErrors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
-            fieldResults.put(error.getField(), error.getDefaultMessage());
+            fieldErrors.put(error.getField(), error.getDefaultMessage());
         });
-        globalResults.put(ex.getBindingResult().getObjectName(), fieldResults);
-
-        return new JSONObject(globalResults).toString().replace("\"", "'");
+        ex.getBindingResult().getGlobalErrors().forEach(error -> {
+            globalErrors.put(error.getObjectName(), error.getDefaultMessage());
+        });
+        result.put("fieldErrors", fieldErrors);
+        if (!globalErrors.isEmpty()) {
+            result.put("globalErrors", globalErrors);
+        }
+        return new JSONObject(result).toString().replace("\"", "'");
     }
 }
