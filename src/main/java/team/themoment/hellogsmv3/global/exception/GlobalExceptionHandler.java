@@ -19,7 +19,6 @@ import team.themoment.hellogsmv3.global.common.response.CommonApiResponse;
 import team.themoment.hellogsmv3.global.exception.error.ExpectedException;
 
 @Slf4j
-@EnableWebMvc
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
