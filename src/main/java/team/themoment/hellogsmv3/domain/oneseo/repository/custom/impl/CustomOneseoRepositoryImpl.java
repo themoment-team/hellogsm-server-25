@@ -113,9 +113,12 @@ public class CustomOneseoRepositoryImpl implements CustomOneseoRepository {
                 .join(oneseo.entranceTestResult, entranceTestResult).fetchJoin()
                 .join(entranceTestResult.entranceTestFactorsDetail, entranceTestFactorsDetail).fetchJoin()
                 .leftJoin(oneseo.middleSchoolAchievement, middleSchoolAchievement).fetchJoin()
-                .where(isExistAppliedScreening
+                .where((isExistAppliedScreening
                         ? oneseo.appliedScreening.eq(screening)
                         : oneseo.wantedScreening.eq(screening))
+                        .and(entranceTestResult.firstTestPassYn.eq(YES))
+                        .and(entranceTestResult.secondTestPassYn.eq(YES)
+                                .or(entranceTestResult.secondTestPassYn.isNull())))
                 .orderBy(oneseo.oneseoSubmitCode.substring(0, 1).asc(),
                         oneseo.oneseoSubmitCode.substring(2).castToNum(Integer.class).asc())
                 .fetch();
